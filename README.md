@@ -1,4 +1,4 @@
 # SP4
 ICE School Project
 
-## Lavet af Ebou, Andreas & Jonas.
+## Lavet af Ebou, Andreasm, Carl-Emil & Jonas.
