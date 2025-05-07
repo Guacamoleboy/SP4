@@ -1,14 +1,9 @@
 /*
 
-    SP4 Project
+    SP4 - ICE School Project
 
-    Author:
-    Ebou, Andreas, Carl-Emil & Jonas.
-
-    Plan
-    ____
-
-    N/A
+    Author(s):
+    Ebou, Andreas, Carl-Emil & Jonas
 
     Comments
     ________
@@ -70,6 +65,7 @@ public class Main extends Application { // Client class
         anyone closes the app.
 
     */
+
     public void closeHandle(Stage stage){
 
         stage.setOnCloseRequest(e -> {
