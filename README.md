@@ -1,7 +1,7 @@
 # SP4
 ICE School Project
 
-#Overview af Idé
+# Overview af Idé
 __________________
 
 Frisører anno 2025 skal selv ud og finde elever når de skal til diverse eksamener og afgangsprøver..
