@@ -3,7 +3,7 @@
     SP4 Project
 
     Author:
-    Ebou, Andreas & Jonas.
+    Ebou, Andreas, Carl-Emil & Jonas.
 
     Plan
     ____

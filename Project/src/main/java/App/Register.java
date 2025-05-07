@@ -2,15 +2,17 @@
 package App;
 
 // Imports
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import util.*;
 
 import java.util.ArrayList;
 
-public class Register extends VBox {
+public class Register extends Pane {
 
     // Attributes
     private TextField usernameField;
@@ -38,21 +40,28 @@ public class Register extends VBox {
         this.setPrefSize(sceneWidth, sceneHeight);
         this.setStyle("-fx-background-color: #AAAAAAFF");
 
-        // Create
-        this.getChildren().add(display());
+        VBox registerBox = display();
+        this.getChildren().add(registerBox);
 
-    } // Constructor end
+        // Center
+        double boxHeight = 6 * 55 + 5 * 15;
+        double layoutX = (sceneWidth - 300) / 2.0;
+        double layoutY = (sceneHeight - boxHeight) / 2.0;
+
+        registerBox.setLayoutX(layoutX);
+        registerBox.setLayoutY(layoutY);
+    }
 
     // ____________________________________________________
 
     public VBox display(){
 
-        VBox loginBox = new VBox(15); // Padding / Margin
-        loginBox.setAlignment(Pos.CENTER);
-        loginBox.setPrefWidth(400); // Center of 600 (Scene)
+        VBox registerBox = new VBox(15); // Padding / Margin
+        registerBox.setAlignment(Pos.CENTER);
+        registerBox.setPrefWidth(300); // Center of 600 (Scene)
 
         Label loginLabel = new Label("Create Account");
-        loginLabel.setStyle("-fx-font-size: 48px; -fx-font-weight: bold; -fx-text-fill: rgba(0,0,0,0.50);");
+        loginLabel.setStyle("-fx-font-size: 40px; -fx-font-weight: bold; -fx-text-fill: rgba(0,0,0,0.50);");
 
         usernameField = new TextField();
         usernameField.setPrefHeight(40);
@@ -84,13 +93,18 @@ public class Register extends VBox {
         signUpButton.setPrefHeight(30);
         signUpButton.setPrefWidth(80);
 
+        usernameField.setMaxWidth(300);
+        passwordField.setMaxWidth(300);
+        passwordConfirmField.setMaxWidth(300);
+        emailField.setMaxWidth(300);
+
         // Events
         signUpButton.setOnAction(e -> registerUser());
 
         // Add
-        loginBox.getChildren().addAll(loginLabel, usernameField, passwordField, passwordConfirmField, emailField, signUpButton); // VBox
+        registerBox.getChildren().addAll(loginLabel, usernameField, passwordField, passwordConfirmField, emailField, signUpButton); // VBox
 
-        return loginBox;
+        return registerBox;
 
     }
 
