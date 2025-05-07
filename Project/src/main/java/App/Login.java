@@ -75,23 +75,10 @@ public class Login extends Pane {
                 "-fx-background-radius: 15px; -fx-border-color: rgba(0,0,0,0.50);");
         passwordField.setPromptText("Password");
 
-        registerButton = new Button("Want an account? Sign up now!");
-        registerButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: rgba(0,0,0,0.50); " +
-                "-fx-border-radius: 15px; -fx-background-radius: 15px; -fx-border-color: rgba(0,0,0,0.50);");
-        registerButton.setPrefHeight(30);
-        registerButton.setPrefWidth(300);
-
-        loginButton = new Button("Log in");
-        loginButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: rgba(0,0,0,0.50); " +
-                "-fx-border-radius: 15px; -fx-background-radius: 15px; -fx-border-color: rgba(0,0,0,0.50);");
-        loginButton.setPrefHeight(30);
-        loginButton.setPrefWidth(100); // 1/3 of VBox scene
-
-        forgotButton = new Button("Forgot something?");
-        forgotButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: rgba(0,0,0,0.50);" +
-        " -fx-border-radius: 15px; -fx-background-radius: 15px; -fx-border-color: rgba(0,0,0,0.50);");
-        forgotButton.setPrefHeight(30);
-        forgotButton.setPrefWidth(200); // 2/3 of VBox scene // 15 padding
+        // Buttons fix for repeated code
+        registerButton = createStyledButton("Create Account", 300);
+        loginButton = createStyledButton("Log in", 200);
+        forgotButton = createStyledButton("Forgot something?", 300);
 
         // Margins
         VBox.setMargin(registerButton, new Insets(30, 0, 0, 0)); // More padding for the register button
@@ -106,6 +93,17 @@ public class Login extends Pane {
 
         return loginBox;
 
+    }
+
+    // ____________________________________________________
+
+    private Button createStyledButton(String text, double width) {
+        Button button = new Button(text);
+        button.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: rgba(0,0,0,0.50); " +
+                "-fx-border-radius: 15px; -fx-background-radius: 15px; -fx-border-color: rgba(0,0,0,0.50);");
+        button.setPrefHeight(30);
+        button.setPrefWidth(width);
+        return button;
     }
 
     // ____________________________________________________
