@@ -10,4 +10,4 @@ Finder de ingen, så dumper de. Dét er da underligt og et kæmpe problem.
 
 Det ønsker vi at lave en løsning på. Heraf vores ICE Projekt lavet i Java.
 
-## Lavet af Ebou, Andreas, Carl-Emil & Jonas.
+## Lavet af Ebou, Andreas, Carl Emil & Jonas.

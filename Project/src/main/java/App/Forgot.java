@@ -1,4 +1,4 @@
 package App;
 
-public class Forgot {
+public class Forgot { //Forgot login details class
 }
