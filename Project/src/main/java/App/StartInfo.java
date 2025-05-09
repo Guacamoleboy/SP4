@@ -34,7 +34,7 @@ public class StartInfo extends VBox {
     public VBox sidePane() {
         Image logo = new Image(getClass().getResource("/assets/logo/Elevtiden-nobg.png").toExternalForm());
         ImageView logoView = new ImageView(logo);
-        logoView.setFitWidth(300);
+        logoView.setFitWidth(sceneWidth);
         logoView.setPreserveRatio(true);
 
         VBox sidePaneBox = new VBox(15); // Padding / Margin
