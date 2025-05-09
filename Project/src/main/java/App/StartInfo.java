@@ -39,7 +39,7 @@ public class StartInfo extends VBox {
 
         VBox sidePaneBox = new VBox(15); // Padding / Margin
         sidePaneBox.setAlignment(Pos.CENTER);
-        
+
         //Placement micro adjustment
         sidePaneBox.setPadding(new Insets(10, 10, 20, 20)); // top, right, bottom, left
 
