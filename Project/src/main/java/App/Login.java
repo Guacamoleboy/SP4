@@ -2,6 +2,7 @@
 package App;
 
 // Imports
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -109,6 +110,11 @@ public class Login extends Pane {
         // Add
         buttons.getChildren().addAll(loginButton, forgotButton); // HBox
         loginBox.getChildren().addAll(loginLabel, usernameField, passwordField, buttons, registerButton); // VBox
+
+        // Border fix
+        usernameField.setFocusTraversable(false);
+        passwordField.setFocusTraversable(false);
+        Platform.runLater(loginBox::requestFocus);
 
         // Events
         registerButton.setOnAction(e -> registerButtonAction());

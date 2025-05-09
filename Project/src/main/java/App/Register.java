@@ -2,6 +2,7 @@
 package App;
 
 // Imports
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -111,6 +112,13 @@ public class Register extends Pane {
         passwordConfirmField.setMaxWidth(300);
         emailField.setMaxWidth(300);
         dropdownBox.setMaxWidth(300);
+
+        // Border fix
+        usernameField.setFocusTraversable(false);
+        emailField.setFocusTraversable(false);
+        passwordField.setFocusTraversable(false);
+        passwordConfirmField.setFocusTraversable(false);
+        Platform.runLater(registerBox::requestFocus);
 
         // Hover
         Animation.addHoverScaleEffect(nextButton);
