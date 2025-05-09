@@ -7,15 +7,11 @@
 }
 
 .body {
-
     -fx-background-color: #dedede !important; /* GREY */
-
 }
 
 .orange {
-
     -fx-background-color: #FFA500 !important; /* ORANGE */
-
 }
 
 .button {
@@ -36,6 +32,12 @@
 }
 
 .label {
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-text-fill: rgba(0,0,0,0.50);
+}
+
+.label-2 {
     -fx-font-size: 20px;
     -fx-font-weight: bold;
     -fx-text-fill: rgba(0,0,0,0.50);

@@ -22,7 +22,7 @@ public class Register extends Pane {
     private PasswordField passwordField;
     private PasswordField passwordConfirmField;
     private FileIO io = new FileIO();
-    private Button signUpButton;
+    private Button nextButton;
     private Button goBackButton;
     private Button forgotButton;
     private Button registerButton;
@@ -92,14 +92,14 @@ public class Register extends Pane {
         emailField.setPromptText("Email");
 
         dropdownBox = new ComboBox<>();
-        dropdownBox.getItems().addAll("Student", "Customer", "Teacher", "School");
+        dropdownBox.getItems().addAll("Student", "Customer");
         dropdownBox.setPromptText("Choose type");
         dropdownBox.getStyleClass().add("combo-box");
 
-        signUpButton = new Button("Sign up");
-        signUpButton.getStyleClass().add("button");
-        signUpButton.setPrefHeight(30);
-        signUpButton.setPrefWidth(150);
+        nextButton = new Button("Next");
+        nextButton.getStyleClass().add("button");
+        nextButton.setPrefHeight(30);
+        nextButton.setPrefWidth(150);
 
         goBackButton = new Button("Go Back");
         goBackButton.getStyleClass().add("button");
@@ -113,11 +113,11 @@ public class Register extends Pane {
         dropdownBox.setMaxWidth(300);
 
         // Events
-        signUpButton.setOnAction(e -> registerUser());
+        nextButton.setOnAction(e -> nextOption());
         goBackButton.setOnAction(e -> goBackButtonAction());
 
         // HBox
-        buttons.getChildren().addAll(signUpButton, goBackButton);
+        buttons.getChildren().addAll(nextButton, goBackButton);
 
         // VBox
         registerBox.getChildren().addAll(loginLabel, usernameField, passwordField, passwordConfirmField, emailField, dropdownBox, buttons); // VBox
@@ -147,6 +147,12 @@ public class Register extends Pane {
 
     // ____________________________________________________
 
+    public String getSelectedUserType() {
+        return dropdownBox.getValue();
+    }
+
+    // ____________________________________________________
+
     public void goBackButtonAction(){
 
         Login login = new Login(600, 600);
@@ -170,26 +176,24 @@ public class Register extends Pane {
 
     // ____________________________________________________
 
-    public void registerUser(){
+    public void nextOption(){
 
-        // ORDER MATTERS. KEEP THAT IN MIND || TOP -> BOTTOM
+        // If user presses the next button!
+        NextOption nextoption = new NextOption(600, 600, this);
+        StartBorder sb = new StartBorder(3);
+        StartInfo si = new StartInfo(300, 600);
+        HBox nextOptionHBox = new HBox(nextoption, sb, si);
 
-        userData = new ArrayList<>();
+        si.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        si.getStyleClass().add("orange");
 
-        if(!validateInformation()){
-            return;
-        }
+        nextOptionHBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        nextOptionHBox.getStyleClass().add("body");
 
-        String status = "Active";
-        String banned = "No";
+        Scene registerScene = new Scene(nextOptionHBox, 900, 600);
 
-        userData.add(getUsername());
-        userData.add(getPassword());
-        userData.add(getEmail());
-        userData.add(status);
-        userData.add(banned);
-
-        io.saveData(userData, "src/main/java/data/userData.csv", "Username, Password, Email, Status, Banned");
+        Stage stage = (Stage) getScene().getWindow(); // Main window
+        stage.setScene(registerScene);
 
     }
 
