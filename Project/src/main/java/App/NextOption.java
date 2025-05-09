@@ -10,6 +10,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import util.DBConnector;
+
 public class NextOption extends Pane {
 
     // Attributes
@@ -26,6 +30,8 @@ public class NextOption extends Pane {
     private ComboBox<String> schoolDropdown;
     private ComboBox<String> yearDropdown;
     private Register register;
+    private DBConnector db;
+    private static final String DB_URL = "jdbc:sqlite:identifier.sqlite";
 
     // ____________________________________________________
 
@@ -35,6 +41,9 @@ public class NextOption extends Pane {
         this.sceneHeight = sceneHeight;
         this.register = register;
         this.setPrefSize(sceneWidth, sceneHeight);
+
+        this.db = new DBConnector();
+        db.connect(DB_URL);
 
         VBox registerBox;
 
@@ -241,10 +250,69 @@ public class NextOption extends Pane {
     // ____________________________________________________
 
     public void registerButtonAction(){
-
-        // Ebou Database her
-        // Scene change til Menu.java også
-
+        String username = register.getUsername();
+        String password = register.getPassword();
+        String email = register.getEmail();
+        String userType = register.getSelectedUserType();
+        
+        if (db.isConnected()) {
+            try {
+                // Insert userdata
+                String insertUserQuery = "INSERT INTO users (username, password, email, status, banned) VALUES (?, ?, ?, 'Offline', 'No')";
+                PreparedStatement insertUserStmt = db.prepareStatement(insertUserQuery);
+                insertUserStmt.setString(1, username);
+                insertUserStmt.setString(2, password);
+                insertUserStmt.setString(3, email);
+                insertUserStmt.executeUpdate();
+                
+                // Insert for type
+                if ("Customer".equalsIgnoreCase(userType)) {
+                    String hairType = hairTypeDropdown.getValue();
+                    String hairColor = hairColorDropdown.getValue();
+                    String length = lengthDropdown.getValue();
+                    String gender = genderDropdown.getValue();
+                    
+                    String insertCustomerQuery = "INSERT INTO customers (username, hair_type, hair_color, length, gender) VALUES (?, ?, ?, ?, ?)";
+                    PreparedStatement insertCustomerStmt = db.prepareStatement(insertCustomerQuery);
+                    insertCustomerStmt.setString(1, username);
+                    insertCustomerStmt.setString(2, hairType);
+                    insertCustomerStmt.setString(3, hairColor);
+                    insertCustomerStmt.setString(4, length);
+                    insertCustomerStmt.setString(5, gender);
+                    insertCustomerStmt.executeUpdate();
+                } else if ("Student".equalsIgnoreCase(userType)) {
+                    String school = schoolDropdown.getValue();
+                    String year = yearDropdown.getValue();
+                    
+                    String insertStudentQuery = "INSERT INTO students (username, school, year) VALUES (?, ?, ?)";
+                    PreparedStatement insertStudentStmt = db.prepareStatement(insertStudentQuery);
+                    insertStudentStmt.setString(1, username);
+                    insertStudentStmt.setString(2, school);
+                    insertStudentStmt.setString(3, year);
+                    insertStudentStmt.executeUpdate();
+                }
+                
+                // go to login screen
+                Login login = new Login(600, 600);
+                StartBorder sb = new StartBorder(3);
+                StartInfo si = new StartInfo(300, 600);
+                
+                si.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+                si.getStyleClass().add("orange");
+                
+                login.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+                login.getStyleClass().add("body");
+                
+                HBox loginHBox = new HBox(si, sb, login);
+                Scene loginScene = new Scene(loginHBox, 900, 600);
+                
+                Stage stage = (Stage) getScene().getWindow();
+                stage.setScene(loginScene);
+                
+            } catch (SQLException e) {
+                System.out.println("Error registering user: " + e.getMessage());
+            }
+        }
     }
 
 } // Class end

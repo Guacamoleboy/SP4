@@ -20,6 +20,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import static App.UpdateChecker.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import util.DBConnector;
 
 public class Login extends Pane {
 
@@ -32,6 +36,8 @@ public class Login extends Pane {
     private Button registerButton;
     private Button updateVersionButton;
     private ProcessData processdata;
+    private DBConnector db;
+    private static final String DB_URL = "jdbc:sqlite:identifier.sqlite";
 
     private int sceneWidth;
     private int sceneHeight;
@@ -44,6 +50,8 @@ public class Login extends Pane {
 
         this.sceneWidth = sceneWidth;
         this.sceneHeight = sceneHeight;
+        this.db = new DBConnector();
+        db.connect(DB_URL);
 
         // Display setup
         this.setPrefWidth(sceneWidth);
@@ -183,21 +191,40 @@ public class Login extends Pane {
     // ____________________________________________________
 
     public void loginButtonAction(){
-
         boolean loggedIn = false;
-        ProcessData processdata = new ProcessData();
-
-        // Check username && password
-        for(User u : processdata.getUsers()){
-            if(getUsername().equals(u.getUsername()) && getPassword().equals(u.getPassword())){
-                loggedIn = true;
-                processdata.setStatus(u.getUsername(), "Online");
-                break;
+    
+        if (db.isConnected()) {
+            try {
+                String query = "SELECT * FROM users WHERE username = ? AND password = ?";
+                PreparedStatement stmt = db.prepareStatement(query);
+                stmt.setString(1, getUsername());
+                stmt.setString(2, getPassword());
+                ResultSet rs = stmt.executeQuery();
+            
+                if (rs.next()) {
+                    loggedIn = true;
+                
+                    // Update user status to Online
+                    String updateQuery = "UPDATE users SET status = 'Online' WHERE username = ?";
+                    PreparedStatement updateStmt = db.prepareStatement(updateQuery);
+                    updateStmt.setString(1, getUsername());
+                    updateStmt.executeUpdate();
+                }
+            } catch (SQLException e) {
+                System.out.println("Error during login: " + e.getMessage());
             }
-        } // For-each end
+        } else {
+            ProcessData processdata = new ProcessData();
+            for(User u : processdata.getUsers()){
+                if(getUsername().equals(u.getUsername()) && getPassword().equals(u.getPassword())){
+                    loggedIn = true;
+                    processdata.setStatus(u.getUsername(), "Online");
+                    break;
+                }
+            }
+        }
 
         if (loggedIn){
-
             Menu menu = new Menu(getUsername(), getPassword(), 900, 600);
             Scene menuScene = new Scene(menu, 900, 600);
 
@@ -205,13 +232,9 @@ public class Login extends Pane {
             stage.setScene(menuScene);
 
             System.out.println("#DEBUG - SUCCESS");
-
         } else {
-
             System.out.println("#DEBUG - FAIL");
-
         }
-
     }
     // ____________________________________________________
 
@@ -262,6 +285,36 @@ public class Login extends Pane {
 
     public Button getRegisterButton(){
         return this.registerButton;
+    }
+
+    public void closeHandle(Stage stage){
+        stage.setOnCloseRequest(e -> {
+            String username = getUsername();
+        
+            if (db.isConnected() && !username.isEmpty()) {
+                try {
+                    String updateQuery = "UPDATE users SET status = 'Offline' WHERE username = ?";
+                    PreparedStatement updateStmt = db.prepareStatement(updateQuery);
+                    updateStmt.setString(1, username);
+                    updateStmt.executeUpdate();
+                } catch (SQLException ex) {
+                    System.out.println("Error updating status: " + ex.getMessage());
+                } finally {
+                    db.closeConnection();
+                }
+            } else {
+                ProcessData processdata = new ProcessData();
+                for (User u : processdata.getUsers()){
+                    if(u.getUsername().equalsIgnoreCase(username)){
+                        u.setStatus("Offline");
+                        processdata.saveData();
+                        break;
+                    }
+                }
+            }
+        
+            System.exit(0);
+        });
     }
 
 } // Login Class End

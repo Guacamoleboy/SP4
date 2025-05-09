@@ -14,6 +14,10 @@ import javafx.stage.Stage;
 import util.*;
 
 import java.util.ArrayList;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import util.DBConnector;
 
 public class Register extends Pane {
 
@@ -35,6 +39,8 @@ public class Register extends Pane {
     private String email;
     private ComboBox<String> dropdownBox;
     private ArrayList <String> userData;
+    private DBConnector db;
+    private static final String DB_URL = "jdbc:sqlite:identifier.sqlite";
 
     // ____________________________________________________
 
@@ -42,6 +48,8 @@ public class Register extends Pane {
 
         this.sceneWidth = sceneWidth;
         this.sceneHeight = sceneHeight;
+        this.db = new DBConnector();
+        db.connect(DB_URL);
         this.setPrefSize(sceneWidth, sceneHeight);
 
         VBox registerBox = display();
@@ -247,6 +255,38 @@ public class Register extends Pane {
     public String getEmail(){
         this.email = emailField.getText();
         return this.email;
+    }
+
+    public boolean registerUser(String username, String password, String email) {
+        if (!db.isConnected()) {
+            db.connect(DB_URL);
+        }
+        
+        try {
+            //  username already exists
+            String checkQuery = "SELECT * FROM users WHERE username = ?";
+            PreparedStatement checkStmt = db.prepareStatement(checkQuery);
+            checkStmt.setString(1, username);
+            ResultSet rs = checkStmt.executeQuery();
+            
+            if (rs.next()) {
+                alert("Username already exists!");
+                return false;
+            }
+            
+            // inset new user
+            String insertQuery = "INSERT INTO users (username, password, email, status, banned) VALUES (?, ?, ?, 'Offline', 'No')";
+            PreparedStatement insertStmt = db.prepareStatement(insertQuery);
+            insertStmt.setString(1, username);
+            insertStmt.setString(2, password);
+            insertStmt.setString(3, email);
+            
+            int result = insertStmt.executeUpdate();
+            return result > 0;
+        } catch (SQLException e) {
+            System.out.println("Error registering user: " + e.getMessage());
+            return false;
+        }
     }
 
 

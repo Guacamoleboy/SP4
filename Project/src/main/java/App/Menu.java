@@ -8,8 +8,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import util.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class Menu extends Pane {
 
@@ -18,8 +19,8 @@ public class Menu extends Pane {
     private String password;
     private int sceneWidth;
     private int sceneHeight;
-
-    private FileIO io = new FileIO();
+    private DBConnector db;
+    private static final String DB_URL = "jdbc:sqlite:identifier.sqlite";
 
     // ____________________________________________________
 
@@ -35,18 +36,17 @@ public class Menu extends Pane {
         this.setPrefHeight(sceneHeight);
         this.setPrefWidth(sceneWidth);
 
+        // db connection
+        this.db = new DBConnector();
+        db.connect(DB_URL);
 
         // Create
         this.getChildren().add(display());
-
     }
 
     // ____________________________________________________
 
     public HBox display(){
-
-        ArrayList <String> data = io.readData("src/main/java/data/userData.csv");
-
         HBox displayBox = new HBox();
         displayBox.setPrefSize(sceneWidth, sceneHeight);
 
@@ -56,24 +56,21 @@ public class Menu extends Pane {
         userList.setPrefSize(250, sceneHeight);
         userList.getStyleClass().add("body");
 
-        for (String s : data){
-
-            if(!data.isEmpty()){
-
-                String[] values = s.split(", ");
-                String accountName = values[0].trim();
-                String accountStatus = values[3].trim();
-
-                if(accountStatus.equalsIgnoreCase("Online")){
-
+        // get online users
+        if (db.isConnected()) {
+            String query = "SELECT username, status FROM users WHERE status = 'Online'";
+            ResultSet rs = db.executeQuery(query);
+            
+            try {
+                while (rs != null && rs.next()) {
+                    String accountName = rs.getString("username");
                     Label onlineLabel = new Label(accountName);
                     onlineLabel.getStyleClass().add("label");
                     userList.getChildren().add(onlineLabel);
-
                 }
-
+            } catch (SQLException e) {
+                System.out.println("Error retrieving online users: " + e.getMessage());
             }
-
         }
 
         BorderPane chatPane = new BorderPane();
@@ -83,8 +80,14 @@ public class Menu extends Pane {
         displayBox.getChildren().addAll(userList, chatPane);
 
         return displayBox;
-
     }
 
+    // ____________________________________________________
+
+    public void cleanup() {
+        if (db != null) {
+            db.closeConnection();
+        }
+    }
 
 } // Menu class end
