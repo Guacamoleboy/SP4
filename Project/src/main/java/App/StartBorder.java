@@ -17,7 +17,6 @@ public class StartBorder extends Pane {
         this.setPrefWidth(this.sceneWidth);
         this.setStyle("-fx-background-color: rgba(0,0,0,0.50);");
 
-
     } // Constructor End
 
 } //StartInfo Class end

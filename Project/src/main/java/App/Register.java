@@ -32,6 +32,7 @@ public class Register extends Pane {
     private String password;
     private String passwordConfirmation;
     private String email;
+    private ComboBox<String> dropdownBox;
     private ArrayList <String> userData;
 
     // ____________________________________________________
@@ -41,13 +42,15 @@ public class Register extends Pane {
         this.sceneWidth = sceneWidth;
         this.sceneHeight = sceneHeight;
         this.setPrefSize(sceneWidth, sceneHeight);
-        this.setStyle("-fx-background-color: "+Main.backgroundColor);
 
         VBox registerBox = display();
+        registerBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        registerBox.getStyleClass().add("body");
+
         this.getChildren().add(registerBox);
 
         // Center
-        double boxHeight = 6 * 55 + 5 * 15;
+        double boxHeight = 7 * 55 + 5 * 15;
         double layoutX = (sceneWidth - 300) / 2.0;
         double layoutY = (sceneHeight - boxHeight) / 2.0;
 
@@ -66,41 +69,40 @@ public class Register extends Pane {
         HBox buttons = new HBox(15);
 
         Label loginLabel = new Label("Create Account");
-        loginLabel.setStyle("-fx-font-size: 40px; -fx-font-weight: bold; -fx-text-fill: rgba(0,0,0,0.50);");
+        loginLabel.getStyleClass().add("label");
 
         usernameField = new TextField();
         usernameField.setPrefHeight(40);
-        usernameField.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-border-radius: 15px; " +
-        "-fx-background-radius: 15px; -fx-border-color: rgba(0,0,0,0.50);");
+        usernameField.getStyleClass().add("text-field");
         usernameField.setPromptText("Username");
 
         passwordField = new PasswordField();
         passwordField.setPrefHeight(40);
-        passwordField.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-border-radius: 15px; " +
-        "-fx-background-radius: 15px; -fx-border-color: rgba(0,0,0,0.50);");
+        passwordField.getStyleClass().add("text-field");
         passwordField.setPromptText("Password");
 
         passwordConfirmField = new PasswordField();
         passwordConfirmField.setPrefHeight(40);
-        passwordConfirmField.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-border-radius: 15px; " +
-        "-fx-background-radius: 15px; -fx-border-color: rgba(0,0,0,0.50);");
+        passwordConfirmField.getStyleClass().add("text-field");
         passwordConfirmField.setPromptText("Password Confirmation");
 
         emailField = new TextField();
         emailField.setPrefHeight(40);
-        emailField.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-border-radius: 15px; " +
-        "-fx-background-radius: 15px; -fx-border-color: rgba(0,0,0,0.50);");
+        emailField.getStyleClass().add("text-field");
         emailField.setPromptText("Email");
 
+        dropdownBox = new ComboBox<>();
+        dropdownBox.getItems().addAll("Student", "Customer", "Teacher", "School");
+        dropdownBox.setPromptText("Choose type");
+        dropdownBox.getStyleClass().add("combo-box");
+
         signUpButton = new Button("Sign up");
-        signUpButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: rgba(0,0,0,0.50); " +
-        "-fx-border-radius: 15px; -fx-background-radius: 15px; -fx-border-color: rgba(0,0,0,0.50);");
+        signUpButton.getStyleClass().add("button");
         signUpButton.setPrefHeight(30);
         signUpButton.setPrefWidth(150);
 
         goBackButton = new Button("Go Back");
-        goBackButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: rgba(0,0,0,0.50); " +
-                "-fx-border-radius: 15px; -fx-background-radius: 15px; -fx-border-color: rgba(0,0,0,0.50);");
+        goBackButton.getStyleClass().add("button");
         goBackButton.setPrefHeight(30);
         goBackButton.setPrefWidth(150);
 
@@ -108,6 +110,7 @@ public class Register extends Pane {
         passwordField.setMaxWidth(300);
         passwordConfirmField.setMaxWidth(300);
         emailField.setMaxWidth(300);
+        dropdownBox.setMaxWidth(300);
 
         // Events
         signUpButton.setOnAction(e -> registerUser());
@@ -116,8 +119,8 @@ public class Register extends Pane {
         // HBox
         buttons.getChildren().addAll(signUpButton, goBackButton);
 
-        // Add
-        registerBox.getChildren().addAll(loginLabel, usernameField, passwordField, passwordConfirmField, emailField, buttons); // VBox
+        // VBox
+        registerBox.getChildren().addAll(loginLabel, usernameField, passwordField, passwordConfirmField, emailField, dropdownBox, buttons); // VBox
 
         return registerBox;
 
@@ -149,6 +152,12 @@ public class Register extends Pane {
         Login login = new Login(600, 600);
         StartBorder sb = new StartBorder(3);
         StartInfo si = new StartInfo(300, 600);
+
+        si.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        si.getStyleClass().add("orange");
+
+        login.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        login.getStyleClass().add("body");
 
         HBox goBackHBOX = new HBox(si, sb, login);
 

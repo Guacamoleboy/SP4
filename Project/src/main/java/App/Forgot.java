@@ -41,13 +41,13 @@ public class Forgot extends Pane {
         this.sceneWidth = sceneWidth;
         this.sceneHeight = sceneHeight;
         this.setPrefSize(sceneWidth, sceneHeight);
-        this.setStyle("-fx-background-color: "+Main.backgroundColor);
 
         VBox forgotBox = display();
         this.getChildren().add(forgotBox);
+        forgotBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
 
         // Center
-        double boxHeight = 6 * 55 + 5 * 15;
+        double boxHeight = 4 * 55 + 5 * 15;
         double layoutX = (sceneWidth - 300) / 2.0;
         double layoutY = (sceneHeight - boxHeight) / 2.0;
 
@@ -66,29 +66,25 @@ public class Forgot extends Pane {
         HBox buttons = new HBox(15);
 
         Label forgotLabel = new Label("Forgot something?");
-        forgotLabel.setStyle("-fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: rgba(0,0,0,0.50);");
+        forgotLabel.getStyleClass().add("label");
 
         usernameField = new TextField();
         usernameField.setPrefHeight(40);
-        usernameField.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-border-radius: 15px; " +
-                "-fx-background-radius: 15px; -fx-border-color: rgba(0,0,0,0.50);");
+        usernameField.getStyleClass().add("text-field");
         usernameField.setPromptText("Username");
 
         emailField = new TextField();
         emailField.setPrefHeight(40);
-        emailField.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-border-radius: 15px; " +
-                "-fx-background-radius: 15px; -fx-border-color: rgba(0,0,0,0.50);");
+        emailField.getStyleClass().add("text-field");
         emailField.setPromptText("Email");
 
         signUpButton = new Button("Reset");
-        signUpButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: rgba(0,0,0,0.50); " +
-                "-fx-border-radius: 15px; -fx-background-radius: 15px; -fx-border-color: rgba(0,0,0,0.50);");
+        signUpButton.getStyleClass().add("button");
         signUpButton.setPrefHeight(30);
         signUpButton.setPrefWidth(150);
 
         goBackButton = new Button("Go Back");
-        goBackButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: rgba(0,0,0,0.50); " +
-                "-fx-border-radius: 15px; -fx-background-radius: 15px; -fx-border-color: rgba(0,0,0,0.50);");
+        goBackButton.getStyleClass().add("button");
         goBackButton.setPrefHeight(30);
         goBackButton.setPrefWidth(150);
 
@@ -110,6 +106,12 @@ public class Forgot extends Pane {
         Login login = new Login(600, 600);
         StartBorder sb = new StartBorder(3);
         StartInfo si = new StartInfo(300, 600);
+
+        si.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        si.getStyleClass().add("orange");
+
+        login.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        login.getStyleClass().add("body");
 
         HBox goBackHBOX = new HBox(si, sb, login);
 

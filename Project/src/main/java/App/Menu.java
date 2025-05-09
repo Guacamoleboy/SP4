@@ -34,7 +34,7 @@ public class Menu extends Pane {
         this.sceneHeight = sceneHeight;
         this.setPrefHeight(sceneHeight);
         this.setPrefWidth(sceneWidth);
-        this.setStyle("-fx-background-color: "+Main.backgroundColor);
+
 
         // Create
         this.getChildren().add(display());
@@ -51,8 +51,10 @@ public class Menu extends Pane {
         displayBox.setPrefSize(sceneWidth, sceneHeight);
 
         VBox userList = new VBox();
+
+        userList.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
         userList.setPrefSize(250, sceneHeight);
-        userList.setStyle("-fx-background-color: #202123");
+        userList.getStyleClass().add("body");
 
         for (String s : data){
 
@@ -65,7 +67,7 @@ public class Menu extends Pane {
                 if(accountStatus.equalsIgnoreCase("Online")){
 
                     Label onlineLabel = new Label(accountName);
-                    onlineLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: white; -fx-padding: 10px;");
+                    onlineLabel.getStyleClass().add("label");
                     userList.getChildren().add(onlineLabel);
 
                 }
@@ -76,7 +78,7 @@ public class Menu extends Pane {
 
         BorderPane chatPane = new BorderPane();
         chatPane.setPrefSize(650, sceneHeight);
-        chatPane.setStyle("-fx-background-color: #343541;");
+        chatPane.getStyleClass().add("label");
 
         displayBox.getChildren().addAll(userList, chatPane);
 
