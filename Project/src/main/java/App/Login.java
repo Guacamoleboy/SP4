@@ -98,6 +98,11 @@ public class Login extends Pane {
         loginButton = createStyledButton("Log in", 200);
         forgotButton = createStyledButton("Forgot something?", 300);
 
+        // Hover
+        Animation.addHoverScaleEffect(registerButton);
+        Animation.addHoverScaleEffect(loginButton);
+        Animation.addHoverScaleEffect(forgotButton);
+
         // Margins
         VBox.setMargin(registerButton, new Insets(30, 0, 0, 0)); // More padding for the register button
 

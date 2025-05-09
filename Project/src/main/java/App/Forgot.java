@@ -88,6 +88,10 @@ public class Forgot extends Pane {
         goBackButton.setPrefHeight(30);
         goBackButton.setPrefWidth(150);
 
+        // Hover
+        Animation.addHoverScaleEffect(signUpButton);
+        Animation.addHoverScaleEffect(goBackButton);
+
         // HBox ADD
         buttons.getChildren().addAll(signUpButton, goBackButton);
 
