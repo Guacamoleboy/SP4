@@ -22,6 +22,17 @@ public class UpdateChecker {
 
     // Attributes
     private static TextUI ui = new TextUI("narko");
+    private static String rawUrl = "https://raw.githubusercontent.com/Guacamoleboy/SP4/main/Project/src/main/java/constants/version.txt";
+
+    public static String version;
+
+    static {
+        try {
+            version = fetchVersionFrom();
+        } catch (Exception e) {
+            System.out.println("Something went wrong");
+        }
+    }
 
     // ________________________________________________________
 
@@ -30,12 +41,11 @@ public class UpdateChecker {
         String currentVersion = getCurrentVersion();
 
         // Link to the version.txt file under my Github
-        String url = "https://raw.githubusercontent.com/Guacamoleboy/SP3/main/Project/src/constants/version.txt";
 
         try {
 
             // Gets last version (Public version) which is the main branchs version.txt version.
-            String latestVersion = fetchVersionFrom(url);
+            String latestVersion = fetchVersionFrom();
 
             // Checks if version is outdated
             if (!isOutdated(currentVersion, latestVersion)) {
@@ -57,10 +67,10 @@ public class UpdateChecker {
 
     // ________________________________________________________
 
-    private static String fetchVersionFrom(String tmpurl) throws Exception {
+    public static String fetchVersionFrom() throws Exception {
 
         // Setup
-        URL url = new URL(tmpurl);
+        URL url = new URL(rawUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
         connection.setConnectTimeout(5000);
@@ -94,7 +104,7 @@ public class UpdateChecker {
 
         } catch (Exception e) {
 
-            ui.displayMsg("Error fetching version from url: " + tmpurl);
+            ui.displayMsg("Error fetching version from url: " + rawUrl);
             throw new Exception("Error fetching version: " + " | Dev msg: " +e.getMessage());
 
         } finally {
@@ -117,12 +127,12 @@ public class UpdateChecker {
 
     // ________________________________________________________
 
-    private static String getCurrentVersion() {
+    public static String getCurrentVersion() {
 
         try {
 
             // Gets locale version from users src/constants folder
-            File file = new File("src/constants/version.txt");
+            File file = new File("src/main/java/constants/version.txt");
             Scanner scan = new Scanner(file);
 
             if (scan.hasNextLine()) {

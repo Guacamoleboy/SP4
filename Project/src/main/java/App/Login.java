@@ -14,6 +14,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import util.*;
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import static App.UpdateChecker.*;
 
 public class Login extends Pane {
 
@@ -24,6 +29,7 @@ public class Login extends Pane {
     private Button loginButton;
     private Button forgotButton;
     private Button registerButton;
+    private Button updateVersionButton;
     private ProcessData processdata;
 
     private int sceneWidth;
@@ -60,7 +66,15 @@ public class Login extends Pane {
 
         HBox buttons = new HBox(15);
         buttons.setAlignment(Pos.CENTER_RIGHT);
-
+        if (!checkVersion()) {
+            Label loginLabel = new Label("Outdated ("+getCurrentVersion()+")\nNew version: " + version);
+            loginLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: rgba(0,0,0,0.50);");
+            updateVersionButton = createStyledButton("Update version", 300);
+            buttons.getChildren().addAll(updateVersionButton);
+            loginBox.getChildren().addAll(loginLabel, buttons);
+            updateVersionButton.setOnAction(e -> updateVersionButtonAction());
+            return loginBox;
+        }
         Label loginLabel = new Label("Log in");
         loginLabel.setStyle("-fx-font-size: 48px; -fx-font-weight: bold; -fx-text-fill: rgba(0,0,0,0.50);");
 
@@ -155,7 +169,17 @@ public class Login extends Pane {
         }
 
     }
+    // ____________________________________________________
 
+    public void updateVersionButtonAction() {
+        try {
+            Desktop desktop = Desktop.getDesktop();
+            URI uri = new URI("https://github.com/Guacamoleboy/SP4/tree/main");
+            desktop.browse(uri);
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
     // ____________________________________________________
 
     public String getUsername(){
