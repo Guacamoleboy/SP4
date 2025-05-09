@@ -10,7 +10,6 @@
 
     N/A
 
-
 */
 
 // Packages
@@ -32,16 +31,12 @@ public class Main extends Application { // Client class
     private StartInfo startinfo = new StartInfo(300, 600);
     private StartBorder startborder = new StartBorder(3);
 
-    //Colors for the whole program
-    public static String backgroundColor = "#AAAAAAFF";
-    public static String barColor = "orange";
-
     // ____________________________________________________
 
     @Override
     public void start(Stage app) {
         String version = getCurrentVersion();
-        app.setTitle("SP4 Version "+version);
+        app.setTitle("SP4 Version " + version);
 
         // Side by side layout JavaFX (left -> Right) // HBox
         HBox mainScene = new HBox(startinfo, startborder, login); // Start Scene
@@ -49,6 +44,12 @@ public class Main extends Application { // Client class
         Scene scene = new Scene(mainScene, 900, 600);
         app.setResizable(false); // Doesn't allow changeing of width / height
         app.setScene(scene);
+
+        startinfo.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        startinfo.getStyleClass().add("orange");
+
+        login.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        login.getStyleClass().add("body");
 
         // Logo for application. It's under resources.
         app.getIcons().add(new Image(getClass().getResource("/assets/logo/logo-128.png").toExternalForm()));

@@ -47,7 +47,6 @@ public class Login extends Pane {
         // Display setup
         this.setPrefWidth(sceneWidth);
         this.setPrefHeight(sceneHeight);
-        this.setStyle("-fx-background-color: "+ Main.backgroundColor);
 
         // Create
         this.getChildren().add(display());
@@ -59,6 +58,8 @@ public class Login extends Pane {
     public VBox display(){
 
         VBox loginBox = new VBox(15); // Padding / Margin
+        loginBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+
         loginBox.setAlignment(Pos.CENTER);
         loginBox.setPrefWidth(300); // Center of 600 (Scene)
         loginBox.setLayoutX(150);
@@ -70,8 +71,9 @@ public class Login extends Pane {
         // Version Control
         if (!checkVersion()) {
             Label loginLabel = new Label("Outdated ("+getCurrentVersion()+")\nNew version: " + version);
-            loginLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: rgba(0,0,0,0.50);");
+            loginLabel.getStyleClass().add("label");
             updateVersionButton = createStyledButton("Update version", 300);
+            updateVersionButton.getStyleClass().add("button");
             buttons.getChildren().addAll(updateVersionButton);
             loginBox.getChildren().addAll(loginLabel, buttons);
             updateVersionButton.setOnAction(e -> updateVersionButtonAction());
@@ -79,17 +81,16 @@ public class Login extends Pane {
         }
 
         Label loginLabel = new Label("Log in");
-        loginLabel.setStyle("-fx-font-size: 48px; -fx-font-weight: bold; -fx-text-fill: rgba(0,0,0,0.50);");
+        loginLabel.getStyleClass().add("label");
 
         usernameField = new TextField();
         usernameField.setPrefHeight(40);
-        usernameField.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-border-radius: 15px; -fx-background-radius: 15px; -fx-border-color: rgba(0,0,0,0.50);");
+        usernameField.getStyleClass().add("text-field");
         usernameField.setPromptText("Username");
 
         passwordField = new PasswordField();
         passwordField.setPrefHeight(40);
-        passwordField.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-border-radius: 15px; " +
-                "-fx-background-radius: 15px; -fx-border-color: rgba(0,0,0,0.50);");
+        passwordField.getStyleClass().add("text-field");
         passwordField.setPromptText("Password");
 
         // Buttons fix for repeated code
@@ -117,8 +118,7 @@ public class Login extends Pane {
 
     private Button createStyledButton(String text, double width) {
         Button button = new Button(text);
-        button.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: rgba(0,0,0,0.50); " +
-                "-fx-border-radius: 15px; -fx-background-radius: 15px; -fx-border-color: rgba(0,0,0,0.50);");
+        button.getStyleClass().add("button");
         button.setPrefHeight(30);
         button.setPrefWidth(width);
         return button;
@@ -133,6 +133,12 @@ public class Login extends Pane {
         StartBorder sb = new StartBorder(3);
         StartInfo si = new StartInfo(300, 600);
         HBox registerHBox = new HBox(register, sb, si);
+
+        si.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        si.getStyleClass().add("orange");
+
+        register.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        register.getStyleClass().add("body");
 
         Scene registerScene = new Scene(registerHBox, 900, 600);
 
@@ -150,6 +156,12 @@ public class Login extends Pane {
         StartBorder sb = new StartBorder(3);
         StartInfo si = new StartInfo(300, 600);
         HBox forgotHBox = new HBox(forgot, sb, si);
+
+        si.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        si.getStyleClass().add("orange");
+
+        forgot.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        forgot.getStyleClass().add("body");
 
         Scene forgotScene = new Scene(forgotHBox, 900, 600);
 
