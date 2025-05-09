@@ -111,6 +111,10 @@ public class NextOption extends Pane {
         hairColorDropdown.setMaxWidth(300);
         genderDropdown.setMaxWidth(300);
 
+        // Hover
+        Animation.addHoverScaleEffect(goBackButton);
+        Animation.addHoverScaleEffect(registerButton);
+
         // Actions
         goBackButton.setOnAction(e -> goBackButtonAction());
         registerButton.setOnAction(e -> registerButtonAction());
@@ -158,6 +162,10 @@ public class NextOption extends Pane {
         registerButton.setPrefHeight(30);
         registerButton.setPrefWidth(150);
 
+        // Hover
+        Animation.addHoverScaleEffect(goBackButton);
+        Animation.addHoverScaleEffect(registerButton);
+
         // Actions
         goBackButton.setOnAction(e -> goBackButtonAction());
         registerButton.setOnAction(e -> registerButtonAction());
@@ -193,6 +201,9 @@ public class NextOption extends Pane {
         tryAgainButton.getStyleClass().add("button");
         tryAgainButton.setPrefHeight(30);
         tryAgainButton.setPrefWidth(300);
+
+        // Hover
+        Animation.addHoverScaleEffect(tryAgainButton);
 
         // Actions
         tryAgainButton.setOnAction(e -> goBackButtonAction());

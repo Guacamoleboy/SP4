@@ -112,6 +112,10 @@ public class Register extends Pane {
         emailField.setMaxWidth(300);
         dropdownBox.setMaxWidth(300);
 
+        // Hover
+        Animation.addHoverScaleEffect(nextButton);
+        Animation.addHoverScaleEffect(goBackButton);
+
         // Events
         nextButton.setOnAction(e -> nextOption());
         goBackButton.setOnAction(e -> goBackButtonAction());
