@@ -2,7 +2,6 @@
 package App;
 
 // Imports
-import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -13,6 +12,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import util.*;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 
 public class Register extends Pane {
@@ -23,7 +24,7 @@ public class Register extends Pane {
     private PasswordField passwordField;
     private PasswordField passwordConfirmField;
     private FileIO io = new FileIO();
-    private Button nextButton;
+    private Button signUpButton;
     private Button goBackButton;
     private Button forgotButton;
     private Button registerButton;
@@ -33,7 +34,6 @@ public class Register extends Pane {
     private String password;
     private String passwordConfirmation;
     private String email;
-    private ComboBox<String> dropdownBox;
     private ArrayList <String> userData;
 
     // ____________________________________________________
@@ -43,15 +43,13 @@ public class Register extends Pane {
         this.sceneWidth = sceneWidth;
         this.sceneHeight = sceneHeight;
         this.setPrefSize(sceneWidth, sceneHeight);
+        this.setStyle("-fx-background-color: "+Main.backgroundColor);
 
         VBox registerBox = display();
-        registerBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-        registerBox.getStyleClass().add("body");
-
         this.getChildren().add(registerBox);
 
         // Center
-        double boxHeight = 7 * 55 + 5 * 15;
+        double boxHeight = 6 * 55 + 5 * 15;
         double layoutX = (sceneWidth - 300) / 2.0;
         double layoutY = (sceneHeight - boxHeight) / 2.0;
 
@@ -70,40 +68,41 @@ public class Register extends Pane {
         HBox buttons = new HBox(15);
 
         Label loginLabel = new Label("Create Account");
-        loginLabel.getStyleClass().add("label");
+        loginLabel.setStyle("-fx-font-size: 40px; -fx-font-weight: bold; -fx-text-fill: rgba(0,0,0,0.50);");
 
         usernameField = new TextField();
         usernameField.setPrefHeight(40);
-        usernameField.getStyleClass().add("text-field");
+        usernameField.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-border-radius: 15px; " +
+                "-fx-background-radius: 15px; -fx-border-color: rgba(0,0,0,0.50);");
         usernameField.setPromptText("Username");
 
         passwordField = new PasswordField();
         passwordField.setPrefHeight(40);
-        passwordField.getStyleClass().add("text-field");
+        passwordField.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-border-radius: 15px; " +
+                "-fx-background-radius: 15px; -fx-border-color: rgba(0,0,0,0.50);");
         passwordField.setPromptText("Password");
 
         passwordConfirmField = new PasswordField();
         passwordConfirmField.setPrefHeight(40);
-        passwordConfirmField.getStyleClass().add("text-field");
+        passwordConfirmField.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-border-radius: 15px; " +
+                "-fx-background-radius: 15px; -fx-border-color: rgba(0,0,0,0.50);");
         passwordConfirmField.setPromptText("Password Confirmation");
 
         emailField = new TextField();
         emailField.setPrefHeight(40);
-        emailField.getStyleClass().add("text-field");
+        emailField.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-border-radius: 15px; " +
+                "-fx-background-radius: 15px; -fx-border-color: rgba(0,0,0,0.50);");
         emailField.setPromptText("Email");
 
-        dropdownBox = new ComboBox<>();
-        dropdownBox.getItems().addAll("Student", "Customer");
-        dropdownBox.setPromptText("Choose type");
-        dropdownBox.getStyleClass().add("combo-box");
-
-        nextButton = new Button("Next");
-        nextButton.getStyleClass().add("button");
-        nextButton.setPrefHeight(30);
-        nextButton.setPrefWidth(150);
+        signUpButton = new Button("Sign up");
+        signUpButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: rgba(0,0,0,0.50); " +
+                "-fx-border-radius: 15px; -fx-background-radius: 15px; -fx-border-color: rgba(0,0,0,0.50);");
+        signUpButton.setPrefHeight(30);
+        signUpButton.setPrefWidth(150);
 
         goBackButton = new Button("Go Back");
-        goBackButton.getStyleClass().add("button");
+        goBackButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: rgba(0,0,0,0.50); " +
+                "-fx-border-radius: 15px; -fx-background-radius: 15px; -fx-border-color: rgba(0,0,0,0.50);");
         goBackButton.setPrefHeight(30);
         goBackButton.setPrefWidth(150);
 
@@ -111,28 +110,16 @@ public class Register extends Pane {
         passwordField.setMaxWidth(300);
         passwordConfirmField.setMaxWidth(300);
         emailField.setMaxWidth(300);
-        dropdownBox.setMaxWidth(300);
-
-        // Border fix
-        usernameField.setFocusTraversable(false);
-        emailField.setFocusTraversable(false);
-        passwordField.setFocusTraversable(false);
-        passwordConfirmField.setFocusTraversable(false);
-        Platform.runLater(registerBox::requestFocus);
-
-        // Hover
-        Animation.addHoverScaleEffect(nextButton);
-        Animation.addHoverScaleEffect(goBackButton);
 
         // Events
-        nextButton.setOnAction(e -> nextOption());
+        signUpButton.setOnAction(e -> registerUser());
         goBackButton.setOnAction(e -> goBackButtonAction());
 
         // HBox
-        buttons.getChildren().addAll(nextButton, goBackButton);
+        buttons.getChildren().addAll(signUpButton, goBackButton);
 
-        // VBox
-        registerBox.getChildren().addAll(loginLabel, usernameField, passwordField, passwordConfirmField, emailField, dropdownBox, buttons); // VBox
+        // Add
+        registerBox.getChildren().addAll(loginLabel, usernameField, passwordField, passwordConfirmField, emailField, buttons); // VBox
 
         return registerBox;
 
@@ -159,23 +146,11 @@ public class Register extends Pane {
 
     // ____________________________________________________
 
-    public String getSelectedUserType() {
-        return dropdownBox.getValue();
-    }
-
-    // ____________________________________________________
-
     public void goBackButtonAction(){
 
         Login login = new Login(600, 600);
         StartBorder sb = new StartBorder(3);
         StartInfo si = new StartInfo(300, 600);
-
-        si.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-        si.getStyleClass().add("orange");
-
-        login.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-        login.getStyleClass().add("body");
 
         HBox goBackHBOX = new HBox(si, sb, login);
 
@@ -188,25 +163,58 @@ public class Register extends Pane {
 
     // ____________________________________________________
 
-    public void nextOption(){
+    public void registerUser() {
+        // ORDER MATTERS. KEEP THAT IN MIND || TOP -> BOTTOM
 
-        // If user presses the next button!
-        NextOption nextoption = new NextOption(600, 600, this);
-        StartBorder sb = new StartBorder(3);
-        StartInfo si = new StartInfo(300, 600);
-        HBox nextOptionHBox = new HBox(nextoption, sb, si);
+        if (!validateInformation()) {
+            return;
+        }
 
-        si.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-        si.getStyleClass().add("orange");
+        try {
+            // Check if user already exists
+            String checkUserSQL = "SELECT * FROM users WHERE username = ? OR email = ?";
+            DBConnector db = new DBConnector();
+            db.connect("jdbc:sqlite:ElevTiden.sqlite");
 
-        nextOptionHBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-        nextOptionHBox.getStyleClass().add("body");
+            PreparedStatement checkStmt = db.prepareStatement(checkUserSQL);
+            checkStmt.setString(1, getUsername());
+            checkStmt.setString(2, getEmail());
+            ResultSet rs = checkStmt.executeQuery();
 
-        Scene registerScene = new Scene(nextOptionHBox, 900, 600);
+            if (rs.next()) {
+                alert("Username or email already exists!");
+                db.closeConnection();
+                return;
+            }
 
-        Stage stage = (Stage) getScene().getWindow(); // Main window
-        stage.setScene(registerScene);
+            // Create new user
+            String insertUserSQL =
+                    "INSERT INTO users (username, password, email, status, banned) " +
+                            "VALUES (?, ?, ?, ?, ?)";
 
+            PreparedStatement insertStmt = db.prepareStatement(insertUserSQL);
+            insertStmt.setString(1, getUsername());
+            insertStmt.setString(2, getPassword());
+            insertStmt.setString(3, getEmail());
+            insertStmt.setString(4, "Offline");
+            insertStmt.setString(5, "false");
+
+            int rowsAffected = insertStmt.executeUpdate();
+            if (rowsAffected > 0) {
+                alert("Account created successfully!");
+
+                // Go back to login screen
+                goBackButtonAction();
+            } else {
+                alert("Failed to create account. Please try again.");
+            }
+
+            db.closeConnection();
+
+        } catch (Exception e) {
+            alert("Error: " + e.getMessage());
+            System.out.println("Error creating user: " + e.getMessage());
+        }
     }
 
     // ____________________________________________________
@@ -250,4 +258,7 @@ public class Register extends Pane {
     }
 
 
+    public String getSelectedUserType() {
+        return "tissemand lige nu";
+    }
 } // Login Class End
