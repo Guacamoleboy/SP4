@@ -184,35 +184,23 @@ public class Login extends Pane {
 
     public void loginButtonAction(){
 
-        boolean loggedIn = false;
-        ProcessData processdata = new ProcessData();
+        SideMenu sm = new SideMenu(100, 600);
+        Menu menu = new Menu(800, 600);
 
-        // Check username && password
-        for(User u : processdata.getUsers()){
-            if(getUsername().equals(u.getUsername()) && getPassword().equals(u.getPassword())){
-                loggedIn = true;
-                processdata.setStatus(u.getUsername(), "Online");
-                break;
-            }
-        } // For-each end
+        sm.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        sm.getStyleClass().add("sideMenu-color");
 
-        if (loggedIn){
+        menu.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        menu.getStyleClass().add("mainMenu-background");
 
-            Menu menu = new Menu(getUsername(), getPassword(), 900, 600);
-            Scene menuScene = new Scene(menu, 900, 600);
+        HBox mainMenuHBOX = new HBox(sm, menu);
+        Scene goBackScene = new Scene(mainMenuHBOX, 900, 600);
 
-            Stage stage = (Stage) getScene().getWindow();
-            stage.setScene(menuScene);
-
-            System.out.println("#DEBUG - SUCCESS");
-
-        } else {
-
-            System.out.println("#DEBUG - FAIL");
-
-        }
+        Stage stage = (Stage) getScene().getWindow();
+        stage.setScene(goBackScene);
 
     }
+
     // ____________________________________________________
 
     /*

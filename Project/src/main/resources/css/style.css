@@ -10,6 +10,14 @@
     -fx-background-color: rgba(0,0,0,0.50) !important;
 }
 
+.mainMenu-background {
+    -fx-background-color: #707070 !important;
+}
+
+.sideMenu-color {
+    -fx-background-color: #989898 !important;
+}
+
 .button {
     -fx-font-size: 18px;
     -fx-font-weight: bold;
