@@ -22,6 +22,8 @@ import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
+import static App.UpdateChecker.getCurrentVersion;
+
 public class Main extends Application { // Client class
 
     // Attributes
@@ -33,8 +35,8 @@ public class Main extends Application { // Client class
 
     @Override
     public void start(Stage app) {
-
-        app.setTitle("SP4 Version 0.1.0");
+        String version = getCurrentVersion();
+        app.setTitle("SP4 Version "+version);
 
         // Side by side layout JavaFX (left -> Right) // HBox
         HBox mainScene = new HBox(startinfo, startborder, login); // Start Scene
