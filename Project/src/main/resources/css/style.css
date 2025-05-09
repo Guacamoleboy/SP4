@@ -1,11 +1,3 @@
-.startInfo {
-
-}
-
-.startBorder {
-
-}
-
 .body {
     -fx-background-color: #dedede !important; /* GREY */
 }
@@ -69,4 +61,33 @@
     -fx-border-color: rgba(0,0,0,0.50);
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
+}
+
+.combo-box:hover {
+    -fx-text-fill: orange;
+    -fx-background-color: rgba(0, 0, 0, 0.05);
+    -fx-background-radius: 15px;
+    -fx-border-radius: 15px;
+}
+
+.combo-box .list-cell {
+    -fx-background-radius: 15px;
+}
+
+.combo-box .list-cell:hover {
+    -fx-background-color: rgba(210, 210, 210, 0.2);
+    -fx-text-fill: orange;
+    -fx-background-radius: 15px;
+    -fx-border-radius: 15px;
+}
+
+.combo-box .list-cell:selected {
+    -fx-background-color: none !important;
+    -fx-text-fill: rgba(0,0,0,0.50);
+}
+
+.combo-box .list-view {
+    -fx-background-radius: 15px;
+    -fx-border-radius: 15px;
+    -fx-background-color: white;
 }
