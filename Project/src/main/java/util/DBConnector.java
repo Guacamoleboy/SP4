@@ -11,7 +11,8 @@ public class DBConnector {
     private Connection connection = null;
 
     public DBConnector() {
-        // Tom konstruktør
+        // Tom constructor
+
     }
 
     public boolean connect(String url) {
@@ -60,7 +61,7 @@ public class DBConnector {
         try {
             return connection.prepareStatement(query);
         } catch (SQLException e) {
-            System.out.println("Fejl ved oprettelse af prepared statement: " + e.getMessage());
+            System.out.println("Fejl ved  prepared statement: " + e.getMessage());
             return null;
         }
     }

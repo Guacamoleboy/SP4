@@ -10,11 +10,11 @@ public class User {
     private String firstName;
     private String lastName;
 
-    // Tom konstruktør
+    //  konstruktør
     public User() {
     }
-
-    // Konstruktør til ProcessData
+    // overloads
+    // Konstruktør til database (uden first/last name)
     public User(String username, String password, String email, String status, String banned) {
         this.username = username;
         this.password = password;
@@ -23,16 +23,30 @@ public class User {
         this.banned = banned;
     }
 
-    // Konstruktør til database
-    public User(int id, String username, String firstName, String lastName, String email) {
-        this.id = id;
+    // first/last name
+    public User(String username, String password, String firstName, String lastName, String email, String status, String banned) {
         this.username = username;
+        this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.status = status;
+        this.banned = banned;
     }
 
-    // Getters and setters
+    //  ID
+    public User(int id, String username, String password, String firstName, String lastName, String email, String status, String banned) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.status = status;
+        this.banned = banned;
+    }
+
+    // getter og setters
     public int getId() {
         return id;
     }
@@ -97,9 +111,23 @@ public class User {
         this.banned = banned;
     }
 
-    // CSV format til ProcessData
+    // Få fulde navn
+    public String getFullName() {
+        if (firstName != null && lastName != null) {
+            return firstName + " " + lastName;
+        } else if (firstName != null) {
+            return firstName;
+        } else if (lastName != null) {
+            return lastName;
+        } else {
+            return username;
+        }
+    }
+
+
     public String toCSV() {
-        return username + ", " + password + ", " + email + ", " + status + ", " + banned;
+        // skal jo skrottes
+        return "VI VIL IKKE BRUGE DETTE";
     }
 
     @Override

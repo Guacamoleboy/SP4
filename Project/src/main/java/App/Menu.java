@@ -51,15 +51,12 @@ public class Main extends Application {
 
     @Override
     public void stop() {
-        // Close the database connection when the application exits
         if (db != null) {
             db.closeConnection();
         }
     }
 
-    /**
-     * Create necessary database tables if they don't exist
-     */
+
     private static void createTables() {
         String createUserTableSQL =
                 "CREATE TABLE IF NOT EXISTS users (" +
@@ -77,12 +74,10 @@ public class Main extends Application {
         }
     }
 
-    /**
-     * Create a new user in the database
-     */
+
     private static void createUser(String username, String password, String firstName, String lastName, String email) {
         try {
-            // Check if user already exists
+            // findes ?
             String checkUserSQL = "SELECT * FROM users WHERE username = ?";
             PreparedStatement checkStmt = db.prepareStatement(checkUserSQL);
             checkStmt.setString(1, username);
@@ -93,7 +88,7 @@ public class Main extends Application {
                 return;
             }
 
-            // Create new user
+            // yes opret
             String insertUserSQL =
                     "INSERT INTO users (username, password, first_name, last_name, email) " +
                             "VALUES (?, ?, ?, ?, ?)";
@@ -124,9 +119,6 @@ public class Main extends Application {
         }
     }
 
-    /**
-     * Display all users in the database
-     */
     private static void displayAllUsers() {
         String query = "SELECT * FROM users";
         ResultSet rs = db.executeQuery(query);
