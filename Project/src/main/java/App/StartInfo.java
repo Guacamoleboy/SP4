@@ -19,7 +19,7 @@ public class StartInfo extends VBox {
         this.sceneWidth = sceneWidth;
         this.sceneHeight = sceneHeight;
         this.setPrefSize(sceneWidth, sceneHeight);
-        this.setStyle("-fx-background-color: orange;");
+        this.setStyle("-fx-background-color: "+Main.barColor);
 
         VBox loginBox = new VBox(15); // Padding / Margin
         loginBox.setAlignment(Pos.CENTER);

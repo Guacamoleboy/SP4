@@ -4,10 +4,12 @@ package App;
 // Imports
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import util.*;
 
 import java.util.ArrayList;
@@ -21,6 +23,7 @@ public class Register extends Pane {
     private PasswordField passwordConfirmField;
     private FileIO io = new FileIO();
     private Button signUpButton;
+    private Button goBackButton;
     private Button forgotButton;
     private Button registerButton;
     private int sceneWidth;
@@ -38,7 +41,7 @@ public class Register extends Pane {
         this.sceneWidth = sceneWidth;
         this.sceneHeight = sceneHeight;
         this.setPrefSize(sceneWidth, sceneHeight);
-        this.setStyle("-fx-background-color: #AAAAAAFF");
+        this.setStyle("-fx-background-color: "+Main.backgroundColor);
 
         VBox registerBox = display();
         this.getChildren().add(registerBox);
@@ -59,6 +62,8 @@ public class Register extends Pane {
         VBox registerBox = new VBox(15); // Padding / Margin
         registerBox.setAlignment(Pos.CENTER);
         registerBox.setPrefWidth(300); // Center of 600 (Scene)
+
+        HBox buttons = new HBox(15);
 
         Label loginLabel = new Label("Create Account");
         loginLabel.setStyle("-fx-font-size: 40px; -fx-font-weight: bold; -fx-text-fill: rgba(0,0,0,0.50);");
@@ -91,7 +96,13 @@ public class Register extends Pane {
         signUpButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: rgba(0,0,0,0.50); " +
         "-fx-border-radius: 15px; -fx-background-radius: 15px; -fx-border-color: rgba(0,0,0,0.50);");
         signUpButton.setPrefHeight(30);
-        signUpButton.setPrefWidth(80);
+        signUpButton.setPrefWidth(150);
+
+        goBackButton = new Button("Go Back");
+        goBackButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: rgba(0,0,0,0.50); " +
+                "-fx-border-radius: 15px; -fx-background-radius: 15px; -fx-border-color: rgba(0,0,0,0.50);");
+        goBackButton.setPrefHeight(30);
+        goBackButton.setPrefWidth(150);
 
         usernameField.setMaxWidth(300);
         passwordField.setMaxWidth(300);
@@ -100,9 +111,13 @@ public class Register extends Pane {
 
         // Events
         signUpButton.setOnAction(e -> registerUser());
+        goBackButton.setOnAction(e -> goBackButtonAction());
+
+        // HBox
+        buttons.getChildren().addAll(signUpButton, goBackButton);
 
         // Add
-        registerBox.getChildren().addAll(loginLabel, usernameField, passwordField, passwordConfirmField, emailField, signUpButton); // VBox
+        registerBox.getChildren().addAll(loginLabel, usernameField, passwordField, passwordConfirmField, emailField, buttons); // VBox
 
         return registerBox;
 
@@ -124,6 +139,23 @@ public class Register extends Pane {
         }
 
         return true;
+
+    }
+
+    // ____________________________________________________
+
+    public void goBackButtonAction(){
+
+        Login login = new Login(600, 600);
+        StartBorder sb = new StartBorder(3);
+        StartInfo si = new StartInfo(300, 600);
+
+        HBox goBackHBOX = new HBox(si, sb, login);
+
+        Scene goBackScene = new Scene(goBackHBOX, 900, 600);
+
+        Stage stage = (Stage) getScene().getWindow();
+        stage.setScene(goBackScene);
 
     }
 
@@ -191,5 +223,6 @@ public class Register extends Pane {
         this.email = emailField.getText();
         return this.email;
     }
+
 
 } // Login Class End

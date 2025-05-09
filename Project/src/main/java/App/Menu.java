@@ -34,7 +34,7 @@ public class Menu extends Pane {
         this.sceneHeight = sceneHeight;
         this.setPrefHeight(sceneHeight);
         this.setPrefWidth(sceneWidth);
-        this.setStyle("-fx-background-color: #AAAAAAFF");
+        this.setStyle("-fx-background-color: "+Main.backgroundColor);
 
         // Create
         this.getChildren().add(display());

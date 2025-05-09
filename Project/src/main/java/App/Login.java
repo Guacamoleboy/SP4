@@ -47,7 +47,7 @@ public class Login extends Pane {
         // Display setup
         this.setPrefWidth(sceneWidth);
         this.setPrefHeight(sceneHeight);
-        this.setStyle("-fx-background-color: #AAAAAAFF");
+        this.setStyle("-fx-background-color: "+ Main.backgroundColor);
 
         // Create
         this.getChildren().add(display());
@@ -66,6 +66,8 @@ public class Login extends Pane {
 
         HBox buttons = new HBox(15);
         buttons.setAlignment(Pos.CENTER_RIGHT);
+
+        // Version Control
         if (!checkVersion()) {
             Label loginLabel = new Label("Outdated ("+getCurrentVersion()+")\nNew version: " + version);
             loginLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: rgba(0,0,0,0.50);");
@@ -75,6 +77,7 @@ public class Login extends Pane {
             updateVersionButton.setOnAction(e -> updateVersionButtonAction());
             return loginBox;
         }
+
         Label loginLabel = new Label("Log in");
         loginLabel.setStyle("-fx-font-size: 48px; -fx-font-weight: bold; -fx-text-fill: rgba(0,0,0,0.50);");
 
@@ -104,6 +107,7 @@ public class Login extends Pane {
         // Events
         registerButton.setOnAction(e -> registerButtonAction());
         loginButton.setOnAction(e -> loginButtonAction());
+        forgotButton.setOnAction(e -> forgotButtonAction());
 
         return loginBox;
 
@@ -134,6 +138,23 @@ public class Login extends Pane {
 
         Stage stage = (Stage) getScene().getWindow(); // Main window
         stage.setScene(registerScene);
+
+    }
+
+    // ____________________________________________________
+
+    public void forgotButtonAction(){
+
+        // If user presses the Register button!
+        Forgot forgot = new Forgot(600, 600);
+        StartBorder sb = new StartBorder(3);
+        StartInfo si = new StartInfo(300, 600);
+        HBox forgotHBox = new HBox(forgot, sb, si);
+
+        Scene forgotScene = new Scene(forgotHBox, 900, 600);
+
+        Stage stage = (Stage) getScene().getWindow(); // Main window
+        stage.setScene(forgotScene);
     }
 
     // ____________________________________________________
@@ -171,6 +192,13 @@ public class Login extends Pane {
     }
     // ____________________________________________________
 
+    /*
+
+        Doesnt download automaticly. It sends you to the URL so
+        you can download the correct version.
+
+    */
+
     public void updateVersionButtonAction() {
         try {
             Desktop desktop = Desktop.getDesktop();
@@ -180,6 +208,7 @@ public class Login extends Pane {
             e.printStackTrace();
         }
     }
+
     // ____________________________________________________
 
     public String getUsername(){
