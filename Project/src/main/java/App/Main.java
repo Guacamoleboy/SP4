@@ -29,7 +29,6 @@ public class Main extends Application { // Client class
     // Attributes
     private Login login = new Login(600, 600);
     private StartInfo startinfo = new StartInfo(300, 600);
-    private StartBorder startborder = new StartBorder(3);
 
     // ____________________________________________________
 
@@ -39,7 +38,7 @@ public class Main extends Application { // Client class
         app.setTitle("SP4 Version " + version);
 
         // Side by side layout JavaFX (left -> Right) // HBox
-        HBox mainScene = new HBox(startinfo, startborder, login); // Start Scene
+        HBox mainScene = new HBox(startinfo, login); // Start Scene
 
         Scene scene = new Scene(mainScene, 900, 600);
         app.setResizable(false); // Doesn't allow changeing of width / height

@@ -2,6 +2,7 @@
 package App;
 
 // Imports
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -87,6 +88,11 @@ public class Forgot extends Pane {
         goBackButton.getStyleClass().add("button");
         goBackButton.setPrefHeight(30);
         goBackButton.setPrefWidth(150);
+
+        // Border fix
+        usernameField.setFocusTraversable(false);
+        emailField.setFocusTraversable(false);
+        Platform.runLater(registerBox::requestFocus);
 
         // Hover
         Animation.addHoverScaleEffect(signUpButton);
