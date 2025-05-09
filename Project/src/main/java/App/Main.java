@@ -19,6 +19,7 @@ package App;
 // Imports
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
@@ -31,6 +32,10 @@ public class Main extends Application { // Client class
     private StartInfo startinfo = new StartInfo(300, 600);
     private StartBorder startborder = new StartBorder(3);
 
+    //Colors for the whole program
+    public static String backgroundColor = "#AAAAAAFF";
+    public static String barColor = "orange";
+
     // ____________________________________________________
 
     @Override
@@ -42,8 +47,11 @@ public class Main extends Application { // Client class
         HBox mainScene = new HBox(startinfo, startborder, login); // Start Scene
 
         Scene scene = new Scene(mainScene, 900, 600);
-        app.setResizable(false); // Don't change width / height
+        app.setResizable(false); // Doesn't allow changeing of width / height
         app.setScene(scene);
+
+        // Logo for application. It's under resources.
+        app.getIcons().add(new Image(getClass().getResource("/assets/logo/logo-128.png").toExternalForm()));
 
         closeHandle(app);
 
