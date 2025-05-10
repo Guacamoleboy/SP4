@@ -2,9 +2,12 @@
 package App;
 
 // Imports
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
@@ -30,6 +33,141 @@ public class Menu extends Pane {
 
         this.getChildren().add(displayHeader());
     } // Constructor end
+
+    // ____________________________________________________
+
+    public VBox displayMyMessages() {
+
+        // VBox
+        VBox messageVBox = new VBox();
+        messageVBox.setLayoutX(20);
+        messageVBox.setLayoutY(100);
+        messageVBox.setPrefWidth(760);
+        messageVBox.setPrefHeight(480);
+        messageVBox.setStyle("-fx-border-color: #464646; -fx-border-width: 2px; -fx-border-radius: 20px; -fx-background-radius: 20px;");
+
+        // HBox
+        HBox messageHBox = new HBox();
+        messageHBox.getStyleClass().add("message-vbox");
+        messageHBox.setPrefWidth(760);
+        messageHBox.setPrefHeight(480);
+        messageHBox.setAlignment(Pos.TOP_LEFT);
+        messageHBox.setSpacing(0);
+
+        // Sidebar
+        VBox sidebar = new VBox(0);
+        sidebar.setPrefWidth(760 * 0.26);
+        sidebar.setAlignment(Pos.TOP_LEFT);
+        sidebar.setPadding(Insets.EMPTY);
+        sidebar.setStyle("-fx-background-color: #696969; -fx-border-radius: 20 0 0 20; -fx-background-radius: 20 0 0 20;"); // Transparent to blend
+
+        // Buttons
+        Button user1 = new Button("Jonas");
+        Button user2 = new Button("Andreas");
+        Button user3 = new Button("Ebou");
+        Button user4 = new Button("Carl-Emil");
+
+        sidebar.getChildren().addAll(user1, user2, user3, user4);
+        user1.getStyleClass().addAll("user-button", "user-button1");
+        user2.getStyleClass().add("user-button");
+        user3.getStyleClass().add("user-button");
+        user4.getStyleClass().add("user-button");
+
+        // Message area (4/5)
+        VBox messageArea = new VBox(15);
+        messageArea.setPrefWidth(760 * 0.74);
+        messageArea.setPadding(new Insets(20));
+        messageArea.setAlignment(Pos.TOP_LEFT);
+        messageArea.setStyle("-fx-background-color: transparent;");
+
+        // Add to HBox (Left -> Right)
+        messageHBox.getChildren().addAll(sidebar, messageArea);
+        messageVBox.getChildren().add(messageHBox);
+
+        // Actions
+        user1.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+        user2.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+        user3.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+        user4.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+
+        return messageVBox;
+    }
+
+    // ____________________________________________________
+
+    public VBox displaySettings() {
+
+        // VBox
+        VBox settingsVBox = new VBox();
+        settingsVBox.setLayoutX(20);
+        settingsVBox.setLayoutY(100);
+        settingsVBox.setPrefWidth(760);
+        settingsVBox.setPrefHeight(480);
+        settingsVBox.setStyle("-fx-border-color: #464646; -fx-border-width: 2px; -fx-border-radius: 20px; -fx-background-radius: 20px;");
+
+        // HBox
+        HBox messageHBox = new HBox();
+        messageHBox.getStyleClass().add("message-vbox");
+        messageHBox.setPrefWidth(760);
+        messageHBox.setPrefHeight(480);
+        messageHBox.setAlignment(Pos.TOP_LEFT);
+        messageHBox.setSpacing(0);
+
+        // Sidebar
+        VBox sidebar = new VBox(0);
+        sidebar.setPrefWidth(760 * 0.26);
+        sidebar.setAlignment(Pos.TOP_LEFT);
+        sidebar.setPadding(Insets.EMPTY);
+        sidebar.setStyle("-fx-background-color: #696969; -fx-border-radius: 20 0 0 20; -fx-background-radius: 20 0 0 20;"); // Transparent to blend
+
+        // Buttons
+        Button setting1 = new Button("Darkmode");
+        Button setting2 = new Button("Sensitivity");
+        Button setting3 = new Button("Nigga");
+        Button setting4 = new Button("Delete Account");
+
+        sidebar.getChildren().addAll(setting1, setting2, setting3, setting4);
+        setting1.getStyleClass().addAll("user-button", "user-button1");
+        setting2.getStyleClass().add("user-button");
+        setting3.getStyleClass().add("user-button");
+        setting4.getStyleClass().add("user-button");
+
+        // Message area (4/5)
+        VBox messageArea = new VBox(15);
+        messageArea.setPrefWidth(760 * 0.74);
+        messageArea.setPadding(new Insets(20));
+        messageArea.setAlignment(Pos.TOP_LEFT);
+        messageArea.setStyle("-fx-background-color: transparent;");
+
+        // Add to HBox (Left -> Right)
+        messageHBox.getChildren().addAll(sidebar, messageArea);
+        settingsVBox.getChildren().add(messageHBox);
+
+        // Actions
+        setting1.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+        setting2.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+        setting3.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+        setting4.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+
+        return settingsVBox;
+    }
+
 
     // ____________________________________________________
 
@@ -101,14 +239,60 @@ public class Menu extends Pane {
         header.getStyleClass().add("header");
 
         title.setAlignment(Pos.CENTER);
-        title.setPrefWidth(200); // Card Width
+        title.setPrefWidth(200);
         title.setLayoutX(20);
-        title.setLayoutY(19); // Minus border
+        title.setLayoutY(20);
 
         title.getChildren().addAll(header);
 
         return title;
 
+    }
+
+    // ____________________________________________________
+
+    public VBox displayComboBoxCity() {
+
+        VBox comboBoxVBox = new VBox(15);
+        comboBoxVBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+
+        ComboBox<String> comboBox = new ComboBox<>();
+        comboBox.getItems().addAll("Hellerup", "Lyngby", "Gentofte", "Hillerød", "Nigga");
+        comboBox.setValue("Choose City");
+
+        comboBox.getStyleClass().add("combo-box-book");
+
+        comboBoxVBox.setAlignment(Pos.CENTER);
+        comboBoxVBox.setPrefWidth(200);
+        comboBoxVBox.setLayoutX(240);
+        comboBoxVBox.setLayoutY(20);
+
+        comboBoxVBox.getChildren().addAll(comboBox);
+
+        return comboBoxVBox;
+    }
+
+    // ____________________________________________________
+
+    public VBox displayComboBoxDate() {
+
+        VBox comboBoxVBox = new VBox(15);
+        comboBoxVBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+
+        ComboBox<String> comboBox = new ComboBox<>();
+        comboBox.getItems().addAll("05/05", "06/05", "07/05", "08/05", "09/05");
+        comboBox.setValue("Choose date");
+
+        comboBox.getStyleClass().add("combo-box-book");
+
+        comboBoxVBox.setAlignment(Pos.CENTER);
+        comboBoxVBox.setPrefWidth(200);
+        comboBoxVBox.setLayoutX(460);
+        comboBoxVBox.setLayoutY(20);
+
+        comboBoxVBox.getChildren().addAll(comboBox);
+
+        return comboBoxVBox;
     }
 
     // ____________________________________________________
