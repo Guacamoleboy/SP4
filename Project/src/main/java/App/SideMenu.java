@@ -67,26 +67,29 @@ public class SideMenu extends Pane {
 
         // Actions
         btn1.setOnAction(e -> {
+            menu.setHeaderTitle("Book");
+            menu.getChildren().clear();
+            menu.getChildren().add(menu.displayHeader());
+            menu.getChildren().add(menu.displayComboBoxCity());
+            menu.getChildren().add(menu.displayComboBoxDate());
+        });
+
+        btn2.setOnAction(e -> {
+            menu.setHeaderTitle("Messages");
+            menu.getChildren().clear();
+            menu.getChildren().add(menu.displayHeader());
+            menu.getChildren().add(menu.displayMyMessages());
+        });
+
+        btn3.setOnAction(e -> {
             menu.setHeaderTitle("My Bookings");
             menu.getChildren().clear();
             menu.getChildren().add(menu.displayHeader());
             menu.getChildren().add(menu.displayMyBookings());
         });
 
-        btn2.setOnAction(e -> {
-            menu.setHeaderTitle("Nigga");
-            menu.getChildren().clear();
-            menu.getChildren().add(menu.displayHeader());
-        });
-
-        btn3.setOnAction(e -> {
-            menu.setHeaderTitle("Gokke");
-            menu.getChildren().clear();
-            menu.getChildren().add(menu.displayHeader());
-        });
-
         btn4.setOnAction(e -> {
-            menu.setHeaderTitle("Daddy");
+            menu.setHeaderTitle("Favorites");
             menu.getChildren().clear();
             menu.getChildren().add(menu.displayHeader());
         });
@@ -95,6 +98,7 @@ public class SideMenu extends Pane {
             menu.setHeaderTitle("Settings");
             menu.getChildren().clear();
             menu.getChildren().add(menu.displayHeader());
+            menu.getChildren().add(menu.displaySettings());
         });
 
         profileBtn.setOnAction(e -> {

@@ -182,3 +182,58 @@
     -fx-text-alignment: CENTER;
 }
 
+.message-vbox {
+    -fx-background-color: rgba(255, 255, 255, 0.30);
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+}
+
+.user-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: rgba(255, 255, 255, 0.8);
+    -fx-font-size: 14px;
+    -fx-padding: 12 20;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-border-width: 0;
+    -fx-alignment: CENTER_LEFT;
+    -fx-pref-width: Infinity;
+}
+
+.user-button1 {
+    -fx-background-radius: 20 0 0 0;
+}
+
+.user-button-last { /* NOT TESTED */
+    -fx-background-radius: 0 0 0 20;
+}
+
+.user-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+}
+
+.user-button:focused {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-border-color: transparent orange transparent transparent;
+    -fx-border-width: 0 4px 0 0;
+    -fx-border-style: solid;
+}
+
+.combo-box-book {
+    -fx-background-color: #696969;
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+    -fx-max-width: 200px;
+    -fx-min-width: 200px;
+    -fx-max-height: 60px;
+    -fx-min-height: 60px;
+    -fx-text-fill: rgb(255, 255, 255);
+    -fx-font-size: 16px;
+    -fx-font-weight: bold !important;
+}
+
+.combo-box-book:hover {
+    -fx-background-color: #7a7a7a;
+    -fx-border-radius: 20px;
+    -fx-background-radius: 20px;
+}
