@@ -230,7 +230,7 @@ public class Menu extends Pane {
     // ____________________________________________________
 
     public HBox displayAvailableBookings() {
-        HBox availableBookings = new HBox(20); // Horizontal container for cards
+        HBox availableBookings = new HBox(20);
         availableBookings.setAlignment(Pos.CENTER_LEFT);
         availableBookings.setPadding(new Insets(20));
         availableBookings.setLayoutY(80);
@@ -500,12 +500,12 @@ public class Menu extends Pane {
 
         String[] adress =
                 {
-                        "Bytoften 21, 2650 Hvidovre",
-                        "fawfawf 11, 3650 Narko",
-                        "Place 44, 5550 Ged",
-                        "Lort 4, 6650 Gok",
-                        "Tessfad 66, 6666 Hillerød",
-                        "Wtfffff 55, 5100 Yessir",
+                "Bytoften 21, 2650 Hvidovre",
+                "fawfawf 11, 3650 Narko",
+                "Place 44, 5550 Ged",
+                "Lort 4, 6650 Gok",
+                "Tessfad 66, 6666 Hillerød",
+                "Wtfffff 55, 5100 Yessir",
                 };
 
         int randomAdress = (int) (Math.random() * adress.length);
