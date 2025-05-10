@@ -34,6 +34,26 @@
     -fx-background-color: #c9c9c9;
 }
 
+.more-button {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: rgb(255, 255, 255);
+    -fx-background-radius: 25px;
+    -fx-border-radius: 25px;
+    -fx-border-width: 0;
+    -fx-background-color: #ffa500;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.more-button:hover {
+    -fx-background-radius: 25px;
+    -fx-border-radius: 25px;
+    -fx-border-width: 0;
+    -fx-background-color: #ffbe4d;
+
+}
+
 .button-card {
     -fx-background-radius: 20px;
     -fx-text-fill: #FFF;

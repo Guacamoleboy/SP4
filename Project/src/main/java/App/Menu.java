@@ -229,6 +229,143 @@ public class Menu extends Pane {
 
     // ____________________________________________________
 
+    public HBox displayAvailableBookings() {
+        HBox availableBookings = new HBox(20); // Horizontal container for cards
+        availableBookings.setAlignment(Pos.CENTER_LEFT);
+        availableBookings.setPadding(new Insets(20));
+        availableBookings.setLayoutY(80);
+
+        for (int i = 0; i < 3; i++) {
+            VBox menu = new VBox(15); // Individual Card
+            menu.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+            menu.getStyleClass().add("booking-vbox");
+
+            menu.setAlignment(Pos.CENTER);
+            menu.setPrefWidth(200); // Card Width
+
+            VBox topMenu = new VBox(15);
+            topMenu.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+            topMenu.getStyleClass().add("topMenu-vbox");
+
+            Label dateLabel = new Label(getDate());
+            Label timeLabel = new Label(getTime());
+            Label placeLabel = new Label(getAdress());
+            Label studentLabel = new Label(getStudentName());
+            Label ratingLabel = new Label(convertToStars(getRating()));
+
+            dateLabel.getStyleClass().add("card-text-header");
+            timeLabel.getStyleClass().add("card-text");
+            placeLabel.getStyleClass().add("card-text");
+            studentLabel.getStyleClass().add("card-text");
+            ratingLabel.getStyleClass().add("star");
+
+            dateLabel.setWrapText(true);
+            timeLabel.setWrapText(true);
+            placeLabel.setWrapText(true);
+            studentLabel.setWrapText(true);
+            ratingLabel.setWrapText(true);
+
+            Button cancelButton = new Button("Open");
+            cancelButton.getStyleClass().add("button-card");
+            cancelButton.setPrefHeight(30);
+            cancelButton.setPrefWidth(100);
+
+            Animation.addHoverScaleEffect(cancelButton);
+
+            cancelButton.setOnAction(e -> removeBooking());
+
+            topMenu.getChildren().addAll(dateLabel);
+            menu.getChildren().addAll(topMenu, timeLabel, placeLabel, studentLabel, ratingLabel, cancelButton);
+
+            availableBookings.getChildren().add(menu);
+        }
+
+        Button moreButton = new Button("More");
+        moreButton.setPrefHeight(30);
+        moreButton.setPrefWidth(100);
+        moreButton.getStyleClass().add("more-button");
+
+        Animation.addHoverScaleEffect(moreButton);
+
+        VBox moreBox = new VBox(moreButton);
+        moreBox.setAlignment(Pos.CENTER);
+
+        availableBookings.getChildren().add(moreBox);
+
+        return availableBookings;
+    }
+
+    // ____________________________________________________
+
+    public HBox displayExamBookings() {
+        HBox examBooking = new HBox(20);
+        examBooking.setAlignment(Pos.CENTER);
+        examBooking.setPadding(new Insets(20));
+        examBooking.setLayoutY(440);
+
+        for (int i = 0; i < 3; i++) {
+            VBox menu = new VBox(15);
+            menu.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+            menu.getStyleClass().add("booking-vbox");
+
+            menu.setAlignment(Pos.CENTER);
+            menu.setPrefWidth(200); // Card Width
+
+            VBox topMenu = new VBox(15);
+            topMenu.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+            topMenu.getStyleClass().add("topMenu-vbox");
+
+            // Labels
+            Label dateLabel = new Label(getDate());
+            Label timeLabel = new Label(getTime());
+            Label placeLabel = new Label(getAdress());
+            Label studentLabel = new Label(getStudentName());
+            Label ratingLabel = new Label(convertToStars(getRating()));
+
+            dateLabel.getStyleClass().add("card-text-header");
+            timeLabel.getStyleClass().add("card-text");
+            placeLabel.getStyleClass().add("card-text");
+            studentLabel.getStyleClass().add("card-text");
+            ratingLabel.getStyleClass().add("star");
+
+            dateLabel.setWrapText(true);
+            timeLabel.setWrapText(true);
+            placeLabel.setWrapText(true);
+            studentLabel.setWrapText(true);
+            ratingLabel.setWrapText(true);
+
+            // Cancel Button
+            Button cancelButton = new Button("Open");
+            cancelButton.getStyleClass().add("button-card");
+            cancelButton.setPrefHeight(30);
+            cancelButton.setPrefWidth(100);
+
+            Animation.addHoverScaleEffect(cancelButton);
+
+            cancelButton.setOnAction(e -> removeBooking());
+
+            topMenu.getChildren().addAll(dateLabel);
+            menu.getChildren().addAll(topMenu, timeLabel, placeLabel, studentLabel, ratingLabel, cancelButton);
+
+            examBooking.getChildren().add(menu);
+        }
+
+        Button moreButton = new Button("More");
+        moreButton.setPrefHeight(30);
+        moreButton.setPrefWidth(100);
+        moreButton.getStyleClass().add("more-button");
+
+        Animation.addHoverScaleEffect(moreButton);
+
+        VBox moreBox = new VBox(moreButton);
+        moreBox.setAlignment(Pos.CENTER);
+        examBooking.getChildren().add(moreBox);
+
+        return examBooking;
+    }
+
+    // ____________________________________________________
+
     public VBox displayHeader(){
 
         VBox title = new VBox(15);
@@ -242,6 +379,28 @@ public class Menu extends Pane {
         title.setPrefWidth(200);
         title.setLayoutX(20);
         title.setLayoutY(20);
+
+        title.getChildren().addAll(header);
+
+        return title;
+
+    }
+
+    // ____________________________________________________
+
+    public VBox displayExamHeader(String exam){
+
+        VBox title = new VBox(15);
+        title.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+
+        header = new Label(exam);
+        header.setAlignment(Pos.CENTER);
+        header.getStyleClass().add("header");
+
+        title.setAlignment(Pos.CENTER);
+        title.setPrefWidth(200);
+        title.setLayoutX(20);
+        title.setLayoutY(380);
 
         title.getChildren().addAll(header);
 
@@ -298,31 +457,66 @@ public class Menu extends Pane {
     // ____________________________________________________
 
     public String getDate() {
-        return "25.07.2025";
+        int day = (int) (Math.random() * 28) + 1; // Fuck the rest of the days. Hardcoded anyways.
+        int month = (int) (Math.random() * 12) + 1;
+        String year = "2025";
+
+        return String.valueOf(day) + "."  + String.valueOf(month) + "." + year;
     }
 
     // ____________________________________________________
 
     public String getTime() {
-        return "15:30";
+
+        int hour = (int) (Math.random() * 24) + 1;
+        int minutes = (int) (Math.random() * 60) + 1;
+
+        return String.valueOf(hour) + ":" + String.valueOf(minutes);
     }
 
     // ____________________________________________________
 
     public String getStudentName() {
-        return "Jonas Munkedahl";
+
+        String[] names =
+                {
+                "Jonas MunkeDahl",
+                "Andreas Lortelort",
+                "Ebou Gedemunk",
+                "Carl-Emil Gok",
+                "Tess Dad",
+                "Tine Dahl",
+                };
+
+        int randomName = (int) (Math.random() * names.length);
+
+        return names[randomName];
+
     }
 
     // ____________________________________________________
 
     public String getAdress() {
-        return "Bytoften 21, 2650 Hvidovre";
+
+        String[] adress =
+                {
+                        "Bytoften 21, 2650 Hvidovre",
+                        "fawfawf 11, 3650 Narko",
+                        "Place 44, 5550 Ged",
+                        "Lort 4, 6650 Gok",
+                        "Tessfad 66, 6666 Hillerød",
+                        "Wtfffff 55, 5100 Yessir",
+                };
+
+        int randomAdress = (int) (Math.random() * adress.length);
+
+        return adress[randomAdress];
     }
 
     // ____________________________________________________
 
     public double getRating() {
-        return 4.5;
+        return 1 + (Math.random() * 4);
     }
 
     // ____________________________________________________
@@ -352,11 +546,21 @@ public class Menu extends Pane {
     public String convertToStars(double rating) {
 
         String message = "";
+
+        rating = Math.max(0, Math.min(5, rating));
+
         int fullStars = (int) rating;
         boolean halfStar = (rating - fullStars) >= 0.5;
-        int emptyStars = 6 - fullStars - (halfStar ? 1: 0);
+        int emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+
+        // Add full stars
         for (int i = 0; i < fullStars; i++) {
             message += "★";
+        }
+
+        // Must be here else it fucks up and only shows 4 stars
+        if (halfStar) {
+            message += "☆";
         }
 
         for (int i = 0; i < emptyStars; i++) {
@@ -364,7 +568,7 @@ public class Menu extends Pane {
         }
 
         return message;
-
     }
+
 
 } // Menu end
