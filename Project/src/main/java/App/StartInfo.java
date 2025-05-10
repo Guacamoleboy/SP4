@@ -9,6 +9,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
 public class StartInfo extends VBox {
 
     // Attributes
@@ -31,22 +35,51 @@ public class StartInfo extends VBox {
 
     } // Constructor End
 
+    // ____________________________________________________
+
     public VBox sidePane() {
+
         Image logo = new Image(getClass().getResource("/assets/logo/Elevtiden-nobg.png").toExternalForm());
         ImageView logoView = new ImageView(logo);
         logoView.setFitWidth(sceneWidth);
         logoView.setPreserveRatio(true);
 
         VBox sidePaneBox = new VBox(15); // Padding / Margin
+        sidePaneBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
         sidePaneBox.setAlignment(Pos.CENTER);
 
+        Label label = new Label(getWelcomeMessage());
+        label.getStyleClass().add("welcome-label");
+        label.setWrapText(true);
+
         //Placement micro adjustment
-        sidePaneBox.setPadding(new Insets(10, 10, 20, 20)); // top, right, bottom, left
+        sidePaneBox.setPadding(new Insets(10, 10, 10, 10)); // top, right, bottom, left
 
         //Adding to VBox
-        sidePaneBox.getChildren().addAll(logoView);
+        sidePaneBox.getChildren().addAll(logoView,label);
 
         return sidePaneBox;
+
     } //logo() end
+
+    // ____________________________________________________
+
+    private String getWelcomeMessage() {
+
+        String message = "";
+
+        File welcomeMessage = new File("src/main/java/constants/welcomeMessage.txt");
+
+        try {
+            Scanner scanner = new Scanner(welcomeMessage);
+            while (scanner.hasNextLine()) {
+                message += scanner.nextLine()+ "\n";
+            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        return message;
+    }
 
 } //StartInfo Class end

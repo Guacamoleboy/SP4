@@ -187,8 +187,8 @@ public class Login extends Pane {
 
     public void loginButtonAction(){
 
-        SideMenu sm = new SideMenu(100, 600);
         Menu menu = new Menu(800, 600);
+        SideMenu sm = new SideMenu(100, 600, menu);
 
         sm.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
         sm.getStyleClass().add("sideMenu-color");

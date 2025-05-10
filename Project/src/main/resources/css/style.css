@@ -34,6 +34,20 @@
     -fx-background-color: #c9c9c9;
 }
 
+.button-card {
+    -fx-background-radius: 20px;
+    -fx-text-fill: #FFF;
+    -fx-border-radius: 20px;
+    -fx-border-color: none !important;
+    -fx-background-color: #4f4f4f;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.button-card:hover {
+    -fx-background-color: #424242;
+}
+
 .text-field {
     -fx-font-size: 20px;
     -fx-font-weight: bold;
@@ -99,3 +113,72 @@
     -fx-border-radius: 15px;
     -fx-background-color: white;
 }
+
+.welcome-label {
+    -fx-text-alignment: CENTER;
+    -fx-padding: 10 10 10 10;
+    -fx-text-fill: rgba(0,0,0,0.80);
+    -fx-border-color: none !important;
+    -fx-font-weight: normal;
+    -fx-font-size: 14px !important;
+    -fx-background-radius: 15px;
+    -fx-background-color: rgba(255, 255, 255, 0.25) !important;
+    -fx-border-radius: none !important;
+    -fx-max-width: 250px; /* Width of the info text */
+    -fx-max-height: 200px;
+}
+
+.welcome-label:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.20) !important;
+}
+
+.header {
+    -fx-background-color: #696969; /* Your Bookings ETC // COLOR */
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+    -fx-padding: 10 10 10 10;
+    -fx-font-size: 25px;
+    -fx-text-fill: #fff;
+    -fx-max-width: 500px;
+    -fx-max-height: 61px; /* Button size + border size */
+    -fx-text-alignment: CENTER;
+    -fx-border-color: #464646;
+}
+
+.star {
+    -fx-text-fill: #ffcc00;
+    -fx-font-size: 16px;
+}
+
+.card-text {
+    -fx-text-fill: #FFF;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold !important;
+}
+
+
+.card-text-header {
+    -fx-text-fill: #FFF;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold !important;
+    -fx-text-alignment: CENTER;
+    -fx-alignment: CENTER;
+    -fx-background-color: rgb(255, 183, 0);
+    -fx-background-radius: 20px 20px 0 0;
+    -fx-padding: 10;
+    -fx-min-width: 200px;
+}
+
+.booking-vbox {
+    -fx-padding: 0 0 15 0; /* Bottom only */
+    -fx-background-radius: 20px;
+    -fx-background-color: rgba(255, 255, 255, 0.30);
+    -fx-border-radius: 20px;
+    -fx-border-color: none;
+    -fx-max-width: 200px;
+}
+
+.topMenu-vbox {
+    -fx-text-alignment: CENTER;
+}
+
