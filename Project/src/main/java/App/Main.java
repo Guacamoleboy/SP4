@@ -22,6 +22,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
+import static App.UpdateChecker.checkVersion;
 import static App.UpdateChecker.getCurrentVersion;
 
 public class Main extends Application { // Client class
@@ -29,7 +30,7 @@ public class Main extends Application { // Client class
     // Attributes
     private Login login = new Login(600, 600);
     private StartInfo startinfo = new StartInfo(300, 600);
-
+    public static boolean upToDate = checkVersion();
     // ____________________________________________________
 
     @Override

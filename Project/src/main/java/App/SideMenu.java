@@ -3,11 +3,16 @@ package App;
 
 // Imports
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.BorderPane;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 public class SideMenu extends Pane {
 
@@ -74,13 +79,31 @@ public class SideMenu extends Pane {
         icon.setFitWidth(iconWidth);
         icon.setFitHeight(iconHeight);
 
+        Label label = new Label(getWelcomeMessage());
+
         Button button = new Button();
         button.setGraphic(icon);
+
         // Change to CSS at some point
         button.setStyle("-fx-background-color: #707070; -fx-cursor: hand; -fx-border-radius: 20px; -fx-background-radius: 20px;");
         button.setPrefSize(buttonSize, buttonSize);
         return button;
 
+    }
+
+    private String getWelcomeMessage() {
+        String message = "";
+        File welcomeMessage = new File("src/main/java/constants/welcomeMessage.txt");
+        try {
+            Scanner scanner = new Scanner(welcomeMessage);
+            while (scanner.hasNextLine()) {
+                message += scanner.nextLine();
+            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        return message;
     }
 
 } // Class end

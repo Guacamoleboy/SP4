@@ -19,6 +19,8 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import static App.Main.upToDate;
 import static App.UpdateChecker.*;
 
 public class Login extends Pane {
@@ -37,6 +39,7 @@ public class Login extends Pane {
     private int sceneHeight;
     private String username;
     private String password;
+
 
     // ____________________________________________________
 
@@ -70,7 +73,7 @@ public class Login extends Pane {
         buttons.setAlignment(Pos.CENTER_RIGHT);
 
         // Version Control
-        if (!checkVersion()) {
+        if (!upToDate) {
             Label loginLabel = new Label("Outdated ("+getCurrentVersion()+")\nNew version: " + version);
             loginLabel.getStyleClass().add("label");
             updateVersionButton = createStyledButton("Update version", 300);
