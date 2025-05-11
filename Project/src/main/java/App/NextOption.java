@@ -218,8 +218,7 @@ public class NextOption extends Pane {
     // ____________________________________________________
 
     public void goBackButtonAction(){
-
-        Register register = new Register(600, 600);
+        Register register = new Register(600, 600, this.register.getUsername(), this.register.getPassword(), this.register.getEmail());
         StartBorder sb = new StartBorder(3);
         StartInfo si = new StartInfo(300, 600);
 

@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import util.*;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Register extends Pane {
 
@@ -34,6 +35,9 @@ public class Register extends Pane {
     private String email;
     private ComboBox<String> dropdownBox;
     private ArrayList <String> userData;
+    private String userNameCache;
+    private String passwordCache;
+    private String emailCache;
 
     // ____________________________________________________
 
@@ -56,6 +60,22 @@ public class Register extends Pane {
 
         registerBox.setLayoutX(layoutX);
         registerBox.setLayoutY(layoutY);
+    }
+
+    public Register(int sceneWidth, int sceneHeight, String userNameCache, String passwordCache, String emailCache) {
+        this(sceneWidth, sceneHeight);
+
+        if (userNameCache != null && passwordCache != null && emailCache != null) {
+            this.userNameCache = userNameCache;
+            usernameField.setText(userNameCache);
+
+            this.passwordCache = passwordCache;
+            passwordField.setText(passwordCache);
+            passwordConfirmField.setText(passwordCache);
+
+            this.emailCache = emailCache;
+            emailField.setText(emailCache);
+        }
     }
 
     // ____________________________________________________
@@ -124,8 +144,21 @@ public class Register extends Pane {
         Animation.addHoverScaleEffect(goBackButton);
 
         // Events
-        nextButton.setOnAction(e -> nextOption());
-        goBackButton.setOnAction(e -> goBackButtonAction());
+        nextButton.setOnAction(e -> {
+            if (validateInformation()) {
+                userNameCache = getUsername();
+                passwordCache = getPassword();
+                emailCache = getEmail();
+                nextOption();
+            }
+        });
+
+        goBackButton.setOnAction(e -> {
+            userNameCache = getUsername();
+            passwordCache = getPassword();
+            emailCache = getEmail();
+            goBackButtonAction();
+        });
 
         // HBox
         buttons.getChildren().addAll(nextButton, goBackButton);
@@ -147,8 +180,14 @@ public class Register extends Pane {
         } else if (!getPasswordConfirmation().equals(getPassword())){
             alert("Passwords don't match..");
             return false;
-        } else if (!getEmail().contains("@")){
+        } else if (!getEmail().matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")){
             alert("Invalid email input");
+            return false;
+        } else if(getUsername().length() <= 4 || getUsername().length() >= 16 && getUsername().matches("^[a-zA-Z0-9]")) {
+            alert("Give a valid username, 5-16 letters/numbers (no symbols #!?_)");
+            return false;
+        } else if(getPassword().length() <=7 || getPassword().length() >= 20 && getPassword().matches("^[a-zA-Z0-9._%+-]")) {
+            alert("Keep password between 8-20 symbols (use numbers and special characters for more secure password)");
             return false;
         }
 
