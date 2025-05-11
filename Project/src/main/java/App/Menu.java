@@ -19,6 +19,10 @@ public class Menu extends Pane {
     private Button cancelButton;
     private String titleText = "Welcome";
     private Label header;
+    private ComboBox<String> box1;
+    private ComboBox<String> box2;
+    private ComboBox<String> box3;
+    private ComboBox<String> box4;
 
     // ____________________________________________________
 
@@ -236,7 +240,7 @@ public class Menu extends Pane {
         availableBookings.setLayoutY(80);
 
         for (int i = 0; i < 3; i++) {
-            VBox menu = new VBox(15); // Individual Card
+            VBox menu = new VBox(15);
             menu.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
             menu.getStyleClass().add("booking-vbox");
 
@@ -248,34 +252,26 @@ public class Menu extends Pane {
             topMenu.getStyleClass().add("topMenu-vbox");
 
             Label dateLabel = new Label(getDate());
-            Label timeLabel = new Label(getTime());
             Label placeLabel = new Label(getAdress());
-            Label studentLabel = new Label(getStudentName());
             Label ratingLabel = new Label(convertToStars(getRating()));
 
             dateLabel.getStyleClass().add("card-text-header");
-            timeLabel.getStyleClass().add("card-text");
             placeLabel.getStyleClass().add("card-text");
-            studentLabel.getStyleClass().add("card-text");
             ratingLabel.getStyleClass().add("star");
 
             dateLabel.setWrapText(true);
-            timeLabel.setWrapText(true);
             placeLabel.setWrapText(true);
-            studentLabel.setWrapText(true);
             ratingLabel.setWrapText(true);
 
-            Button cancelButton = new Button("Open");
-            cancelButton.getStyleClass().add("button-card");
-            cancelButton.setPrefHeight(30);
-            cancelButton.setPrefWidth(100);
-
-            Animation.addHoverScaleEffect(cancelButton);
-
-            cancelButton.setOnAction(e -> removeBooking());
-
             topMenu.getChildren().addAll(dateLabel);
-            menu.getChildren().addAll(topMenu, timeLabel, placeLabel, studentLabel, ratingLabel, cancelButton);
+            menu.getChildren().addAll(topMenu, placeLabel, ratingLabel);
+
+            menu.setOnMouseClicked(event -> {
+                System.out.println("DEBUG // WORKS");
+            });
+
+            // VBox animation
+            Animation.addHoverScaleEffectVBox(menu);
 
             availableBookings.getChildren().add(menu);
         }
@@ -301,7 +297,7 @@ public class Menu extends Pane {
         HBox examBooking = new HBox(20);
         examBooking.setAlignment(Pos.CENTER);
         examBooking.setPadding(new Insets(20));
-        examBooking.setLayoutY(440);
+        examBooking.setLayoutY(320);
 
         for (int i = 0; i < 3; i++) {
             VBox menu = new VBox(15);
@@ -317,35 +313,26 @@ public class Menu extends Pane {
 
             // Labels
             Label dateLabel = new Label(getDate());
-            Label timeLabel = new Label(getTime());
             Label placeLabel = new Label(getAdress());
-            Label studentLabel = new Label(getStudentName());
             Label ratingLabel = new Label(convertToStars(getRating()));
 
             dateLabel.getStyleClass().add("card-text-header");
-            timeLabel.getStyleClass().add("card-text");
             placeLabel.getStyleClass().add("card-text");
-            studentLabel.getStyleClass().add("card-text");
             ratingLabel.getStyleClass().add("star");
 
             dateLabel.setWrapText(true);
-            timeLabel.setWrapText(true);
             placeLabel.setWrapText(true);
-            studentLabel.setWrapText(true);
             ratingLabel.setWrapText(true);
 
-            // Cancel Button
-            Button cancelButton = new Button("Open");
-            cancelButton.getStyleClass().add("button-card");
-            cancelButton.setPrefHeight(30);
-            cancelButton.setPrefWidth(100);
-
-            Animation.addHoverScaleEffect(cancelButton);
-
-            cancelButton.setOnAction(e -> removeBooking());
-
             topMenu.getChildren().addAll(dateLabel);
-            menu.getChildren().addAll(topMenu, timeLabel, placeLabel, studentLabel, ratingLabel, cancelButton);
+            menu.getChildren().addAll(topMenu, placeLabel, ratingLabel);
+
+            menu.setOnMouseClicked(event -> {
+                System.out.println("DEBUG // WORKS");
+            });
+
+            // VBox animation
+            Animation.addHoverScaleEffectVBox(menu);
 
             examBooking.getChildren().add(menu);
         }
@@ -400,7 +387,7 @@ public class Menu extends Pane {
         title.setAlignment(Pos.CENTER);
         title.setPrefWidth(200);
         title.setLayoutX(20);
-        title.setLayoutY(380);
+        title.setLayoutY(260);
 
         title.getChildren().addAll(header);
 
@@ -410,49 +397,63 @@ public class Menu extends Pane {
 
     // ____________________________________________________
 
-    public VBox displayComboBoxCity() {
+    public VBox displayComboBox() {
 
-        VBox comboBoxVBox = new VBox(15);
-        comboBoxVBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        VBox outerBox = new VBox(0);
+        outerBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        outerBox.getStyleClass().add("combo-box-book");
+        outerBox.setAlignment(Pos.CENTER);
+        outerBox.setPrefWidth(220);
+        outerBox.setLayoutX(240);
+        outerBox.setLayoutY(20);
 
-        ComboBox<String> comboBox = new ComboBox<>();
-        comboBox.getItems().addAll("Hellerup", "Lyngby", "Gentofte", "Hillerød", "Nigga");
-        comboBox.setValue("Choose City");
+        // First Row (Center align ComboBoxes)
+        HBox row1 = new HBox(10);
+        row1.setAlignment(Pos.CENTER);  // Center the ComboBoxes in this row
 
-        comboBox.getStyleClass().add("combo-box-book");
+        ComboBox<String> box1 = new ComboBox<>();
+        box1.getItems().addAll("Hillerød", "Gentofte", "Hellerup", "Lyngby", "KBH", "Charlottenlund");
+        box1.setPromptText("City");
+        box1.getStyleClass().add("combo-box-booking-fix");
+        box1.setPrefWidth(100);
+        box1.setStyle("-fx-alignment: center;");
 
-        comboBoxVBox.setAlignment(Pos.CENTER);
-        comboBoxVBox.setPrefWidth(200);
-        comboBoxVBox.setLayoutX(240);
-        comboBoxVBox.setLayoutY(20);
+        ComboBox<String> box2 = new ComboBox<>();
+        box2.getItems().addAll("05/05", "06/05", "07/05", "08/05", "09/05", "10/05", "11/05");
+        box2.setPromptText("Date");
+        box2.getStyleClass().add("combo-box-booking-fix");
+        box2.setPrefWidth(100);
+        box2.setStyle("-fx-alignment: center;");
 
-        comboBoxVBox.getChildren().addAll(comboBox);
+        // Second Row (Center align ComboBoxes)
+        HBox row2 = new HBox(10);
+        row2.setAlignment(Pos.CENTER);  // Center the ComboBoxes in this row
 
-        return comboBoxVBox;
+        ComboBox<String> box3 = new ComboBox<>();
+        box3.getItems().addAll("1", "2", "3", "4", "5");
+        box3.setPromptText("Rating");
+        box3.getStyleClass().add("combo-box-booking-fix");
+        box3.setPrefWidth(100);
+        box3.setStyle("-fx-alignment: center;");
+
+        ComboBox<String> box4 = new ComboBox<>();
+        box4.getItems().addAll("New", "1", "2", "3", "4");
+        box4.setPromptText("Year");
+        box4.getStyleClass().add("combo-box-booking-fix");
+        box4.setPrefWidth(100);
+        box4.setStyle("-fx-alignment: center;");
+
+        // Add the ComboBoxes to their respective rows
+        row1.getChildren().addAll(box1, box2);
+        row2.getChildren().addAll(box3, box4);
+
+        // Add the rows to the outer VBox
+        outerBox.getChildren().addAll(row1, row2);
+
+        return outerBox;
     }
 
-    // ____________________________________________________
 
-    public VBox displayComboBoxDate() {
-
-        VBox comboBoxVBox = new VBox(15);
-        comboBoxVBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-
-        ComboBox<String> comboBox = new ComboBox<>();
-        comboBox.getItems().addAll("05/05", "06/05", "07/05", "08/05", "09/05");
-        comboBox.setValue("Choose date");
-
-        comboBox.getStyleClass().add("combo-box-book");
-
-        comboBoxVBox.setAlignment(Pos.CENTER);
-        comboBoxVBox.setPrefWidth(200);
-        comboBoxVBox.setLayoutX(460);
-        comboBoxVBox.setLayoutY(20);
-
-        comboBoxVBox.getChildren().addAll(comboBox);
-
-        return comboBoxVBox;
-    }
 
     // ____________________________________________________
 
