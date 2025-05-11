@@ -68,6 +68,16 @@
     -fx-background-color: #424242;
 }
 
+.button-card-booking {
+    -fx-background-radius: 20px;
+    -fx-text-fill: #FFF;
+    -fx-font-size: 15px;
+    -fx-border-color: none !important;
+    -fx-background-color: #4f4f4f;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
 .text-field {
     -fx-font-size: 20px;
     -fx-font-weight: bold;
@@ -125,7 +135,7 @@
 
 .combo-box .list-cell:selected {
     -fx-background-color: none !important;
-    -fx-text-fill: rgba(0,0,0,0.50);
+    -fx-text-fill: rgba(0,0,0,0.50); /* ComboBox Fix */
 }
 
 .combo-box .list-view {
@@ -189,6 +199,34 @@
     -fx-min-width: 200px;
 }
 
+.combo-box > .arrow-button {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-shape: null;
+    -fx-pref-width: 0;
+    -fx-min-width: 0;
+    -fx-max-width: 0;
+}
+
+.combo-box > .arrow-button > .arrow {
+    -fx-shape: null;
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.combo-box-booking-fix {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+    -fx-margin: 0;
+}
+
+.combo-box-booking-fix:hover {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
 .booking-vbox {
     -fx-padding: 0 0 15 0; /* Bottom only */
     -fx-background-radius: 20px;
@@ -196,6 +234,13 @@
     -fx-border-radius: 20px;
     -fx-border-color: none;
     -fx-max-width: 200px;
+}
+
+.booking-vbox:hover {
+    -fx-cursor: hand;
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+    -fx-border-radius: 20px;
+    -fx-background-radius: 20px;
 }
 
 .topMenu-vbox {
@@ -243,17 +288,26 @@
     -fx-background-color: #696969;
     -fx-background-radius: 20px;
     -fx-border-radius: 20px;
-    -fx-max-width: 200px;
-    -fx-min-width: 200px;
-    -fx-max-height: 60px;
-    -fx-min-height: 60px;
-    -fx-text-fill: rgb(255, 255, 255);
+    -fx-border-width: 1px;
+    -fx-border-color: rgba(0,0,0,0.50);
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-max-width: 200px; /* Important */
+    -fx-min-width: 200px; /* Important */
+    -fx-max-height: 60px; /* Important */
+    -fx-min-height: 60px; /* Important */
+    -fx-text-fill: rgb(255, 255, 255) !important;
     -fx-font-size: 16px;
     -fx-font-weight: bold !important;
+    -fx-margin: 0;
+    -fx-padding: 0 0 0 20px;
 }
 
 .combo-box-book:hover {
-    -fx-background-color: #7a7a7a;
-    -fx-border-radius: 20px;
-    -fx-background-radius: 20px;
+    -fx-background-color: #696969; /* Same as original // To remove annoying Hover effect on ComboBox */
+}
+
+.combo-box-book .list-cell:selected {
+    -fx-background-color: none !important;
+    -fx-text-fill: rgb(255, 255, 255); /* ComboBox Fix */
 }

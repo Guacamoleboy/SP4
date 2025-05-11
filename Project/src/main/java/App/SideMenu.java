@@ -71,8 +71,7 @@ public class SideMenu extends Pane {
             menu.getChildren().clear();
             menu.getChildren().add(menu.displayHeader());
             menu.getChildren().add(menu.displayExamHeader("Exam"));
-            menu.getChildren().add(menu.displayComboBoxCity());
-            menu.getChildren().add(menu.displayComboBoxDate());
+            menu.getChildren().add(menu.displayComboBox());
             menu.getChildren().add(menu.displayAvailableBookings());
             menu.getChildren().add(menu.displayExamBookings());
         });
