@@ -21,6 +21,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import util.DBConnector;
 
 import static App.UpdateChecker.checkVersion;
 import static App.UpdateChecker.getCurrentVersion;
@@ -31,12 +32,19 @@ public class Main extends Application { // Client class
     private Login login = new Login(600, 600);
     private StartInfo startinfo = new StartInfo(300, 600);
     public static boolean upToDate = checkVersion();
+    private DBConnector db;
+    private static final String DB_URL = "jdbc:sqlite:identifier.sqlite";
+
     // ____________________________________________________
 
     @Override
     public void start(Stage app) {
         String version = getCurrentVersion();
         app.setTitle("SP4 Version " + version);
+
+        // Initialize database
+        db = new DBConnector();
+        db.connect(DB_URL);
 
         // Side by side layout JavaFX (left -> Right) // HBox
         HBox mainScene = new HBox(startinfo, login); // Start Scene
@@ -57,7 +65,6 @@ public class Main extends Application { // Client class
         closeHandle(app);
 
         app.show();
-
     }
 
     // _______________________MAIN_________________________
@@ -78,11 +85,8 @@ public class Main extends Application { // Client class
     */
 
     public void closeHandle(Stage stage){
-
         stage.setOnCloseRequest(e -> {
-
             ProcessData processdata = new ProcessData();
-
             String username = login.getUsername();
 
             for (User u : processdata.getUsers()){
@@ -93,10 +97,13 @@ public class Main extends Application { // Client class
                 }
             }
 
+            // Also update status in database
+            if (db != null && !username.isEmpty()) {
+                db.updateUserStatus(username, "Offline");
+                db.closeConnection();
+            }
+
             System.exit(0);
-
         });
-
     }
-
 } // Class end

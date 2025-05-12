@@ -19,8 +19,8 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Objects;
 
-import static App.Main.upToDate;
 import static App.UpdateChecker.*;
 
 public class Login extends Pane {
@@ -34,17 +34,17 @@ public class Login extends Pane {
     private Button registerButton;
     private Button updateVersionButton;
     private ProcessData processdata;
+    private DBConnector db;
+    private static final String DB_URL = "jdbc:sqlite:identifier.sqlite";
 
     private int sceneWidth;
     private int sceneHeight;
     private String username;
     private String password;
 
-
     // ____________________________________________________
 
     public Login(int sceneWidth, int sceneHeight){
-
         this.sceneWidth = sceneWidth;
         this.sceneHeight = sceneHeight;
 
@@ -52,17 +52,19 @@ public class Login extends Pane {
         this.setPrefWidth(sceneWidth);
         this.setPrefHeight(sceneHeight);
 
+
+        db = new DBConnector();
+        db.connect(DB_URL);
+
         // Create
         this.getChildren().add(display());
-
-    } // Constructor end
+    }
 
     // ____________________________________________________
 
     public VBox display(){
-
         VBox loginBox = new VBox(15); // Padding / Margin
-        loginBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        loginBox.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/style.css")).toExternalForm());
 
         loginBox.setAlignment(Pos.CENTER);
         loginBox.setPrefWidth(300); // Center of 600 (Scene)
@@ -73,7 +75,7 @@ public class Login extends Pane {
         buttons.setAlignment(Pos.CENTER_RIGHT);
 
         // Version Control
-        if (!upToDate) {
+        if (!Main.upToDate) {
             Label loginLabel = new Label("Outdated ("+getCurrentVersion()+")\nNew version: " + version);
             loginLabel.getStyleClass().add("label");
             updateVersionButton = createStyledButton("Update version", 300);
@@ -125,7 +127,6 @@ public class Login extends Pane {
         forgotButton.setOnAction(e -> forgotButtonAction());
 
         return loginBox;
-
     }
 
     // ____________________________________________________
@@ -141,7 +142,6 @@ public class Login extends Pane {
     // ____________________________________________________
 
     public void registerButtonAction(){
-
         // If user presses the Register button!
         Register register = new Register(600, 600);
         StartBorder sb = new StartBorder(3);
@@ -158,13 +158,11 @@ public class Login extends Pane {
 
         Stage stage = (Stage) getScene().getWindow(); // Main window
         stage.setScene(registerScene);
-
     }
 
     // ____________________________________________________
 
     public void forgotButtonAction(){
-
         // If user presses the Register button!
         Forgot forgot = new Forgot(600, 600);
         StartBorder sb = new StartBorder(3);
@@ -186,31 +184,53 @@ public class Login extends Pane {
     // ____________________________________________________
 
     public void loginButtonAction(){
+        String username = getUsername();
+        String password = getPassword();
 
-        Menu menu = new Menu(800, 600);
-        SideMenu sm = new SideMenu(100, 600, menu);
+        if (username.isEmpty() || password.isEmpty()) {
+            showAlert("Please enter both username and password");
+            return;
+        }
 
-        sm.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-        sm.getStyleClass().add("sideMenu-color");
+        if (db.isConnected() && db.validateUser(username, password)) {
+            Menu menu = new Menu(username, password, 800, 600);
+            SideMenu sm = new SideMenu(100, 600, menu);
 
-        menu.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-        menu.getStyleClass().add("mainMenu-background");
+            sm.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+            sm.getStyleClass().add("sideMenu-color");
 
-        HBox mainMenuHBOX = new HBox(sm, menu);
-        Scene goBackScene = new Scene(mainMenuHBOX, 900, 600);
+            menu.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+            menu.getStyleClass().add("mainMenu-background");
 
-        Stage stage = (Stage) getScene().getWindow();
-        stage.setScene(goBackScene);
+            HBox mainMenuHBOX = new HBox(sm, menu);
+            Scene goBackScene = new Scene(mainMenuHBOX, 900, 600);
 
+            Stage stage = (Stage) getScene().getWindow();
+            stage.setScene(goBackScene);
+
+            stage.setOnCloseRequest(e -> {
+                menu.cleanup();
+            });
+        } else {
+            showAlert("Invalid username or password");
+        }
+    }
+
+    // ____________________________________________________
+
+    private void showAlert(String message) {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
+        alert.setTitle("Login Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     // ____________________________________________________
 
     /*
-
         Doesnt download automaticly. It sends you to the URL so
         you can download the correct version.
-
     */
 
     public void updateVersionButtonAction() {
@@ -254,5 +274,4 @@ public class Login extends Pane {
     public Button getRegisterButton(){
         return this.registerButton;
     }
-
-} // Login Class End
+}
