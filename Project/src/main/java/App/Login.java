@@ -34,8 +34,7 @@ public class Login extends Pane {
     private Button registerButton;
     private Button updateVersionButton;
     private ProcessData processdata;
-    private DBConnector db;
-    private static final String DB_URL = "jdbc:sqlite:identifier.sqlite";
+
 
     private int sceneWidth;
     private int sceneHeight;
@@ -51,10 +50,6 @@ public class Login extends Pane {
         // Display setup
         this.setPrefWidth(sceneWidth);
         this.setPrefHeight(sceneHeight);
-
-
-        db = new DBConnector();
-        db.connect(DB_URL);
 
         // Create
         this.getChildren().add(display());
@@ -184,6 +179,7 @@ public class Login extends Pane {
     // ____________________________________________________
 
     public void loginButtonAction(){
+
         String username = getUsername();
         String password = getPassword();
 
@@ -192,9 +188,10 @@ public class Login extends Pane {
             return;
         }
 
-        if (db.isConnected() && db.validateUser(username, password)) {
+        if (Main.db.isConnected() && Main.db.validateUser(username, password)) {
+
             Menu menu = new Menu(username, password, 800, 600);
-            SideMenu sm = new SideMenu(100, 600, menu);
+            SideMenu sm = new SideMenu(100, 600, menu, Main.db.getRole(username));
 
             sm.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
             sm.getStyleClass().add("sideMenu-color");
@@ -208,9 +205,6 @@ public class Login extends Pane {
             Stage stage = (Stage) getScene().getWindow();
             stage.setScene(goBackScene);
 
-            stage.setOnCloseRequest(e -> {
-                menu.cleanup();
-            });
         } else {
             showAlert("Invalid username or password");
         }
@@ -274,4 +268,5 @@ public class Login extends Pane {
     public Button getRegisterButton(){
         return this.registerButton;
     }
+
 }

@@ -11,9 +11,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import util.*;
-
+import App.Main.*;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class Register extends Pane {
 
@@ -38,7 +37,6 @@ public class Register extends Pane {
     private String userNameCache;
     private String passwordCache;
     private String emailCache;
-    private DBConnector db;
     private static final String DB_URL = "jdbc:sqlite:identifier.sqlite";
 
     // ____________________________________________________
@@ -48,9 +46,10 @@ public class Register extends Pane {
         this.sceneHeight = sceneHeight;
         this.setPrefSize(sceneWidth, sceneHeight);
 
-        // Initialize database
+       /* // Initialize database
         db = new DBConnector();
         db.connect(DB_URL);
+        */
 
         VBox registerBox = display();
         registerBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
@@ -173,6 +172,7 @@ public class Register extends Pane {
     // ____________________________________________________
 
     public boolean validateInformation(){
+
         if(getUsername().isEmpty() || getPassword().isEmpty() || getPasswordConfirmation().isEmpty() || getEmail().isEmpty()){
             alert("Fields must be filled out!");
             return false;
@@ -188,7 +188,9 @@ public class Register extends Pane {
         } else if(getPassword().length() <=7 || getPassword().length() >= 20) {
             alert("Keep password between 8-20 symbols");
             return false;
-        } else if (db.isConnected() && db.userExists(getUsername())) {
+        } else if (Main.db.isConnected())
+
+        if (Main.db.userExists(getUsername())) {
             alert("Username already exists");
             return false;
         }
@@ -199,12 +201,34 @@ public class Register extends Pane {
     // ____________________________________________________
 
     private void registerUser() {
-        if (db.isConnected() && db.createUser(getUsername(), getPassword(), getEmail())) {
+        System.out.println("Starting user registration...");
+
+        String username = getUsername();
+        String password = getPassword();
+        String role = getSelectedUserType(); // Student eller Customer
+        String email = getEmail();
+
+        System.out.println("Username entered: " + username);
+        System.out.println("Password entered: " + password);
+        System.out.println("Role selected: " + role);
+        System.out.println("Email entered: " + email);
+
+        boolean connected = Main.db.isConnected();
+        System.out.println("Database connected: " + connected);
+
+        boolean userCreated = Main.db.createUser(username, password, email, role);
+        System.out.println("User creation attempt result: " + userCreated);
+
+        if (connected && userCreated) {
+            System.out.println("Registration successful.");
             alert("Registration successful! You can now log in.");
             goBackButtonAction();
         } else {
+            System.out.println("Registration failed.");
             alert("Registration failed. Please try again.");
         }
+
+        System.out.println("User registration process ended.");
     }
 
     // ____________________________________________________

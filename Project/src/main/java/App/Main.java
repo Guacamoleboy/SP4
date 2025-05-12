@@ -32,7 +32,7 @@ public class Main extends Application { // Client class
     private Login login = new Login(600, 600);
     private StartInfo startinfo = new StartInfo(300, 600);
     public static boolean upToDate = checkVersion();
-    private DBConnector db;
+    public static DBConnector db;
     private static final String DB_URL = "jdbc:sqlite:identifier.sqlite";
 
     // ____________________________________________________
@@ -75,7 +75,6 @@ public class Main extends Application { // Client class
 
     // ____________________________________________________
 
-
     /*
 
         If a user closes the app then it should change their status to "Offline" again.
@@ -95,12 +94,6 @@ public class Main extends Application { // Client class
                     processdata.saveData();
                     break;
                 }
-            }
-
-            // Also update status in database
-            if (db != null && !username.isEmpty()) {
-                db.updateUserStatus(username, "Offline");
-                db.closeConnection();
             }
 
             System.exit(0);
