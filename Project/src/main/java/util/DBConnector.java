@@ -1,6 +1,7 @@
 package util;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class DBConnector {
     Connection con;
@@ -29,6 +30,7 @@ public class DBConnector {
     // ____________________________________________________
 
     private void initializeDatabase() {
+
         try {
             Statement stmt = con.createStatement();
             String createUsersTable = "CREATE TABLE IF NOT EXISTS users (" +
@@ -161,59 +163,6 @@ public class DBConnector {
 
     // ____________________________________________________
 
-    public void selectPlayers() {
-        String query = "SELECT * FROM players";
-
-        try {
-            Statement statement = con.createStatement();
-
-            ResultSet rs = statement.executeQuery(query);
-
-            while (rs.next()) {
-                String name = rs.getString("name");
-                System.out.println(name);
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    // ____________________________________________________
-
-    public void getBalanceOfPlayer(String name) {
-        String query = "SELECT balance FROM Players WHERE name = '" + name + "'";
-        try {
-            Statement statement = con.createStatement();
-            ResultSet rs = statement.executeQuery(query);
-
-            int balance = rs.getInt("balance");
-            System.out.println("Saldo: " + balance);
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    // ____________________________________________________
-
-    public void addPlayer(String name, int position, int balance) {
-        String query = "INSERT INTO players(name, position, balance) VALUES('" + name + "', " + position + ", " + balance + ")";
-        try {
-            PreparedStatement statement = con.prepareStatement(query);
-            ResultSet rs = statement.executeQuery(query);
-
-            name = rs.getString("name");
-            position = rs.getInt("position");
-            balance = rs.getInt("balance");
-            System.out.println("name: " + name + "position: " + position + "Saldo: " + balance);
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    // ____________________________________________________
-
     public String getRole(String username) {
 
         String role = "";
@@ -234,28 +183,60 @@ public class DBConnector {
 
     }
 
-        public boolean createNewDatabase(String url) {
-            try {
-                String dbFile = url.replace("jdbc:sqlite:", "");
+    // ____________________________________________________
 
-                java.io.File file = new java.io.File(dbFile);
-                if (!file.exists()) {
-                    file.createNewFile();
-                    System.out.println("Created a database at:" + dbFile);
+    public boolean createNewDatabase(String url) {
 
-                }
-                con = java.sql.DriverManager.getConnection(url);
-                connected = true;
-                initializeDatabase();
-                return true;
+        try {
+            String dbFile = url.replace("jdbc:sqlite:", "");
 
-            } catch (Exception e){
-                System.out.println("fejl tissemand");
-                return false;
+            java.io.File file = new java.io.File(dbFile);
+            if (!file.exists()) {
+                file.createNewFile();
+                System.out.println("Created a database at:" + dbFile);
+
             }
+            con = java.sql.DriverManager.getConnection(url);
+            connected = true;
+            initializeDatabase();
+            return true;
+
+        } catch (Exception e){
+            System.out.println("fejl tissemand");
+            return false;
+        }
 
     }
 
+    // ____________________________________________________
 
+    public ArrayList<String> getUserData(String username) {
+        ArrayList<String> userData = new ArrayList<String>();
+        String query = "SELECT * FROM users WHERE username = '" + username + "'";
+
+        try {
+
+            Statement statement = con.createStatement();
+            ResultSet rs = statement.executeQuery(query);
+
+            userData.add(rs.getString("id"));
+            userData.add(rs.getString("username"));
+            userData.add(rs.getString("password"));
+            userData.add(rs.getString("email"));
+            userData.add(rs.getString("status"));
+            userData.add(rs.getString("role"));
+            userData.add(rs.getString("banned"));
+            /*
+            userData.add(rs.getString("profilePicture"));
+            userData.add(rs.getString("profileBanner"));
+            */
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return userData;
+
+    }
 
 } // DBConnector end

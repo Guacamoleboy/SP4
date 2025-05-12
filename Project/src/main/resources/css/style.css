@@ -376,3 +376,23 @@
     -fx-min-height: 200px;
     -fx-tab-max-height: 200px;
 }
+
+.profile-vbox {
+    -fx-border-color: #464646;
+    -fx-border-radius: 20px;
+    -fx-border-width: 2px;
+    -fx-background-radius: 20px;
+}
+
+.profilePicture-hbox {
+    -fx-min-width: 200px;
+    -fx-max-width: 200px;
+    -fx-padding: 0 10 0 0; /* Top, Right, Bottom, Left (?) */
+    -fx-border-radius: 0 0 0 20px; /* Left rounded corner */
+}
+
+.banner-hbox {
+    -fx-min-width: 580px;
+    -fx-max-width: 580px;
+    -fx-border-radius: 0 20px 0 0; /* Right rounded corner */
+}
