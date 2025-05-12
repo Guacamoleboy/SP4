@@ -2,6 +2,8 @@
 package App;
 
 // Imports
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -10,6 +12,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 
 import javax.xml.transform.Source;
 import java.io.File;
@@ -23,6 +26,7 @@ public class StartInfo extends VBox {
     // Attributes
     private int sceneWidth;
     private int sceneHeight;
+    private ImageView slideShow;
 
     // ____________________________________________________
 
@@ -55,15 +59,16 @@ public class StartInfo extends VBox {
         logoView.setFitWidth(sceneWidth*0.7);
         logoView.setPreserveRatio(true);
 
-        int randomValue = (int) (Math.random() * 10) + 1;
 
         Image slideShowPictures = new Image(getClass().getResource(getRandomImg()).toExternalForm());
-        ImageView slideShow = new ImageView(slideShowPictures);
-        slideShow.setFitWidth(sceneWidth * 0.8);
-        slideShow.setFitHeight(sceneHeight);
-        slideShow.setStyle("-fx-border-radius: 20px; -fx-background-radius: 20px");
-        slideShow.setFitWidth(sceneWidth*0.7);
+        slideShow = new ImageView(slideShowPictures);
         slideShow.setPreserveRatio(true);
+        slideShow.setSmooth(true);
+        slideShow.setFitWidth(300);
+        slideShow.setFitHeight(200);
+        slideShow.getStyleClass().add("slide-show");
+        //slideShow.setStyle("-fx-border-radius: 20px; -fx-background-radius: 20px");
+        startSlideshow();
 
         // Welcome msg
         Label label = new Label(getWelcomeMessage());
@@ -80,33 +85,24 @@ public class StartInfo extends VBox {
 
     // ____________________________________________________
 
-    public String getRandomImg(){
+    private void startSlideshow() {
+        KeyFrame kf = new KeyFrame(Duration.seconds(3), event -> {
+            String imgPath = getRandomImg();
+            Image newImage = new Image(getClass().getResource(imgPath).toExternalForm());
+            slideShow.setImage(newImage);
+        });
 
-       slide();
-       return null;
-
+        Timeline timeline = new Timeline(kf);
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
     }
+
 
     // ____________________________________________________
 
-    public void slide() {
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            System.out.println(("Stoppede"));
-        }
-
+    private String getRandomImg() {
         int randomValue = (int) (Math.random() * 10) + 1;
-
-        String path = "/assets/slideshow/" + randomValue + ".jpg";
-        getRandomImg();
-
-    }
-
-    // ____________________________________________________
-
-    public String updateImage(String path){
-        return null;
+        return "/assets/slideshow/" + randomValue + ".jpg";
     }
 
     // ____________________________________________________
