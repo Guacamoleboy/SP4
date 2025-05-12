@@ -9,6 +9,8 @@ import java.util.ArrayList;
 public class Profile extends Pane {
 
     // Attributes
+
+    // OBJECT //
     private ArrayList<String> userData;
 
     /*

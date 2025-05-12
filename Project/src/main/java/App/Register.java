@@ -17,6 +17,20 @@ import java.util.ArrayList;
 public class Register extends Pane {
 
     // Attributes
+
+    // DATATYPE //
+    private int sceneWidth;
+    private int sceneHeight;
+    private String username;
+    private String password;
+    private String passwordConfirmation;
+    private String email;
+    private String userNameCache;
+    private String passwordCache;
+    private String emailCache;
+    private static final String DB_URL = "jdbc:sqlite:identifier.sqlite";
+
+    // OBJECT //
     private TextField usernameField;
     private TextField emailField;
     private PasswordField passwordField;
@@ -26,18 +40,9 @@ public class Register extends Pane {
     private Button goBackButton;
     private Button forgotButton;
     private Button registerButton;
-    private int sceneWidth;
-    private int sceneHeight;
-    private String username;
-    private String password;
-    private String passwordConfirmation;
-    private String email;
     private ComboBox<String> dropdownBox;
     private ArrayList <String> userData;
-    private String userNameCache;
-    private String passwordCache;
-    private String emailCache;
-    private static final String DB_URL = "jdbc:sqlite:identifier.sqlite";
+
 
     // ____________________________________________________
 

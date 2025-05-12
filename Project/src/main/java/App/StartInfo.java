@@ -10,24 +10,22 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
-
-import javax.xml.transform.Source;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Scanner;
-import java.util.concurrent.TimeoutException;
 
 public class StartInfo extends VBox {
 
     // Attributes
+
+    // DATATYPE //
     private int sceneWidth;
     private int sceneHeight;
-    private ImageView slideShow;
     private int randomValue = 0;
+
+    // OBJECT //
+    private ImageView slideShow;
 
     // ____________________________________________________
 
@@ -49,34 +47,37 @@ public class StartInfo extends VBox {
 
     public VBox sidePane() {
 
+        // VBox panel
         VBox sidePaneBox = new VBox(10);
         sidePaneBox.setPadding(new Insets(10));
         sidePaneBox.setAlignment(Pos.CENTER);
         sidePaneBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
         sidePaneBox.getStyleClass().add("start-vbox");
 
+        // Logo no background
         Image logo = new Image(getClass().getResource("/assets/logo/Elevtiden-logo-only.png").toExternalForm());
         ImageView logoView = new ImageView(logo);
         logoView.setFitWidth(sceneWidth*0.7);
         logoView.setPreserveRatio(true);
 
-
+        // Slideshow
         Image slideShowPictures = new Image(getClass().getResource(getRandomImg()).toExternalForm());
         slideShow = new ImageView(slideShowPictures);
         slideShow.setPreserveRatio(true);
         slideShow.setSmooth(true);
         slideShow.setFitHeight(200);
         slideShow.getStyleClass().add("slide-show");
-        //slideShow.setStyle("-fx-border-radius: 20px; -fx-background-radius: 20px");
         startSlideshow();
 
         // Welcome msg
         Label label = new Label(getWelcomeMessage());
         label.getStyleClass().add("welcome-label");
 
+        // Slogan
         Label slogan = new Label("STØT FREMTIDENS FRISØRER - MED GOD SAMVITTIGHED");
         slogan.getStyleClass().add("label-3");
 
+        // Add
         sidePaneBox.getChildren().addAll(logoView, slogan, slideShow, label);
 
         return sidePaneBox;
@@ -86,6 +87,9 @@ public class StartInfo extends VBox {
     // ____________________________________________________
 
     private void startSlideshow() {
+
+        // Timeline to display random image in a given interval
+
         KeyFrame kf = new KeyFrame(Duration.seconds(3), event -> {
             String imgPath = getRandomImg();
             Image newImage = new Image(getClass().getResource(imgPath).toExternalForm());
@@ -95,18 +99,19 @@ public class StartInfo extends VBox {
         Timeline timeline = new Timeline(kf);
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
+
     }
 
     // ____________________________________________________
 
     private String getRandomImg() {
-        randomValue = randomValue < 10 ? randomValue+1 : 1;
+        randomValue = randomValue < 10 ? randomValue + 1 : 1;
         return "/assets/slideshow/" + randomValue + ".png";
     }
 
     // ____________________________________________________
 
-    private String getWelcomeMessage() {
+    private String getWelcomeMessage() { // TO SQL (?)
 
         String message = "";
 

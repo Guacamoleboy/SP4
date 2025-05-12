@@ -26,6 +26,14 @@ import static App.UpdateChecker.*;
 public class Login extends Pane {
 
     // Attributes
+
+    // DATATYPE //
+    private int sceneWidth;
+    private int sceneHeight;
+    private String username;
+    private String password;
+
+    // OBJECT //
     private TextField usernameField;
     private FileIO io = new FileIO();
     private PasswordField passwordField;
@@ -34,12 +42,6 @@ public class Login extends Pane {
     private Button registerButton;
     private Button updateVersionButton;
     private ProcessData processdata;
-
-
-    private int sceneWidth;
-    private int sceneHeight;
-    private String username;
-    private String password;
 
     // ____________________________________________________
 

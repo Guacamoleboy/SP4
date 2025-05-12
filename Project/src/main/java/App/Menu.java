@@ -1,32 +1,34 @@
+// Package
 package App;
 
+// Import
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import util.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 public class Menu extends Pane {
 
     // Attributes
+
+    // DATATYPE //
     private String username;
     private String password;
+    private String titleText = "Welcome";
     private int sceneWidth;
     private int sceneHeight;
-
     private static final String DB_URL = "jdbc:sqlite:identifier.sqlite";
+
+    // OBJECT //
     private TextArea chatArea;
     private TextField messageField;
     private String currentChatPartner;
     private VBox userListBox;
     private Button cancelButton;
-    private String titleText = "Welcome";
     private Label header;
     private ComboBox<String> box1;
     private ComboBox<String> box2;
@@ -55,6 +57,7 @@ public class Menu extends Pane {
     // ____________________________________________________
 
     private void loadOnlineUsers() {
+
         if (userListBox.getChildren().size() > 1) {
             userListBox.getChildren().remove(1, userListBox.getChildren().size());
         }
@@ -91,6 +94,7 @@ public class Menu extends Pane {
                 System.out.println("Error retrieving online users: " + e.getMessage());
             }
         }
+
     }
 
     // ____________________________________________________
@@ -112,6 +116,7 @@ public class Menu extends Pane {
                 System.out.println("Error loading chat history: " + e.getMessage());
             }
         }
+
     }
 
     // ____________________________________________________
@@ -128,6 +133,7 @@ public class Menu extends Pane {
                 loadChatHistory(currentChatPartner);
             }
         }
+
     }
 
     // ____________________________________________________
@@ -177,6 +183,7 @@ public class Menu extends Pane {
         Button user3 = new Button("Ebou");
         Button user4 = new Button("Carl-Emil");
 
+        // Sidebar add
         sidebar.getChildren().addAll(user1, user2, user3, user4);
         user1.getStyleClass().addAll("user-button", "user-button1");
         user2.getStyleClass().add("user-button");
@@ -661,20 +668,24 @@ public class Menu extends Pane {
     // ____________________________________________________
 
     public String getDate() {
+
         int day = (int) (Math.random() * 28) + 1; // Fuck the rest of the days. Hardcoded anyways.
         int month = (int) (Math.random() * 12) + 1;
         String year = "2025";
 
         return String.valueOf(day) + "."  + String.valueOf(month) + "." + year;
+
     }
 
     // ____________________________________________________
 
     public String getTime() {
+
         int hour = (int) (Math.random() * 24) + 1;
         int minutes = (int) (Math.random() * 60) + 1;
 
         return String.valueOf(hour) + ":" + String.valueOf(minutes);
+
     }
 
     // ____________________________________________________
@@ -682,12 +693,12 @@ public class Menu extends Pane {
     public String getStudentName() {
         String[] names =
                 {
-                        "Jonas MunkeDahl",
-                        "Andreas Lortelort",
-                        "Ebou Gedemunk",
-                        "Carl-Emil Gok",
-                        "Tess Dad",
-                        "Tine Dahl",
+                "Jonas MunkeDahl",
+                "Andreas Lortelort",
+                "Ebou Gedemunk",
+                "Carl-Emil Gok",
+                "Tess Something",
+                "Tine Dahl",
                 };
 
         int randomName = (int) (Math.random() * names.length);

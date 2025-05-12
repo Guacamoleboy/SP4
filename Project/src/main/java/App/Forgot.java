@@ -18,6 +18,16 @@ import java.util.ArrayList;
 public class Forgot extends Pane {
 
     // Attributes
+
+    // DATATYPE //
+    private int sceneWidth;
+    private int sceneHeight;
+    private String username;
+    private String password;
+    private String passwordConfirmation;
+    private String email;
+
+    // OBJECT //
     private TextField usernameField;
     private TextField emailField;
     private PasswordField passwordField;
@@ -27,12 +37,6 @@ public class Forgot extends Pane {
     private Button goBackButton;
     private Button forgotButton;
     private Button registerButton;
-    private int sceneWidth;
-    private int sceneHeight;
-    private String username;
-    private String password;
-    private String passwordConfirmation;
-    private String email;
     private ArrayList <String> userData;
 
     // ____________________________________________________

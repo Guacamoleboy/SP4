@@ -6,8 +6,10 @@ import java.util.ArrayList;
 public class ProcessData {
 
     // Attributes
+
+    // OBJECT //
     private Login login = new Login(900, 600);
-    private  FileIO io = new FileIO();
+    private FileIO io = new FileIO();
     private ArrayList <User> user;
 
     // ____________________________________________________
