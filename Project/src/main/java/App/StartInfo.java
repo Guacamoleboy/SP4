@@ -27,6 +27,7 @@ public class StartInfo extends VBox {
     private int sceneWidth;
     private int sceneHeight;
     private ImageView slideShow;
+    private int randomValue = 0;
 
     // ____________________________________________________
 
@@ -64,7 +65,6 @@ public class StartInfo extends VBox {
         slideShow = new ImageView(slideShowPictures);
         slideShow.setPreserveRatio(true);
         slideShow.setSmooth(true);
-        slideShow.setFitWidth(300);
         slideShow.setFitHeight(200);
         slideShow.getStyleClass().add("slide-show");
         //slideShow.setStyle("-fx-border-radius: 20px; -fx-background-radius: 20px");
@@ -97,11 +97,10 @@ public class StartInfo extends VBox {
         timeline.play();
     }
 
-
     // ____________________________________________________
 
     private String getRandomImg() {
-        int randomValue = (int) (Math.random() * 10) + 1;
+        randomValue = randomValue < 10 ? randomValue+1 : 1;
         return "/assets/slideshow/" + randomValue + ".jpg";
     }
 

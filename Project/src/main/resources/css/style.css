@@ -370,5 +370,9 @@
 
 .slide-show {
     -fx-border-radius: 20px;
-    -fx-background-radius: 20px
+    -fx-background-radius: 20px;
+    -fx-min-width: 300px;
+    -fx-max-width: 300px;
+    -fx-min-height: 200px;
+    -fx-tab-max-height: 200px;
 }
