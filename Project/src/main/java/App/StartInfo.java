@@ -11,6 +11,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+import javax.xml.transform.Source;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -43,11 +44,6 @@ public class StartInfo extends VBox {
 
     public VBox sidePane() {
 
-        Rectangle splitter = new Rectangle();
-        splitter.setHeight(1);
-        splitter.setWidth(sceneWidth * 0.8); // or a fixed width
-        splitter.getStyleClass().add("splitter-rect");
-
         VBox sidePaneBox = new VBox(10);
         sidePaneBox.setPadding(new Insets(10));
         sidePaneBox.setAlignment(Pos.CENTER);
@@ -59,20 +55,24 @@ public class StartInfo extends VBox {
         logoView.setFitWidth(sceneWidth*0.7);
         logoView.setPreserveRatio(true);
 
+        int randomValue = (int) (Math.random() * 10) + 1;
+
+        Image slideShowPictures = new Image(getClass().getResource(getRandomImg()).toExternalForm());
+        ImageView slideShow = new ImageView(slideShowPictures);
+        slideShow.setFitWidth(sceneWidth * 0.8);
+        slideShow.setFitHeight(sceneHeight);
+        slideShow.setStyle("-fx-border-radius: 20px; -fx-background-radius: 20px");
+        slideShow.setFitWidth(sceneWidth*0.7);
+        slideShow.setPreserveRatio(true);
+
         // Welcome msg
         Label label = new Label(getWelcomeMessage());
         label.getStyleClass().add("welcome-label");
 
-        // Slideshow
-        Image slideShow = new Image(getClass().getResource(getRandomImg()).toExternalForm());
-
         Label slogan = new Label("STØT FREMTIDENS FRISØRER - MED GOD SAMVITTIGHED");
         slogan.getStyleClass().add("label-3");
 
-        sidePaneBox.getChildren().addAll(logoView, slogan, label);
-
-        sidePaneBox.getChildren().add(new Rectangle(sceneWidth * 0.8, 1, Color.LIGHTGRAY));
-        sidePaneBox.getChildren().get(sidePaneBox.getChildren().size() - 1).getStyleClass().add("splitter-rect");
+        sidePaneBox.getChildren().addAll(logoView, slogan, slideShow, label);
 
         return sidePaneBox;
 
@@ -82,22 +82,31 @@ public class StartInfo extends VBox {
 
     public String getRandomImg(){
 
-        int randomValue = (int) (Math.random() * 10) + 1;
+       slide();
+       return null;
 
+    }
+
+    // ____________________________________________________
+
+    public void slide() {
         try {
-            Thread.sleep(1000);
-            int previousPicture = randomValue = (int) (Math.random() * 10) + 1; // random billede mellem 1 og 10 (til og med 10)
-
-            // Prevent picture being shown twice
-            if(randomValue == previousPicture) {
-                randomValue = (int) (Math.random() * 10) + 1;
-            }
-
+            Thread.sleep(3000);
         } catch (InterruptedException e) {
-            System.out.println("error");
+            System.out.println(("Stoppede"));
         }
 
-        return "/assets/slideshow/" + randomValue;
+        int randomValue = (int) (Math.random() * 10) + 1;
+
+        String path = "/assets/slideshow/" + randomValue + ".jpg";
+        getRandomImg();
+
+    }
+
+    // ____________________________________________________
+
+    public String updateImage(String path){
+        return null;
     }
 
     // ____________________________________________________

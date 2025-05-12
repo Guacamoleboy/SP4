@@ -234,4 +234,28 @@ public class DBConnector {
 
     }
 
+        public boolean createNewDatabase(String url) {
+            try {
+                String dbFile = url.replace("jdbc:sqlite:", "");
+
+                java.io.File file = new java.io.File(dbFile);
+                if (!file.exists()) {
+                    file.createNewFile();
+                    System.out.println("Created a database at:" + dbFile);
+
+                }
+                con = java.sql.DriverManager.getConnection(url);
+                connected = true;
+                initializeDatabase();
+                return true;
+
+            } catch (Exception e){
+                System.out.println("fejl tissemand");
+                return false;
+            }
+
+    }
+
+
+
 } // DBConnector end
