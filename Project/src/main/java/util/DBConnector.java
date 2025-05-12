@@ -4,12 +4,19 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class DBConnector {
-    Connection con;
+
+    // Attributes
+
+    // DATATYPE //
     private boolean connected = false;
+
+    // OBJECT //
+    Connection con;
 
     // ____________________________________________________
 
     public boolean connect(String url) {
+
         try {
             con = DriverManager.getConnection(url);
             connected = true;
@@ -19,6 +26,7 @@ public class DBConnector {
             System.out.println(e.getMessage());
             return false;
         }
+
     }
 
     // ____________________________________________________
@@ -226,6 +234,7 @@ public class DBConnector {
             userData.add(rs.getString("status"));
             userData.add(rs.getString("role"));
             userData.add(rs.getString("banned"));
+
             /*
             userData.add(rs.getString("profilePicture"));
             userData.add(rs.getString("profileBanner"));

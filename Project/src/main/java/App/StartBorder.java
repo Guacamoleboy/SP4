@@ -7,6 +7,8 @@ import javafx.scene.layout.Pane;
 public class StartBorder extends Pane {
 
     // Attributes
+
+    // DATATYPE //
     private int sceneWidth;
 
     // ____________________________________________________

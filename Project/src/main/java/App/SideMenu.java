@@ -12,10 +12,14 @@ import javafx.scene.layout.BorderPane;
 public class SideMenu extends Pane {
 
     // Attributes
+
+    // DATATYPE //
     private int sceneWidth;
     private int sceneHeight;
-    private Menu menu;
     private String role;
+
+    // OBJECT //
+    private Menu menu;
 
     // ____________________________________________________
 

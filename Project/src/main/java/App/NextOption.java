@@ -13,12 +13,16 @@ import javafx.stage.Stage;
 public class NextOption extends Pane {
 
     // Attributes
+
+    // DATATYPE //
+    private int sceneWidth;
+    private int sceneHeight;
+
+    // OBJECT //
     private Button nextButton;
     private Button goBackButton;
     private Button tryAgainButton;
     private Button registerButton;
-    private int sceneWidth;
-    private int sceneHeight;
     private ComboBox<String> hairTypeDropdown;
     private ComboBox<String> genderDropdown;
     private ComboBox<String> lengthDropdown;

@@ -14,10 +14,13 @@ import util.*;
 public class UpdateChecker {
 
     // Attributes
-    private static TextUI ui = new TextUI("narko");
-    private static String rawUrl = "https://raw.githubusercontent.com/Guacamoleboy/SP4/main/Project/src/main/java/constants/version.txt";
 
+    // DATATYPE //
+    private static String rawUrl = "https://raw.githubusercontent.com/Guacamoleboy/SP4/main/Project/src/main/java/constants/version.txt";
     public static String version;
+
+    // OBJECT // USED (?)
+    private static TextUI ui = new TextUI("narko");
 
     static {
         try {

@@ -29,11 +29,15 @@ import static App.UpdateChecker.getCurrentVersion;
 public class Main extends Application { // Client class
 
     // Attributes
+
+    // DATATYPE //
+    public static boolean upToDate = checkVersion();
+    private static final String DB_URL = "jdbc:sqlite:identifier.sqlite";
+
+    // OBJECT //
     private Login login = new Login(600, 600);
     private StartInfo startinfo = new StartInfo(300, 600);
-    public static boolean upToDate = checkVersion();
     public static DBConnector db;
-    private static final String DB_URL = "jdbc:sqlite:identifier.sqlite";
 
     // ____________________________________________________
 
