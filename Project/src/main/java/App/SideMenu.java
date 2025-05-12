@@ -108,7 +108,7 @@ public class SideMenu extends Pane {
         profileBtn.setOnAction(e -> {
             menu.setHeaderTitle("Profile");
             menu.getChildren().clear();
-            menu.getChildren().add(menu.displayHeader());
+            menu.getChildren().add(menu.displayProfile());
         });
 
         // Hover
@@ -181,7 +181,7 @@ public class SideMenu extends Pane {
         profileBtn.setOnAction(e -> {
             menu.setHeaderTitle("Profile");
             menu.getChildren().clear();
-            menu.getChildren().add(menu.displayHeader());
+            menu.getChildren().add(menu.displayProfile());
         });
 
         // Hover
@@ -258,7 +258,7 @@ public class SideMenu extends Pane {
         profileBtn.setOnAction(e -> {
             menu.setHeaderTitle("Profile");
             menu.getChildren().clear();
-            menu.getChildren().add(menu.displayHeader());
+            menu.getChildren().add(menu.displayProfile());
         });
 
         // Hover
@@ -344,7 +344,7 @@ public class SideMenu extends Pane {
         profileBtn.setOnAction(e -> {
             menu.setHeaderTitle("Profile");
             menu.getChildren().clear();
-            menu.getChildren().add(menu.displayHeader());
+            menu.getChildren().add(menu.displayProfile());
         });
 
         // Hover
@@ -417,7 +417,7 @@ public class SideMenu extends Pane {
         profileBtn.setOnAction(e -> {
             menu.setHeaderTitle("Profile");
             menu.getChildren().clear();
-            menu.getChildren().add(menu.displayHeader());
+            menu.getChildren().add(menu.displayProfile());
         });
 
         // Hover

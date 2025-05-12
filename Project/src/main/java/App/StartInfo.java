@@ -101,7 +101,7 @@ public class StartInfo extends VBox {
 
     private String getRandomImg() {
         randomValue = randomValue < 10 ? randomValue+1 : 1;
-        return "/assets/slideshow/" + randomValue + ".jpg";
+        return "/assets/slideshow/" + randomValue + ".png";
     }
 
     // ____________________________________________________

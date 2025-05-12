@@ -567,6 +567,41 @@ public class Menu extends Pane {
 
     // ____________________________________________________
 
+    public VBox displayProfile(){
+
+        VBox profileVBox = new VBox(15);
+        profileVBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        profileVBox.getStyleClass().add("profile-vbox");
+        profileVBox.setAlignment(Pos.CENTER);
+        profileVBox.setLayoutX(20);
+        profileVBox.setLayoutY(20);
+        profileVBox.setPrefWidth(760);
+        profileVBox.setPrefHeight(560);
+
+        // WTF JEG HADER LIVET
+        HBox bannerHBox = new HBox(15);
+        bannerHBox.setAlignment(Pos.CENTER);
+        bannerHBox.getStyleClass().add("banner-hbox");
+
+        // Profile Picture Box
+        HBox profilePictureHBox = new HBox(15);
+        profilePictureHBox.setAlignment(Pos.CENTER);
+        profilePictureHBox.getStyleClass().add("profilePicture-hbox");
+        profilePictureHBox.setPrefWidth(760);
+        profilePictureHBox.setPrefHeight(300);
+
+        // Horizontal display
+        profilePictureHBox.getChildren().add(bannerHBox);
+
+        // Vertical display
+        profileVBox.getChildren().add(profilePictureHBox);
+
+        return profileVBox;
+
+    }
+
+    // ____________________________________________________
+
     public VBox displayComboBox() {
 
         VBox outerBox = new VBox(0);
