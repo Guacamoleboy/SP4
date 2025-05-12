@@ -38,14 +38,19 @@ public class Register extends Pane {
     private String userNameCache;
     private String passwordCache;
     private String emailCache;
+    private DBConnector db;
+    private static final String DB_URL = "jdbc:sqlite:identifier.sqlite";
 
     // ____________________________________________________
 
     public Register(int sceneWidth, int sceneHeight){
-
         this.sceneWidth = sceneWidth;
         this.sceneHeight = sceneHeight;
         this.setPrefSize(sceneWidth, sceneHeight);
+
+        // Initialize database
+        db = new DBConnector();
+        db.connect(DB_URL);
 
         VBox registerBox = display();
         registerBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
@@ -81,7 +86,6 @@ public class Register extends Pane {
     // ____________________________________________________
 
     public VBox display(){
-
         VBox registerBox = new VBox(15); // Padding / Margin
         registerBox.setAlignment(Pos.CENTER);
         registerBox.setPrefWidth(300); // Center of 600 (Scene)
@@ -116,7 +120,7 @@ public class Register extends Pane {
         dropdownBox.setPromptText("Choose type");
         dropdownBox.getStyleClass().add("combo-box");
 
-        nextButton = new Button("Next");
+        nextButton = new Button("Register");
         nextButton.getStyleClass().add("button");
         nextButton.setPrefHeight(30);
         nextButton.setPrefWidth(150);
@@ -146,10 +150,7 @@ public class Register extends Pane {
         // Events
         nextButton.setOnAction(e -> {
             if (validateInformation()) {
-                userNameCache = getUsername();
-                passwordCache = getPassword();
-                emailCache = getEmail();
-                nextOption();
+                registerUser();
             }
         });
 
@@ -167,13 +168,11 @@ public class Register extends Pane {
         registerBox.getChildren().addAll(loginLabel, usernameField, passwordField, passwordConfirmField, emailField, dropdownBox, buttons); // VBox
 
         return registerBox;
-
     }
 
     // ____________________________________________________
 
     public boolean validateInformation(){
-
         if(getUsername().isEmpty() || getPassword().isEmpty() || getPasswordConfirmation().isEmpty() || getEmail().isEmpty()){
             alert("Fields must be filled out!");
             return false;
@@ -183,16 +182,29 @@ public class Register extends Pane {
         } else if (!getEmail().matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")){
             alert("Invalid email input");
             return false;
-        } else if(getUsername().length() <= 4 || getUsername().length() >= 16 && getUsername().matches("^[a-zA-Z0-9]")) {
-            alert("Give a valid username, 5-16 letters/numbers (no symbols #!?_)");
+        } else if(getUsername().length() <= 4 || getUsername().length() >= 16) {
+            alert("Give a valid username, 5-16 letters/numbers");
             return false;
-        } else if(getPassword().length() <=7 || getPassword().length() >= 20 && getPassword().matches("^[a-zA-Z0-9._%+-]")) {
-            alert("Keep password between 8-20 symbols (use numbers and special characters for more secure password)");
+        } else if(getPassword().length() <=7 || getPassword().length() >= 20) {
+            alert("Keep password between 8-20 symbols");
+            return false;
+        } else if (db.isConnected() && db.userExists(getUsername())) {
+            alert("Username already exists");
             return false;
         }
 
         return true;
+    }
 
+    // ____________________________________________________
+
+    private void registerUser() {
+        if (db.isConnected() && db.createUser(getUsername(), getPassword(), getEmail())) {
+            alert("Registration successful! You can now log in.");
+            goBackButtonAction();
+        } else {
+            alert("Registration failed. Please try again.");
+        }
     }
 
     // ____________________________________________________
@@ -204,7 +216,6 @@ public class Register extends Pane {
     // ____________________________________________________
 
     public void goBackButtonAction(){
-
         Login login = new Login(600, 600);
         StartBorder sb = new StartBorder(3);
         StartInfo si = new StartInfo(300, 600);
@@ -221,42 +232,16 @@ public class Register extends Pane {
 
         Stage stage = (Stage) getScene().getWindow();
         stage.setScene(goBackScene);
-
-    }
-
-    // ____________________________________________________
-
-    public void nextOption(){
-
-        // If user presses the next button!
-        NextOption nextoption = new NextOption(600, 600, this);
-        StartBorder sb = new StartBorder(3);
-        StartInfo si = new StartInfo(300, 600);
-        HBox nextOptionHBox = new HBox(nextoption, sb, si);
-
-        si.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-        si.getStyleClass().add("orange");
-
-        nextOptionHBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-        nextOptionHBox.getStyleClass().add("body");
-
-        Scene registerScene = new Scene(nextOptionHBox, 900, 600);
-
-        Stage stage = (Stage) getScene().getWindow(); // Main window
-        stage.setScene(registerScene);
-
     }
 
     // ____________________________________________________
 
     public void alert(String msg){
-
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Validation Error!");
         alert.setHeaderText(null);
         alert.setContentText(msg);
         alert.showAndWait();
-
     }
 
     // ____________________________________________________
@@ -286,6 +271,4 @@ public class Register extends Pane {
         this.email = emailField.getText();
         return this.email;
     }
-
-
-} // Login Class End
+}

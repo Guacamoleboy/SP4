@@ -1,21 +1,30 @@
-// Packages
 package App;
 
-// Imports
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import util.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class Menu extends Pane {
 
     // Attributes
+    private String username;
+    private String password;
     private int sceneWidth;
     private int sceneHeight;
+    private DBConnector db;
+    private static final String DB_URL = "jdbc:sqlite:identifier.sqlite";
+    private TextArea chatArea;
+    private TextField messageField;
+    private String currentChatPartner;
+    private VBox userListBox;
     private Button cancelButton;
     private String titleText = "Welcome";
     private Label header;
@@ -26,17 +35,178 @@ public class Menu extends Pane {
 
     // ____________________________________________________
 
-    public Menu(int sceneWidth, int sceneHeight) {
+    public Menu(String username, String password, int sceneWidth, int sceneHeight){
 
+        // User data
+        this.username = username;
+        this.password = password;
+
+        // Scene Setup
         this.sceneWidth = sceneWidth;
         this.sceneHeight = sceneHeight;
-
-        // Display setup
-        this.setPrefWidth(sceneWidth);
         this.setPrefHeight(sceneHeight);
+        this.setPrefWidth(sceneWidth);
 
+        // db connection
+        this.db = new DBConnector();
+        if (db.connect(DB_URL)) {
+            db.updateUserStatus(username, "Online");
+        }
+
+        // Create
+        this.getChildren().add(display());
         this.getChildren().add(displayHeader());
-    } // Constructor end
+    }
+
+    // ____________________________________________________
+
+    public HBox display(){
+        HBox displayBox = new HBox();
+        displayBox.setPrefSize(sceneWidth, sceneHeight);
+
+        userListBox = new VBox(10);
+        userListBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        userListBox.setPrefSize(250, sceneHeight);
+        userListBox.setPadding(new Insets(60, 10, 10, 10));
+        userListBox.getStyleClass().add("body");
+
+        Label usersHeader = new Label("Online Users");
+        usersHeader.getStyleClass().add("header");
+        userListBox.getChildren().add(usersHeader);
+
+        loadOnlineUsers();
+
+        BorderPane chatPane = new BorderPane();
+        chatPane.setPrefSize(650, sceneHeight);
+        chatPane.getStyleClass().add("mainMenu-background");
+
+        chatArea = new TextArea();
+        chatArea.setEditable(false);
+        chatArea.setPrefHeight(sceneHeight - 100);
+        chatArea.getStyleClass().add("chat-area");
+
+        HBox messageBox = new HBox(10);
+        messageBox.setPadding(new Insets(10));
+        messageBox.setAlignment(Pos.CENTER);
+
+        messageField = new TextField();
+        messageField.setPrefWidth(500);
+        messageField.setPromptText("Type your message here...");
+        messageField.getStyleClass().add("text-field");
+
+        Button sendButton = new Button("Send");
+        sendButton.getStyleClass().add("button");
+        Animation.addHoverScaleEffect(sendButton);
+        sendButton.setOnAction(e -> sendMessage());
+
+        messageBox.getChildren().addAll(messageField, sendButton);
+
+        VBox chatBox = new VBox(10);
+        Label chatHeader = new Label("Chat");
+        chatHeader.getStyleClass().add("header");
+        chatBox.getChildren().addAll(chatHeader, chatArea);
+        chatBox.setPadding(new Insets(15));
+
+        chatPane.setCenter(chatBox);
+        chatPane.setBottom(messageBox);
+
+        displayBox.getChildren().addAll(userListBox, chatPane);
+
+        return displayBox;
+    }
+
+    // ____________________________________________________
+
+    private void loadOnlineUsers() {
+        if (userListBox.getChildren().size() > 1) {
+            userListBox.getChildren().remove(1, userListBox.getChildren().size());
+        }
+
+        if (db.isConnected()) {
+            String query = "SELECT username FROM users WHERE status = 'Online' AND username != '" + username + "'";
+            ResultSet rs = db.executeQuery(query);
+
+            try {
+                boolean hasUsers = false;
+                while (rs != null && rs.next()) {
+                    hasUsers = true;
+                    String onlineUser = rs.getString("username");
+
+                    Button userButton = new Button(onlineUser);
+                    userButton.getStyleClass().add("user-button");
+                    userButton.setPrefWidth(220);
+                    Animation.addHoverScaleEffect(userButton);
+
+                    userButton.setOnAction(e -> {
+                        currentChatPartner = onlineUser;
+                        loadChatHistory(onlineUser);
+                    });
+
+                    userListBox.getChildren().add(userButton);
+                }
+
+                if (!hasUsers) {
+                    Label noUsersLabel = new Label("No users online");
+                    noUsersLabel.getStyleClass().add("label");
+                    userListBox.getChildren().add(noUsersLabel);
+                }
+            } catch (SQLException e) {
+                System.out.println("Error retrieving online users: " + e.getMessage());
+            }
+        }
+    }
+
+    // ____________________________________________________
+
+    private void loadChatHistory(String partner) {
+        chatArea.clear();
+        if (db.isConnected()) {
+            ResultSet rs = db.getMessages(username, partner);
+            try {
+                while (rs != null && rs.next()) {
+                    String sender = rs.getString("sender");
+                    String content = rs.getString("content");
+                    String timestamp = rs.getString("timestamp");
+
+                    String messagePrefix = sender.equals(username) ? "You: " : sender + ": ";
+                    chatArea.appendText(messagePrefix + content + " (" + timestamp + ")\n");
+                }
+            } catch (SQLException e) {
+                System.out.println("Error loading chat history: " + e.getMessage());
+            }
+        }
+    }
+
+    // ____________________________________________________
+
+    private void sendMessage() {
+        String message = messageField.getText().trim();
+        if (message.isEmpty() || currentChatPartner == null) {
+            return;
+        }
+
+        if (db.isConnected()) {
+            if (db.saveMessage(username, currentChatPartner, message)) {
+                messageField.clear();
+                loadChatHistory(currentChatPartner);
+            }
+        }
+    }
+
+    // ____________________________________________________
+
+    public void refreshUserList() {
+        loadOnlineUsers();
+    }
+
+    // ____________________________________________________
+
+    public void cleanup() {
+        if (db != null) {
+            db.updateUserStatus(username, "Offline");
+            db.closeConnection();
+        }
+    }
 
     // ____________________________________________________
 
@@ -172,7 +342,6 @@ public class Menu extends Pane {
         return settingsVBox;
     }
 
-
     // ____________________________________________________
 
     public VBox displayMyBookings() {
@@ -192,22 +361,22 @@ public class Menu extends Pane {
 
         //DETTE SKAL LAVES!
         //if (BOOKINGS != null) {
-            //String stars = convertToStars(getRating());//getRating();
-            Label dateLabel = new Label(getDate());
-            Label timeLabel = new Label(getTime());
-            Label placeLabel = new Label(getAdress());
-            Label studentLabel = new Label(getStudentName());
-            Label ratingLabel = new Label(convertToStars(getRating()));
-            dateLabel.getStyleClass().add("card-text-header");
-            timeLabel.getStyleClass().add("card-text");
-            placeLabel.getStyleClass().add("card-text");
-            studentLabel.getStyleClass().add("card-text");
-            ratingLabel.getStyleClass().add("star");
-            dateLabel.setWrapText(true);
-            timeLabel.setWrapText(true);
-            placeLabel.setWrapText(true);
-            studentLabel.setWrapText(true);
-            ratingLabel.setWrapText(true);
+        //String stars = convertToStars(getRating());//getRating();
+        Label dateLabel = new Label(getDate());
+        Label timeLabel = new Label(getTime());
+        Label placeLabel = new Label(getAdress());
+        Label studentLabel = new Label(getStudentName());
+        Label ratingLabel = new Label(convertToStars(getRating()));
+        dateLabel.getStyleClass().add("card-text-header");
+        timeLabel.getStyleClass().add("card-text");
+        placeLabel.getStyleClass().add("card-text");
+        studentLabel.getStyleClass().add("card-text");
+        ratingLabel.getStyleClass().add("star");
+        dateLabel.setWrapText(true);
+        timeLabel.setWrapText(true);
+        placeLabel.setWrapText(true);
+        studentLabel.setWrapText(true);
+        ratingLabel.setWrapText(true);
         //} else {
         // Label titleLabel = new Label("NO BOOKINGS!");
         //}
@@ -228,7 +397,6 @@ public class Menu extends Pane {
         menu.getChildren().addAll(topMenu, timeLabel, placeLabel, studentLabel, ratingLabel, cancelButton);
 
         return menu;
-
     }
 
     // ____________________________________________________
@@ -354,23 +522,21 @@ public class Menu extends Pane {
     // ____________________________________________________
 
     public VBox displayHeader(){
-
         VBox title = new VBox(15);
         title.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
 
-        header = new Label(titleText);
+        header = new Label("Welcome, " + username);
         header.setAlignment(Pos.CENTER);
         header.getStyleClass().add("header");
 
         title.setAlignment(Pos.CENTER);
-        title.setPrefWidth(200);
-        title.setLayoutX(20);
+        title.setPrefWidth(sceneWidth);
+        title.setLayoutX(0);
         title.setLayoutY(20);
 
         title.getChildren().addAll(header);
 
         return title;
-
     }
 
     // ____________________________________________________
@@ -392,7 +558,6 @@ public class Menu extends Pane {
         title.getChildren().addAll(header);
 
         return title;
-
     }
 
     // ____________________________________________________
@@ -453,8 +618,6 @@ public class Menu extends Pane {
         return outerBox;
     }
 
-
-
     // ____________________________________________________
 
     public String getDate() {
@@ -468,7 +631,6 @@ public class Menu extends Pane {
     // ____________________________________________________
 
     public String getTime() {
-
         int hour = (int) (Math.random() * 24) + 1;
         int minutes = (int) (Math.random() * 60) + 1;
 
@@ -478,35 +640,32 @@ public class Menu extends Pane {
     // ____________________________________________________
 
     public String getStudentName() {
-
         String[] names =
                 {
-                "Jonas MunkeDahl",
-                "Andreas Lortelort",
-                "Ebou Gedemunk",
-                "Carl-Emil Gok",
-                "Tess Dad",
-                "Tine Dahl",
+                        "Jonas MunkeDahl",
+                        "Andreas Lortelort",
+                        "Ebou Gedemunk",
+                        "Carl-Emil Gok",
+                        "Tess Dad",
+                        "Tine Dahl",
                 };
 
         int randomName = (int) (Math.random() * names.length);
 
         return names[randomName];
-
     }
 
     // ____________________________________________________
 
     public String getAdress() {
-
         String[] adress =
                 {
-                "Bytoften 21, 2650 Hvidovre",
-                "fawfawf 11, 3650 Narko",
-                "Place 44, 5550 Ged",
-                "Lort 4, 6650 Gok",
-                "Tessfad 66, 6666 Hillerød",
-                "Wtfffff 55, 5100 Yessir",
+                        "Bytoften 21, 2650 Hvidovre",
+                        "fawfawf 11, 3650 Narko",
+                        "Place 44, 5550 Ged",
+                        "Lort 4, 6650 Gok",
+                        "Tessfad 66, 6666 Hillerød",
+                        "Wtfffff 55, 5100 Yessir",
                 };
 
         int randomAdress = (int) (Math.random() * adress.length);
@@ -529,13 +688,11 @@ public class Menu extends Pane {
     // ____________________________________________________
 
     public void setHeaderTitle(String text) {
-
         this.titleText = text;
 
         if (header != null) {
             header.setText(text);
         }
-
     }
 
     // ____________________________________________________
@@ -545,7 +702,6 @@ public class Menu extends Pane {
     // Polygon.setFill
 
     public String convertToStars(double rating) {
-
         String message = "";
 
         rating = Math.max(0, Math.min(5, rating));
@@ -570,6 +726,4 @@ public class Menu extends Pane {
 
         return message;
     }
-
-
-} // Menu end
+}
