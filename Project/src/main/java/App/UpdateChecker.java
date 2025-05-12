@@ -1,22 +1,15 @@
 /*
-
-    Checks for outdated versions for a given branch vs main.
-    If the branch currently being worked in is outdated, then the
-    branch user will be prompted.
-
+    Tjekker gennem git og compare sql
 */
 
 package App;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Scanner;
 import util.*;
-
-
-// ________________________________________________________
 
 public class UpdateChecker {
 
@@ -30,45 +23,66 @@ public class UpdateChecker {
         try {
             version = fetchVersionFrom();
         } catch (Exception e) {
-            System.out.println("Something went wrong");
+            System.out.println("Something went wrong fetching remote version: " + e.getMessage());
+            version = "0.0.0";
         }
     }
 
     // ________________________________________________________
 
-    public static boolean checkVersion(){
+    public static boolean checkVersion() {
+        initializeVersionTable();
 
         String currentVersion = getCurrentVersion();
 
-        // Link to the version.txt file under my Github
-
         try {
-
-            // Gets last version (Public version) which is the main branchs version.txt version.
             String latestVersion = fetchVersionFrom();
 
-            // Checks if version is outdated
             if (!isOutdated(currentVersion, latestVersion)) {
-                ui.displayMsg(ui.promptTextColor("red") + "New update is available ("+latestVersion+")\nYour version: "+ currentVersion +" " + ui.promptTextColor("reset"));
+                ui.displayMsg(ui.promptTextColor("red") + "New update is available (" + latestVersion + ")\nYour version: " + currentVersion + " " + ui.promptTextColor("reset"));
                 return false;
             } else {
-                ui.displayMsg(ui.promptTextColor("green") + "\nYou are up to date ("+latestVersion+")!"+ ui.promptTextColor("reset"));
+                ui.displayMsg(ui.promptTextColor("green") + "\nYou are up to date (" + latestVersion + ")!" + ui.promptTextColor("reset"));
                 return true;
             }
 
-        } catch(Exception e) {
-            ui.displayMsg("Error while checking for updates:" +e.getMessage());
-        } // Try-catch end
+        } catch (Exception e) {
+            ui.displayMsg("Error while checking for updates: " + e.getMessage());
+        }
 
-        // Default return
         return false;
+    }
 
+    // ________________________________________________________
+
+    private static void initializeVersionTable() {
+        if (Main.db != null && Main.db.isConnected()) {
+            String createVersionTable = "CREATE TABLE IF NOT EXISTS version_info (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "version_number TEXT NOT NULL," +
+                    "update_date DATETIME DEFAULT CURRENT_TIMESTAMP" +
+                    ")";
+
+            Main.db.executeUpdate(createVersionTable);
+
+            String checkQuery = "SELECT COUNT(*) as count FROM version_info";
+            try {
+                ResultSet rs = Main.db.executeQuery(checkQuery);
+                if (rs != null && rs.next() && rs.getInt("count") == 0) {
+                    String insertDefault = "INSERT INTO version_info (version_number) VALUES ('1.0.0')";
+                    Main.db.executeUpdate(insertDefault);
+                }
+            } catch (SQLException e) {
+                System.out.println("Error checking version table: " + e.getMessage());
+            }
+        } else {
+            System.out.println("Database not connected, cannot initialize version table");
+        }
     }
 
     // ________________________________________________________
 
     public static String fetchVersionFrom() throws Exception {
-
         // Setup
         URL url = new URL(rawUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -77,17 +91,14 @@ public class UpdateChecker {
         connection.setReadTimeout(5000);
 
         try {
-
             int response = connection.getResponseCode();
 
             if (response != HttpURLConnection.HTTP_OK) {
-                throw new Exception("HTTP request failed" + response);
+                throw new Exception("http request failed: " + response);
             }
 
             try (Scanner scan = new Scanner(connection.getInputStream())) {
-
                 if (scan.hasNextLine()) {
-
                     String version = scan.nextLine().trim();
 
                     if (version.isEmpty()) {
@@ -95,56 +106,51 @@ public class UpdateChecker {
                     }
 
                     return version;
-
                 } else {
                     throw new Exception("No data found in file!");
                 }
-
-            } // Try (INNER)
-
+            }
         } catch (Exception e) {
-
-            ui.displayMsg("Error fetching version from url: " + rawUrl);
-            throw new Exception("Error fetching version: " + " | Dev msg: " +e.getMessage());
-
+            ui.displayMsg("Error from url: " + rawUrl);
+            throw new Exception("Error getting version: " + e.getMessage());
         } finally {
-
             connection.disconnect();
-
-        } // Try-catch (OUTTER)
-
+        }
     }
 
     // ________________________________________________________
 
     private static boolean isOutdated(String current, String latest) {
-
-        // Compares the two as Strings instead of double so we can have 0.5.5 etc instead of .5, .6, .7 etc.
-        // Usually 1.0 is Alpha release.
         return current.equals(latest);
-
     }
 
     // ________________________________________________________
 
     public static String getCurrentVersion() {
+        if (Main.db != null && Main.db.isConnected()) {
+            String query = "SELECT version_number FROM version_info ORDER BY id DESC LIMIT 1";
 
-        try {
-
-            // Gets locale version from users src/constants folder
-            File file = new File("src/main/java/constants/version.txt");
-            Scanner scan = new Scanner(file);
-
-            if (scan.hasNextLine()) {
-                return scan.nextLine().trim();
+            try {
+                ResultSet rs = Main.db.executeQuery(query);
+                if (rs != null && rs.next()) {
+                    return rs.getString("version_number");
+                }
+            } catch (SQLException e) {
+                ui.displayMsg("Error retrieving version from database: " + e.getMessage());
             }
+        }
 
-        } catch (FileNotFoundException e) {
-            ui.displayMsg("No file path found" + " | Dev msg: " + e.getMessage());
-        } // Try-catch end
 
-        // Default return
         return "0.0.0";
     }
 
-} // UpdateChecker end
+    // ________________________________________________________
+
+    public static boolean updateVersion(String newVersion) {
+        if (Main.db != null && Main.db.isConnected()) {
+            String query = "INSERT INTO version_info (version_number) VALUES ('" + newVersion + "')";
+            return Main.db.executeUpdate(query);
+        }
+        return false;
+    }
+}

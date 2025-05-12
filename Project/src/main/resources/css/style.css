@@ -179,12 +179,6 @@
     -fx-border-color: #464646;
 }
 
-.splitter-rect { /* USELESS (?) */
-    -fx-fill: #cccccc;
-    -fx-arc-width: 30;
-    -fx-arc-height: 30;
-}
-
 .star {
     -fx-text-fill: #ffcc00;
     -fx-font-size: 16px;

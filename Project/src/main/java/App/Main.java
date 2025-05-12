@@ -45,7 +45,13 @@ public class Main extends Application { // Client class
         // Initialize database
         db = new DBConnector();
         db.connect(DB_URL);
-
+        if (db.connect(DB_URL)) {
+            System.out.println("Database connection success");
+        } else {
+            System.out.println("Failed to connect db, creating new");
+            db.createNewDatabase(DB_URL);
+            db.connect(DB_URL);
+        }
         // Side by side layout JavaFX (left -> Right) // HBox
         HBox mainScene = new HBox(startinfo, login); // Start Scene
 

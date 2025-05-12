@@ -2,8 +2,11 @@ package App;
 
 import javafx.animation.ScaleTransition;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+
+import javax.swing.text.html.ImageView;
 
 public class Animation {
 
