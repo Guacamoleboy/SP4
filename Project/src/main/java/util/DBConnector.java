@@ -31,13 +31,13 @@ public class DBConnector {
     private void initializeDatabase() {
         try {
             Statement stmt = con.createStatement();
-
             String createUsersTable = "CREATE TABLE IF NOT EXISTS users (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "username TEXT NOT NULL UNIQUE," +
                     "password TEXT NOT NULL," +
                     "email TEXT," +
                     "status TEXT DEFAULT 'Offline'," +
+                    "role TEXT NOT NULL," +
                     "banned TEXT DEFAULT 'No'" +
                     ")";
 
@@ -86,6 +86,7 @@ public class DBConnector {
 
     public boolean userExists(String username) {
         String query = "SELECT COUNT(*) as count FROM users WHERE username = '" + username + "'";
+
         try {
             ResultSet rs = executeQuery(query);
             if (rs != null && rs.next()) {
@@ -114,9 +115,9 @@ public class DBConnector {
 
     // ____________________________________________________
 
-    public boolean createUser(String username, String password, String email) {
-        String query = "INSERT INTO users (username, password, email, status) VALUES ('" +
-                username + "', '" + password + "', '" + email + "', 'Offline')";
+    public boolean createUser(String username, String password, String email, String role) {
+        String query = "INSERT INTO users (username, password, email, status, role) VALUES ('" +
+                username + "', '" + password + "', '" + email + "', 'Offline', '" + role + "' )";
         return executeUpdate(query);
     }
 
@@ -210,4 +211,27 @@ public class DBConnector {
             System.out.println(e.getMessage());
         }
     }
-}
+
+    // ____________________________________________________
+
+    public String getRole(String username) {
+
+        String role = "";
+        String query = "SELECT role FROM users WHERE username = '" + username + "'";
+
+        try {
+
+            Statement statement = con.createStatement();
+            ResultSet rs = statement.executeQuery(query);
+
+            role = rs.getString("role");
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return role;
+
+    }
+
+} // DBConnector end

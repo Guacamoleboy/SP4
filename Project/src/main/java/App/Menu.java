@@ -19,7 +19,7 @@ public class Menu extends Pane {
     private String password;
     private int sceneWidth;
     private int sceneHeight;
-    private DBConnector db;
+
     private static final String DB_URL = "jdbc:sqlite:identifier.sqlite";
     private TextArea chatArea;
     private TextField messageField;
@@ -47,72 +47,9 @@ public class Menu extends Pane {
         this.setPrefHeight(sceneHeight);
         this.setPrefWidth(sceneWidth);
 
-        // db connection
-        this.db = new DBConnector();
-        if (db.connect(DB_URL)) {
-            db.updateUserStatus(username, "Online");
-        }
-
         // Create
-        this.getChildren().add(display());
         this.getChildren().add(displayHeader());
-    }
 
-    // ____________________________________________________
-
-    public HBox display(){
-        HBox displayBox = new HBox();
-        displayBox.setPrefSize(sceneWidth, sceneHeight);
-
-        userListBox = new VBox(10);
-        userListBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-        userListBox.setPrefSize(250, sceneHeight);
-        userListBox.setPadding(new Insets(60, 10, 10, 10));
-        userListBox.getStyleClass().add("body");
-
-        Label usersHeader = new Label("Online Users");
-        usersHeader.getStyleClass().add("header");
-        userListBox.getChildren().add(usersHeader);
-
-        loadOnlineUsers();
-
-        BorderPane chatPane = new BorderPane();
-        chatPane.setPrefSize(650, sceneHeight);
-        chatPane.getStyleClass().add("mainMenu-background");
-
-        chatArea = new TextArea();
-        chatArea.setEditable(false);
-        chatArea.setPrefHeight(sceneHeight - 100);
-        chatArea.getStyleClass().add("chat-area");
-
-        HBox messageBox = new HBox(10);
-        messageBox.setPadding(new Insets(10));
-        messageBox.setAlignment(Pos.CENTER);
-
-        messageField = new TextField();
-        messageField.setPrefWidth(500);
-        messageField.setPromptText("Type your message here...");
-        messageField.getStyleClass().add("text-field");
-
-        Button sendButton = new Button("Send");
-        sendButton.getStyleClass().add("button");
-        Animation.addHoverScaleEffect(sendButton);
-        sendButton.setOnAction(e -> sendMessage());
-
-        messageBox.getChildren().addAll(messageField, sendButton);
-
-        VBox chatBox = new VBox(10);
-        Label chatHeader = new Label("Chat");
-        chatHeader.getStyleClass().add("header");
-        chatBox.getChildren().addAll(chatHeader, chatArea);
-        chatBox.setPadding(new Insets(15));
-
-        chatPane.setCenter(chatBox);
-        chatPane.setBottom(messageBox);
-
-        displayBox.getChildren().addAll(userListBox, chatPane);
-
-        return displayBox;
     }
 
     // ____________________________________________________
@@ -122,9 +59,9 @@ public class Menu extends Pane {
             userListBox.getChildren().remove(1, userListBox.getChildren().size());
         }
 
-        if (db.isConnected()) {
+        if (Main.db.isConnected()) {
             String query = "SELECT username FROM users WHERE status = 'Online' AND username != '" + username + "'";
-            ResultSet rs = db.executeQuery(query);
+            ResultSet rs = Main.db.executeQuery(query);
 
             try {
                 boolean hasUsers = false;
@@ -160,8 +97,8 @@ public class Menu extends Pane {
 
     private void loadChatHistory(String partner) {
         chatArea.clear();
-        if (db.isConnected()) {
-            ResultSet rs = db.getMessages(username, partner);
+        if (Main.db.isConnected()) {
+            ResultSet rs = Main.db.getMessages(username, partner);
             try {
                 while (rs != null && rs.next()) {
                     String sender = rs.getString("sender");
@@ -185,8 +122,8 @@ public class Menu extends Pane {
             return;
         }
 
-        if (db.isConnected()) {
-            if (db.saveMessage(username, currentChatPartner, message)) {
+        if (Main.db.isConnected()) {
+            if (Main.db.saveMessage(username, currentChatPartner, message)) {
                 messageField.clear();
                 loadChatHistory(currentChatPartner);
             }
@@ -202,10 +139,9 @@ public class Menu extends Pane {
     // ____________________________________________________
 
     public void cleanup() {
-        if (db != null) {
-            db.updateUserStatus(username, "Offline");
-            db.closeConnection();
-        }
+        /*if (Main.db != null) {
+            Main.db.closeConnection();
+        }*/
     }
 
     // ____________________________________________________
@@ -305,14 +241,81 @@ public class Menu extends Pane {
         // Buttons
         Button setting1 = new Button("Darkmode");
         Button setting2 = new Button("Sensitivity");
-        Button setting3 = new Button("Nigga");
+        Button setting3 = new Button("Something");
         Button setting4 = new Button("Delete Account");
 
         sidebar.getChildren().addAll(setting1, setting2, setting3, setting4);
         setting1.getStyleClass().addAll("user-button", "user-button1");
         setting2.getStyleClass().add("user-button");
         setting3.getStyleClass().add("user-button");
-        setting4.getStyleClass().add("user-button");
+        setting4.getStyleClass().add("user-button-delete"); // RED
+
+        // Message area (4/5)
+        VBox messageArea = new VBox(15);
+        messageArea.setPrefWidth(760 * 0.74);
+        messageArea.setPadding(new Insets(20));
+        messageArea.setAlignment(Pos.TOP_LEFT);
+        messageArea.setStyle("-fx-background-color: transparent;");
+
+        // Add to HBox (Left -> Right)
+        messageHBox.getChildren().addAll(sidebar, messageArea);
+        settingsVBox.getChildren().add(messageHBox);
+
+        // Actions
+        setting1.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+        setting2.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+        setting3.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+        setting4.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+
+        return settingsVBox;
+    }
+
+    // ____________________________________________________
+
+    public VBox displaySupportSettings() {
+
+        // VBox
+        VBox settingsVBox = new VBox();
+        settingsVBox.setLayoutX(20);
+        settingsVBox.setLayoutY(100);
+        settingsVBox.setPrefWidth(760);
+        settingsVBox.setPrefHeight(480);
+        settingsVBox.setStyle("-fx-border-color: #464646; -fx-border-width: 2px; -fx-border-radius: 20px; -fx-background-radius: 20px;");
+
+        // HBox
+        HBox messageHBox = new HBox();
+        messageHBox.getStyleClass().add("message-vbox");
+        messageHBox.setPrefWidth(760);
+        messageHBox.setPrefHeight(480);
+        messageHBox.setAlignment(Pos.TOP_LEFT);
+        messageHBox.setSpacing(0);
+
+        // Sidebar
+        VBox sidebar = new VBox(0);
+        sidebar.setPrefWidth(760 * 0.26);
+        sidebar.setAlignment(Pos.TOP_LEFT);
+        sidebar.setPadding(Insets.EMPTY);
+        sidebar.setStyle("-fx-background-color: #696969; -fx-border-radius: 20 0 0 20; -fx-background-radius: 20 0 0 20;"); // Transparent to blend
+
+        // Buttons
+        Button setting1 = new Button("Darkmode");
+        Button setting2 = new Button("Sensitivity");
+        Button setting3 = new Button("Something");
+        Button setting4 = new Button("Delete Account");
+
+        sidebar.getChildren().addAll(setting1, setting2, setting3, setting4);
+        setting1.getStyleClass().addAll("user-button", "user-button1");
+        setting2.getStyleClass().add("user-button");
+        setting3.getStyleClass().add("user-button");
+        setting4.getStyleClass().add("user-button-delete"); // RED
 
         // Message area (4/5)
         VBox messageArea = new VBox(15);
@@ -522,21 +525,23 @@ public class Menu extends Pane {
     // ____________________________________________________
 
     public VBox displayHeader(){
+
         VBox title = new VBox(15);
         title.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
 
-        header = new Label("Welcome, " + username);
+        header = new Label(titleText);
         header.setAlignment(Pos.CENTER);
         header.getStyleClass().add("header");
 
         title.setAlignment(Pos.CENTER);
-        title.setPrefWidth(sceneWidth);
-        title.setLayoutX(0);
+        title.setPrefWidth(200);
+        title.setLayoutX(20);
         title.setLayoutY(20);
 
         title.getChildren().addAll(header);
 
         return title;
+
     }
 
     // ____________________________________________________
@@ -660,12 +665,12 @@ public class Menu extends Pane {
     public String getAdress() {
         String[] adress =
                 {
-                        "Bytoften 21, 2650 Hvidovre",
-                        "fawfawf 11, 3650 Narko",
-                        "Place 44, 5550 Ged",
-                        "Lort 4, 6650 Gok",
-                        "Tessfad 66, 6666 Hillerød",
-                        "Wtfffff 55, 5100 Yessir",
+                "Bytoften 21, 2650 Hvidovre",
+                "fawfawf 11, 3650 Narko",
+                "Place 44, 5550 Ged",
+                "Lort 4, 6650 Gok",
+                "Tessfad 66, 6666 Hillerød",
+                "Wtfffff 55, 5100 Yessir",
                 };
 
         int randomAdress = (int) (Math.random() * adress.length);

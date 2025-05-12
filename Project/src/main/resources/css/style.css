@@ -104,6 +104,15 @@
     -fx-text-fill: rgba(0,0,0,0.50);
 }
 
+.label-3 {
+    -fx-font-size: 9px;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 3, 0.5, 1, 1);
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-padding: 0 0 10 0; /* top, right, bottom, left */
+}
+
 .combo-box {
     -fx-font-size: 15px;
     -fx-font-weight: bold;
@@ -146,20 +155,15 @@
 
 .welcome-label {
     -fx-text-alignment: CENTER;
-    -fx-padding: 10 10 10 10;
-    -fx-text-fill: rgba(0,0,0,0.80);
-    -fx-border-color: none !important;
-    -fx-font-weight: normal;
-    -fx-font-size: 14px !important;
-    -fx-background-radius: 15px;
-    -fx-background-color: rgba(255, 255, 255, 0.25) !important;
-    -fx-border-radius: none !important;
+    -fx-font-size: 12px;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 3, 0.5, 1, 1);
+    -fx-font-weight: bold;
+    -fx-padding: 20 10 10 10;
+    -fx-wrap-text: true;
     -fx-max-width: 250px; /* Width of the info text */
-    -fx-max-height: 200px;
-}
-
-.welcome-label:hover {
-    -fx-background-color: rgba(255, 255, 255, 0.20) !important;
+    -fx-border-radius: 20px;
+    -fx-background-radius: 20px;
 }
 
 .header {
@@ -173,6 +177,12 @@
     -fx-max-height: 61px; /* Button size + border size */
     -fx-text-alignment: CENTER;
     -fx-border-color: #464646;
+}
+
+.splitter-rect { /* USELESS (?) */
+    -fx-fill: #cccccc;
+    -fx-arc-width: 30;
+    -fx-arc-height: 30;
 }
 
 .star {
@@ -227,6 +237,12 @@
     -fx-border-color: transparent;
 }
 
+.start-vbox {
+    -fx-padding: 20 0 10 0; /* Bottom only */
+    -fx-max-width: 300px;
+    -fx-max-height: 600px;
+}
+
 .booking-vbox {
     -fx-padding: 0 0 15 0; /* Bottom only */
     -fx-background-radius: 20px;
@@ -263,6 +279,25 @@
     -fx-border-width: 0;
     -fx-alignment: CENTER_LEFT;
     -fx-pref-width: Infinity;
+}
+
+.user-button-delete {
+    -fx-background-color: transparent;
+    -fx-text-fill: rgba(255, 255, 255, 0.8);
+    -fx-font-size: 14px;
+    -fx-padding: 12 20;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-border-width: 0;
+    -fx-alignment: CENTER_LEFT;
+    -fx-pref-width: Infinity;
+}
+
+.user-button-delete:focused {
+    -fx-background-color: rgba(255, 55, 55, 0.36);
+    -fx-border-color: transparent #ff001f transparent transparent;
+    -fx-border-width: 0 4px 0 0;
+    -fx-border-style: solid;
 }
 
 .user-button1 {
@@ -310,4 +345,23 @@
 .combo-box-book .list-cell:selected {
     -fx-background-color: none !important;
     -fx-text-fill: rgb(255, 255, 255); /* ComboBox Fix */
+}
+
+.image-button {
+    -fx-background-color: #656565;
+    -fx-cursor: hand;
+    -fx-border-radius: 20px;
+    -fx-background-radius: 20px;
+}
+
+.image-button:hover {
+    -fx-background-color: #5b5b5b;
+    -fx-border-radius: 20px;
+    -fx-background-radius: 20px;
+}
+
+.image-button:focused {
+    -fx-background-color: orange;
+    -fx-border-radius: 20px;
+    -fx-background-radius: 20px;
 }
