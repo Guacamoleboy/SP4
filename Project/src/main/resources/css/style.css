@@ -295,7 +295,7 @@
 }
 
 .user-button-delete:focused:hover {
-    -fx-background-color: rgba(163, 17, 17, 0.36);
+    -fx-background-color: rgba(255, 55, 55, 0.36);
 }
 
 .user-button1 {
@@ -369,7 +369,7 @@
 }
 
 .slide-show {
-    -fx-border-radius: 20px;
+    -fx-border-radius: 20px 20px 20px 20px; /* rounded corners */
     -fx-background-radius: 20px;
     -fx-min-width: 300px;
     -fx-max-width: 300px;
@@ -396,3 +396,61 @@
     -fx-max-width: 580px;
     -fx-border-radius: 0 20px 0 0; /* Right rounded corner */
 }
+
+.profilePictureHBox-visuals {
+    -fx-border-width: 0 0 2px 0;
+    -fx-border-color: rgba(0, 0, 0, 0.30);
+}
+
+.deleteButton-visuals {
+    -fx-background-color: rgba(255, 55, 55, 0.36);
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+    -fx-border-color: rgba(0, 0, 0, 0.5);
+}
+
+.deleteButton-visuals:hover {
+    -fx-background-color: rgba(225, 49, 49, 0.36);
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+    -fx-border-color: rgba(0, 0, 0, 0.5);
+}
+
+.deleteYesButton-visuals {
+    -fx-background-color: rgba(222, 18, 18, 0.36);
+    -fx-background-radius: 20px;
+    -fx-text-fill: white;
+    -fx-font-weight: normal !important;
+    -fx-border-radius: 20px;
+    -fx-border-color: rgba(0, 0, 0, 0.5);
+}
+
+.deleteYesButton-visuals:hover {
+    -fx-background-color: rgba(100, 20, 20, 0.36);
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+    -fx-font-weight: bold !important;
+    -fx-border-color: rgba(0, 0, 0, 0.5);
+}
+
+.deleteButtontext-visuals {
+    -fx-text-fill: #fff !important;
+    -fx-font-size: 16px !important;
+    -fx-font-weight: normal !important;
+}
+
+.deleteButtontext-visuals:hover {
+    -fx-font-weight: bold !important;
+}
+
+.deletetext-visuals {
+    -fx-text-fill: red;
+    -fx-font-size: 30px !important;
+    -fx-effect: dropshadow(gaussian, rgba(155, 38, 38, 0.2), 3, 0.5, 1, 1);
+}
+
+.deletBox-fix {
+    -fx-margin: 0;
+    -fx-padding: 150 0 0 0 !important;
+}
+

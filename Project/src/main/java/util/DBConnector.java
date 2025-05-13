@@ -48,10 +48,20 @@ public class DBConnector {
                     "email TEXT," +
                     "status TEXT DEFAULT 'Offline'," +
                     "role TEXT NOT NULL," +
-                    "banned TEXT DEFAULT 'No'" +
+                    "banned TEXT DEFAULT 'No'," +
+                    "profilehex TEXT DEFAULT '#ADD8E6FF'," +
+                    "bannerhex TEXT DEFAULT '#D3D3D3FF'," +
+                    "rolehex TEXT DEFAULT '#d0e6f7'" +
                     ")";
 
             String createMessagesTable = "CREATE TABLE IF NOT EXISTS messages (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "sender TEXT NOT NULL," +
+                    "receiver TEXT NOT NULL," +
+                    "content TEXT NOT NULL," +
+                    "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP" +
+                    ")";
+            String createMessagesTable = "CREATE TABLE IF NOT EXISTS bookings (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "sender TEXT NOT NULL," +
                     "receiver TEXT NOT NULL," +
@@ -133,13 +143,6 @@ public class DBConnector {
 
     // ____________________________________________________
 
-    public boolean updateUserStatus(String username, String status) {
-        String query = "UPDATE users SET status = '" + status + "' WHERE username = '" + username + "'";
-        return executeUpdate(query);
-    }
-
-    // ____________________________________________________
-
     public boolean saveMessage(String sender, String receiver, String content) {
         String query = "INSERT INTO messages (sender, receiver, content) VALUES ('" +
                 sender + "', '" + receiver + "', '" + content + "')";
@@ -209,7 +212,7 @@ public class DBConnector {
             initializeDatabase();
             return true;
 
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println("fejl tissemand");
             return false;
         }
@@ -234,6 +237,9 @@ public class DBConnector {
             userData.add(rs.getString("status"));
             userData.add(rs.getString("role"));
             userData.add(rs.getString("banned"));
+            userData.add(rs.getString("profilehex"));
+            userData.add(rs.getString("bannerhex"));
+            userData.add(rs.getString("rolehex"));
 
             /*
             userData.add(rs.getString("profilePicture"));
@@ -246,6 +252,52 @@ public class DBConnector {
 
         return userData;
 
+    }
+
+    // ____________________________________________________
+
+    public boolean changePassword(String username, String password){
+        // TILFØJ HER
+
+        return false;
+    }
+
+    // ____________________________________________________
+
+    public boolean changeBannerColor(String color){
+        // TILFØJ HER
+
+        return false;
+    }
+
+    // ____________________________________________________
+
+    public boolean changeRole(String username, String role){
+        // TILFØJ HER
+
+        if(role.equalsIgnoreCase("School")){
+            // FUNKTION HER
+        } else if (role.equalsIgnoreCase("Support")){
+            // FUNKTION HER
+        }
+
+        return false;
+    }
+
+    // ____________________________________________________
+
+    public boolean changeLanguage(String language){
+        // TILFØJ HER
+
+        return false;
+    }
+
+    // ____________________________________________________
+
+    public boolean deleteAccount(String username){
+
+            String query = "DELETE FROM users WHERE username = '" + username + "'";
+            return executeUpdate(query);
     }
 
 } // DBConnector end

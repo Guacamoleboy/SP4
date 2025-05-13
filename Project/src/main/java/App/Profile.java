@@ -66,7 +66,7 @@ public class Profile extends Pane {
         } catch (NumberFormatException e) {
             System.out.println("ID MUST BE A NUMBER!!!");
         }
-        return -1; //nigga
+        return -1;
     }
 
     // ______________________________________
@@ -77,14 +77,26 @@ public class Profile extends Pane {
 
     // ______________________________________
 
-    public String getProfilePicture(){
+    public String getUsername(){
+        return userData.get(1);
+    }
+
+    // ______________________________________
+
+    public String getProfilePictureHex(){
         return userData.get(8);
     }
 
     // ______________________________________
 
-    public String getProfileBanner(){
+    public String getProfileBannerHex(){
         return userData.get(9);
+    }
+
+    // ______________________________________
+
+    public String getProfileRoleHex(){
+        return userData.get(10);
     }
 
 }

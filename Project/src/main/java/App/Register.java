@@ -51,7 +51,7 @@ public class Register extends Pane {
         this.sceneHeight = sceneHeight;
         this.setPrefSize(sceneWidth, sceneHeight);
 
-       /* // Initialize database
+        /* // Initialize database
         db = new DBConnector();
         db.connect(DB_URL);
         */
@@ -162,7 +162,7 @@ public class Register extends Pane {
             userNameCache = getUsername();
             passwordCache = getPassword();
             emailCache = getEmail();
-            goBackButtonAction();
+            Main.loginPage();
         });
 
         // HBox
@@ -227,7 +227,7 @@ public class Register extends Pane {
         if (connected && userCreated) {
             System.out.println("Registration successful.");
             alert("Registration successful! You can now log in.");
-            goBackButtonAction();
+            //Main.loginPage();
         } else {
             System.out.println("Registration failed.");
             alert("Registration failed. Please try again.");
@@ -244,7 +244,7 @@ public class Register extends Pane {
 
     // ____________________________________________________
 
-    public void goBackButtonAction(){
+    /*public void goBackButtonAction(){
         Login login = new Login(600, 600);
         StartBorder sb = new StartBorder(3);
         StartInfo si = new StartInfo(300, 600);
@@ -261,7 +261,7 @@ public class Register extends Pane {
 
         Stage stage = (Stage) getScene().getWindow();
         stage.setScene(goBackScene);
-    }
+    }*/
 
     // ____________________________________________________
 
