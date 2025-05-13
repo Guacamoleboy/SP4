@@ -4,6 +4,7 @@ package App;
 // Imports
 import javafx.application.Platform;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -124,7 +125,7 @@ public class Register extends Pane {
         dropdownBox.setPromptText("Choose type");
         dropdownBox.getStyleClass().add("combo-box");
 
-        nextButton = new Button("Register");
+        nextButton = new Button("Next");
         nextButton.getStyleClass().add("button");
         nextButton.setPrefHeight(30);
         nextButton.setPrefWidth(150);
@@ -154,7 +155,9 @@ public class Register extends Pane {
         // Events
         nextButton.setOnAction(e -> {
             if (validateInformation()) {
-                registerUser();
+                System.out.println("STORE IDIOT!");
+                //registerUser();
+                nextOption();
             }
         });
 
@@ -162,7 +165,8 @@ public class Register extends Pane {
             userNameCache = getUsername();
             passwordCache = getPassword();
             emailCache = getEmail();
-            Main.loginPage();
+            Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+            Main.loginPage(stage);
         });
 
         // HBox
@@ -205,7 +209,36 @@ public class Register extends Pane {
 
     // ____________________________________________________
 
-    private void registerUser() {
+    public void nextOption(){
+
+        // If user presses the next button!
+        NextOption nextoption = new NextOption(600, 600, this);
+        StartBorder sb = new StartBorder(3);
+        StartInfo si = new StartInfo(300, 600);
+        HBox nextOptionHBox = new HBox(nextoption, sb, si);
+
+        si.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        si.getStyleClass().add("orange");
+
+        nextOptionHBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        nextOptionHBox.getStyleClass().add("body");
+
+        Scene registerScene = new Scene(nextOptionHBox, 900, 600);
+
+        Stage stage = (Stage) getScene().getWindow(); // Main window
+        stage.setScene(registerScene);
+
+    }
+
+    // ____________________________________________________
+
+    /*
+    ###########################################################
+            !!!!!!VIGTIGT AT VI FÅR GEMT BRUGEREN!!!!!!
+    ###########################################################
+     */
+
+    public void registerUser() {
         System.out.println("Starting user registration...");
 
         String username = getUsername();
@@ -227,7 +260,8 @@ public class Register extends Pane {
         if (connected && userCreated) {
             System.out.println("Registration successful.");
             alert("Registration successful! You can now log in.");
-            //Main.loginPage();
+            Stage stage = (Stage) getScene().getWindow();
+            Main.loginPage(stage);
         } else {
             System.out.println("Registration failed.");
             alert("Registration failed. Please try again.");

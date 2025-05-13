@@ -1,6 +1,7 @@
 package App;
 
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -63,7 +64,8 @@ public class Setting extends Pane {
         //Stage stage = (Stage) getScene().getWindow();
         logOutButton.setOnAction(e -> {
             if (acceptAlert("Logging out", "Are you sure?")) { // (TITLE, MESSAGE) FUCK JER
-                //Main.loginPage();
+                Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+                Main.loginPage(stage);
             }
         });
 
