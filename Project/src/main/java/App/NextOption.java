@@ -10,6 +10,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
+
 public class NextOption extends Pane {
 
     // Attributes
@@ -244,10 +246,8 @@ public class NextOption extends Pane {
     // ____________________________________________________
 
     public void registerButtonAction(){
-
-        // Ebou Database her
-        // Scene change til Menu.java også
-
+        System.out.println("HUSK AT LAVE REGISTER!"); // TODO: fix
+        //Register.registerUser(); SKYD MIG IRL - okay
     }
 
 } // Class end

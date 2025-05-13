@@ -287,8 +287,7 @@ public class Login extends Pane {
 
         Scene goBackScene = new Scene(goBackHBOX, 900, 600);
 
-        //Stage stage = (Stage) getScene().getWindow();
-        stage.setScene(goBackScene); // NULL
+        stage.setScene(goBackScene);
 
     }
 

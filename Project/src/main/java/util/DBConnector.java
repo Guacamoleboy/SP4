@@ -54,13 +54,6 @@ public class DBConnector {
                     "rolehex TEXT DEFAULT '#d0e6f7'" +
                     ")";
 
-            String createMessagesTable = "CREATE TABLE IF NOT EXISTS messages (" +
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "sender TEXT NOT NULL," +
-                    "receiver TEXT NOT NULL," +
-                    "content TEXT NOT NULL," +
-                    "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP" +
-                    ")";
             String createMessagesTable = "CREATE TABLE IF NOT EXISTS bookings (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "sender TEXT NOT NULL," +
@@ -69,6 +62,17 @@ public class DBConnector {
                     "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP" +
                     ")";
 
+            String createBookingsTable = "CREATE TABLE IF NOT EXISTS bookings (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "dato DATE NOT NULL," +
+                    "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP," +
+                    "place TEXT NOT NULL," +
+                    "contactNumber TEXT NOT NULL," +
+                    "bookingTimestamp DATETIME NOT NULL," +
+                    "open TEXT NOT NULL CHECK(open IN ('yes', 'no'))," +
+                    "notes TEXT DEFAULT 'Ingen noter..'" +
+                    ")";
+            stmt.execute(createBookingsTable);
             stmt.execute(createUsersTable);
             stmt.execute(createMessagesTable);
 
