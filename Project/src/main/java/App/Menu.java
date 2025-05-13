@@ -24,6 +24,7 @@ public class Menu extends Pane {
     private int sceneWidth;
     private int sceneHeight;
     private static final String DB_URL = "jdbc:sqlite:identifier.sqlite";
+    private boolean isDarkMode = false;
 
     // OBJECT //
     private TextArea chatArea;
@@ -37,6 +38,7 @@ public class Menu extends Pane {
     private ComboBox<String> box3;
     private ComboBox<String> box4;
     private Setting setting;
+    private VBox messageArea;
 
     // ____________________________________________________
 
@@ -249,7 +251,7 @@ public class Menu extends Pane {
         sidebar.setPrefWidth(760 * 0.26);
         sidebar.setAlignment(Pos.TOP_LEFT);
         sidebar.setPadding(Insets.EMPTY);
-        sidebar.setStyle("-fx-background-color: #696969; -fx-border-radius: 20 0 0 20; -fx-background-radius: 20 0 0 20;"); // Transparent to blend
+        sidebar.setStyle("-fx-background-color: #696969; -fx-border-radius: 20 0 0 20; -fx-background-radius: 20 0 0 20; -fx-border-width: 0 2px 0 0; -fx-border-color: #464646");
 
         // Buttons
         Button setting1 = new Button("Darkmode");
@@ -266,9 +268,9 @@ public class Menu extends Pane {
         setting5.getStyleClass().add("user-button");
 
         // Message area (4/5)
-        VBox messageArea = new VBox(15);
+        messageArea = new VBox(15);
         messageArea.setPrefWidth(760 * 0.74);
-        messageArea.setPadding(new Insets(20));
+        messageArea.setPadding(new Insets(0));
         messageArea.setAlignment(Pos.TOP_LEFT);
         messageArea.setStyle("-fx-background-color: transparent;");
 
@@ -278,7 +280,7 @@ public class Menu extends Pane {
 
         // Actions
         setting1.setOnAction(e -> {
-            messageArea.getChildren().clear();
+            darkmodeToggle(isDarkMode);
         });
 
         setting2.setOnAction(e -> {
@@ -287,12 +289,12 @@ public class Menu extends Pane {
 
         setting3.setOnAction(e -> {
             messageArea.getChildren().clear();
-            messageArea.getChildren().add(setting.displayLogOut()); // FUCKING IDIOT ALTSÅ - SPURGT JOE
+            messageArea.getChildren().add(setting.displayLogOutJonas());
         });
 
         setting4.setOnAction(e -> {
             messageArea.getChildren().clear(); // DUMME IDIOT JONAS FUCK JEG ER DUM JO
-            messageArea.getChildren().add(setting.displayDelete());
+            messageArea.getChildren().add(setting.displayDeleteJonas());
         });
 
         setting5.setOnAction(e -> {
@@ -798,6 +800,17 @@ public class Menu extends Pane {
         }
 
         return message;
+    }
+
+    protected void darkmodeToggle(boolean darkmode) {
+
+        if (darkmode) {
+            messageArea.getChildren().clear();
+            messageArea.getChildren().add(setting.displayDarkmodeJonas());
+        } else {
+            messageArea.getChildren().clear();
+            messageArea.getChildren().add(setting.displayLightmodeJonas());
+        }
     }
 
 }
