@@ -271,4 +271,25 @@ public class Login extends Pane {
         return this.registerButton;
     }
 
+    // ____________________________________________________
+
+    public void goToLoginPage(Stage stage){
+        Login login = new Login(600, 600);
+        StartInfo si = new StartInfo(300, 600);
+
+        si.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        si.getStyleClass().add("orange");
+
+        login.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        login.getStyleClass().add("body");
+
+        HBox goBackHBOX = new HBox(si, login);
+
+        Scene goBackScene = new Scene(goBackHBOX, 900, 600);
+
+        //Stage stage = (Stage) getScene().getWindow();
+        stage.setScene(goBackScene); // NULL
+
+    }
+
 }

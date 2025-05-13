@@ -8,7 +8,7 @@ public class ProcessData {
     // Attributes
 
     // OBJECT //
-    private Login login = new Login(900, 600);
+    //private Login login = new Login(900, 600);
     private FileIO io = new FileIO();
     private ArrayList <User> user;
 

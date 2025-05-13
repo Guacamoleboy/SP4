@@ -5,6 +5,7 @@ package App;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -108,7 +109,10 @@ public class Forgot extends Pane {
         // Add
         registerBox.getChildren().addAll(forgotLabel, usernameField, emailField, buttons); // VBox
 
-        goBackButton.setOnAction(e -> goBackButtonAction());
+        goBackButton.setOnAction(e -> {
+            Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+            Main.loginPage(stage);
+        });
 
         return registerBox;
 
@@ -116,7 +120,7 @@ public class Forgot extends Pane {
 
     // ____________________________________________________
 
-    public void goBackButtonAction(){
+    /*public void goBackButtonAction(){
         Login login = new Login(600, 600);
         StartBorder sb = new StartBorder(3);
         StartInfo si = new StartInfo(300, 600);
@@ -133,6 +137,6 @@ public class Forgot extends Pane {
 
         Stage stage = (Stage) getScene().getWindow();
         stage.setScene(goBackScene);
-    }
+    }*/
 
 } // Login Class End

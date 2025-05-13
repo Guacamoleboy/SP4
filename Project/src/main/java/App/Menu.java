@@ -5,9 +5,11 @@ package App;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.image.ImageView;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -34,6 +36,7 @@ public class Menu extends Pane {
     private ComboBox<String> box2;
     private ComboBox<String> box3;
     private ComboBox<String> box4;
+    private Setting setting;
 
     // ____________________________________________________
 
@@ -48,6 +51,9 @@ public class Menu extends Pane {
         this.sceneHeight = sceneHeight;
         this.setPrefHeight(sceneHeight);
         this.setPrefWidth(sceneWidth);
+
+        // instantiate (forstår du?)
+        setting = new Setting(this.username);
 
         // Create
         this.getChildren().add(displayHeader());
@@ -248,14 +254,16 @@ public class Menu extends Pane {
         // Buttons
         Button setting1 = new Button("Darkmode");
         Button setting2 = new Button("Sensitivity");
-        Button setting3 = new Button("Something");
+        Button setting3 = new Button("Log Out");
         Button setting4 = new Button("Delete Account");
+        Button setting5 = new Button("Change Profile Colors");
 
-        sidebar.getChildren().addAll(setting1, setting2, setting3, setting4);
+        sidebar.getChildren().addAll(setting1, setting2, setting3, setting4, setting5);
         setting1.getStyleClass().addAll("user-button", "user-button1");
         setting2.getStyleClass().add("user-button");
         setting3.getStyleClass().add("user-button");
         setting4.getStyleClass().add("user-button-delete"); // RED
+        setting5.getStyleClass().add("user-button");
 
         // Message area (4/5)
         VBox messageArea = new VBox(15);
@@ -272,13 +280,22 @@ public class Menu extends Pane {
         setting1.setOnAction(e -> {
             messageArea.getChildren().clear();
         });
+
         setting2.setOnAction(e -> {
             messageArea.getChildren().clear();
         });
+
         setting3.setOnAction(e -> {
             messageArea.getChildren().clear();
+            messageArea.getChildren().add(setting.displayLogOut()); // FUCKING IDIOT ALTSÅ - SPURGT JOE
         });
+
         setting4.setOnAction(e -> {
+            messageArea.getChildren().clear(); // DUMME IDIOT JONAS FUCK JEG ER DUM JO
+            messageArea.getChildren().add(setting.displayDelete());
+        });
+
+        setting5.setOnAction(e -> {
             messageArea.getChildren().clear();
         });
 
@@ -315,13 +332,13 @@ public class Menu extends Pane {
         // Buttons
         Button setting1 = new Button("Darkmode");
         Button setting2 = new Button("Sensitivity");
-        Button setting3 = new Button("Something");
+        Button setting3 = new Button("Log out");
         Button setting4 = new Button("Delete Account");
 
         sidebar.getChildren().addAll(setting1, setting2, setting3, setting4);
         setting1.getStyleClass().addAll("user-button", "user-button1");
         setting2.getStyleClass().add("user-button");
-        setting3.getStyleClass().add("user-button");
+        setting3.getStyleClass().add("user-button-delete");
         setting4.getStyleClass().add("user-button-delete"); // RED
 
         // Message area (4/5)
@@ -347,6 +364,7 @@ public class Menu extends Pane {
         });
         setting4.setOnAction(e -> {
             messageArea.getChildren().clear();
+            //displayDelete
         });
 
         return settingsVBox;
@@ -454,18 +472,6 @@ public class Menu extends Pane {
             availableBookings.getChildren().add(menu);
         }
 
-        Button moreButton = new Button("More");
-        moreButton.setPrefHeight(30);
-        moreButton.setPrefWidth(100);
-        moreButton.getStyleClass().add("more-button");
-
-        Animation.addHoverScaleEffect(moreButton);
-
-        VBox moreBox = new VBox(moreButton);
-        moreBox.setAlignment(Pos.CENTER);
-
-        availableBookings.getChildren().add(moreBox);
-
         return availableBookings;
     }
 
@@ -515,17 +521,6 @@ public class Menu extends Pane {
             examBooking.getChildren().add(menu);
         }
 
-        Button moreButton = new Button("More");
-        moreButton.setPrefHeight(30);
-        moreButton.setPrefWidth(100);
-        moreButton.getStyleClass().add("more-button");
-
-        Animation.addHoverScaleEffect(moreButton);
-
-        VBox moreBox = new VBox(moreButton);
-        moreBox.setAlignment(Pos.CENTER);
-        examBooking.getChildren().add(moreBox);
-
         return examBooking;
     }
 
@@ -574,38 +569,65 @@ public class Menu extends Pane {
 
     // ____________________________________________________
 
-    public VBox displayProfile(){
+    public VBox displayProfile() {
 
         VBox profileVBox = new VBox(15);
         profileVBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
         profileVBox.getStyleClass().add("profile-vbox");
-        profileVBox.setAlignment(Pos.CENTER);
+        profileVBox.setAlignment(Pos.TOP_CENTER);
         profileVBox.setLayoutX(20);
         profileVBox.setLayoutY(20);
         profileVBox.setPrefWidth(760);
         profileVBox.setPrefHeight(560);
 
-        // WTF JEG HADER LIVET
-        HBox bannerHBox = new HBox(15);
-        bannerHBox.setAlignment(Pos.CENTER);
-        bannerHBox.getStyleClass().add("banner-hbox");
-
-        // Profile Picture Box
-        HBox profilePictureHBox = new HBox(15);
-        profilePictureHBox.setAlignment(Pos.CENTER);
-        profilePictureHBox.getStyleClass().add("profilePicture-hbox");
+        // HBox
+        HBox profilePictureHBox = new HBox();
         profilePictureHBox.setPrefWidth(760);
-        profilePictureHBox.setPrefHeight(300);
+        profilePictureHBox.setSpacing(0);
+        profilePictureHBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        profilePictureHBox.getStyleClass().add("profilePictureHBox-visuals");
 
-        // Horizontal display
-        profilePictureHBox.getChildren().add(bannerHBox);
+        // Left (1/4)
+        VBox leftPane = new VBox();
+        leftPane.setPrefWidth(190);
+        leftPane.setStyle("-fx-background-color: #ADD8E6FF; -fx-background-radius: 20px 0 0 0; -fx-border-radius: 20px 0 0 0;");
 
-        // Vertical display
+        VBox leftPaneInfo = new VBox();
+        leftPaneInfo.setAlignment(Pos.CENTER);
+        leftPaneInfo.setStyle("-fx-background-color: #d0e6f7; -fx-padding: 10px;");
+
+        Label debugLabel = new Label("Student");
+
+        leftPaneInfo.getChildren().add(debugLabel);
+
+        Image profileImage = new Image(getClass().getResource("/assets/profile/person1.png").toExternalForm());
+        ImageView profileImageView = new ImageView(profileImage);
+        profileImageView.setFitWidth(150);
+        profileImageView.setFitHeight(130);
+        profileImageView.setPreserveRatio(true);
+
+        leftPane.setAlignment(Pos.CENTER);
+        leftPane.getChildren().addAll(profileImageView, leftPaneInfo);
+
+        // Right (3/4)
+        VBox rightPane = new VBox();
+        rightPane.setPrefWidth(570);
+        rightPane.setStyle("-fx-background-color: #D3D3D3FF; -fx-background-radius: 0 20px 0 0; -fx-border-radius: 0 20px 0 0;");
+
+        Label bannerLabel = new Label("Allow color change");
+        bannerLabel.setStyle("-fx-font-size: 24px;");
+        rightPane.setAlignment(Pos.CENTER);
+        rightPane.getChildren().add(bannerLabel);
+
+        // Add to HBox
+        profilePictureHBox.getChildren().addAll(leftPane, rightPane);
+
+        // Add to VBox
         profileVBox.getChildren().add(profilePictureHBox);
 
         return profileVBox;
-
     }
+
 
     // ____________________________________________________
 
@@ -777,4 +799,5 @@ public class Menu extends Pane {
 
         return message;
     }
+
 }

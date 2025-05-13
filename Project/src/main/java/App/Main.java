@@ -3,7 +3,7 @@
     SP4 - ICE School Project
 
     Author(s):
-    Ebou, Andreas, Carl-Emil & Jonas
+    Ebou, Andreas, Carl Emil & Jonas
 
     Comments
     ________
@@ -35,7 +35,7 @@ public class Main extends Application { // Client class
     private static final String DB_URL = "jdbc:sqlite:identifier.sqlite";
 
     // OBJECT //
-    private Login login = new Login(600, 600);
+    private static Login login = new Login(600, 600);
     private StartInfo startinfo = new StartInfo(300, 600);
     public static DBConnector db;
 
@@ -109,4 +109,11 @@ public class Main extends Application { // Client class
             System.exit(0);
         });
     }
+
+    // ____________________________________________________
+
+    public static void loginPage(Stage stage) {
+        login.goToLoginPage(stage);
+    }
+
 } // Class end
