@@ -72,7 +72,7 @@ public class Main extends Application { // Client class
         // Logo for application. It's under resources.
         app.getIcons().add(new Image(getClass().getResource("/assets/logo/logo-128.png").toExternalForm()));
 
-        closeHandle(app);
+        //closeHandle(app);
 
         app.show();
     }
@@ -93,7 +93,7 @@ public class Main extends Application { // Client class
 
     */
 
-    public void closeHandle(Stage stage){
+    /*public void closeHandle(Stage stage){
         stage.setOnCloseRequest(e -> {
             ProcessData processdata = new ProcessData();
             String username = login.getUsername();
@@ -108,7 +108,7 @@ public class Main extends Application { // Client class
 
             System.exit(0);
         });
-    }
+    }*/
 
     // ____________________________________________________
 

@@ -219,6 +219,19 @@
     -fx-padding: 0;
 }
 
+.combo-box-ticket {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-margin: 0;
+    -fx-font-size: 25px !important;
+    -fx-padding: 0 0 0 20px;
+}
+
+.combo-box-ticket:hover {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
 .combo-box-booking-fix {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
@@ -397,11 +410,6 @@
     -fx-border-radius: 0 20px 0 0; /* Right rounded corner */
 }
 
-.profilePictureHBox-visuals {
-    -fx-border-width: 0 0 2px 0;
-    -fx-border-color: rgba(0, 0, 0, 0.30);
-}
-
 .deleteButton-visuals {
     -fx-background-color: rgba(255, 55, 55, 0.36);
     -fx-background-radius: 20px;
@@ -453,4 +461,48 @@
     -fx-margin: 0;
     -fx-padding: 150 0 0 0 !important;
 }
+
+.tickets-open {
+    -fx-border-width: 0 0 0 0;
+    -fx-border-color: transparent transparent transparent transparent;
+}
+
+.tickets-open:focused {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-border-color: transparent #11ff00 transparent transparent;
+    -fx-border-width: 0 4px 0 0;
+    -fx-border-style: solid;
+}
+
+.tickets-closed {
+    -fx-border-width: 0 0 0 0;
+    -fx-border-color: transparent transparent transparent transparent;
+}
+
+.tickets-closed:focused {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-border-color: transparent #ff0000 transparent transparent;
+    -fx-border-width: 0 4px 0 0;
+    -fx-border-style: solid;
+}
+
+.text-area {
+    -fx-background-color: #4b4747 !important;
+    -fx-text-fill: #FFF;
+    -fx-font-weight: bold !important;
+    -fx-font-size: 18px;
+    -fx-border-width: 0;
+    -fx-padding: 15px 0 0 0;
+    -fx-border-color: none !important;
+}
+
+.text-area .content {
+    -fx-background-color: #4b4747 !important;
+    -fx-text-fill: #FFF !important;
+    -fx-border-color: none !important;
+}
+
+
+
+
 
