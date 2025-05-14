@@ -6,6 +6,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -640,7 +641,6 @@ public class Menu extends Pane {
         rightPane.setPadding(new Insets(10));
 
         // Button row
-        /*
         HBox buttonBox = new HBox(10);
         buttonBox.setAlignment(Pos.CENTER);
         Button review = new Button("Reviews");
@@ -653,33 +653,152 @@ public class Menu extends Pane {
         pictures.getStyleClass().add("button");
         buttonBox.getChildren().addAll(review, bookings, contact, pictures);
 
+        VBox rightPaneContent = new VBox(10); // Container til dynamisk indhold
+        rightPaneContent.setPrefWidth(550);
+        rightPaneContent.setAlignment(Pos.TOP_CENTER);
 
-        review.setOnAction(e -> System.out.println("REVIEW"));
-        bookings.setOnAction(e -> System.out.println("BOOKINGS"));
-        contact.setOnAction(e -> System.out.println("CONTACTC"));
-        pictures.setOnAction(e -> System.out.println("PICTURES"));
-        */
+
+        bookings.setOnAction(e -> {
+            setHeaderTitle("Book");
+            getChildren().clear();
+            getChildren().add(displayHeader());
+            getChildren().add(displayExamHeader("Exam"));
+            getChildren().add(displayComboBox());
+            getChildren().add(displayAvailableBookings());
+            getChildren().add(displayExamBookings());
+        });
+
+        review.setOnAction(e -> {
+            rightPaneContent.getChildren().clear();
+            rightPaneContent.getChildren().add(displayReview());
+        });
+
+        contact.setOnAction(e -> {
+            rightPaneContent.getChildren().clear();
+            System.out.println("REDIRECT ME TO PRIVATE MESSAGE TO THE PROFILE!!!");
+        });
+        pictures.setOnAction(e -> {
+            rightPaneContent.getChildren().clear();
+            rightPaneContent.getChildren().add(displayPictures());
+            System.out.println("PICTURES");
+        });
 
 
         //VISUALS
         leftPane.setStyle("-fx-background-color: #ADD8E6FF; -fx-background-radius: 20px 0 0 20px; " +
-        "-fx-border-radius: 20px 0 0 20px; -fx-text-alignment: center");
+                "-fx-border-radius: 20px 0 0 20px; -fx-text-alignment: center");
         leftPaneInfo.setStyle("-fx-background-color: #d0e6f7;"); //Label
         contentBox.setStyle("-fx-padding: 10; -fx-background-color: #686868; " +
-        "-fx-background-radius: 0 0 0 20px;");
+                "-fx-background-radius: 0 0 0 20px;");
         aboutMeLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #FFF");
         aboutMeTextArea.setStyle("-fx-font-size: 15px; -fx-text-fill: white;");
         rightPane.setStyle("-fx-background-color: #D3D3D3FF; -fx-background-radius: 0 20px 20px 0; " +
-        "-fx-border-radius: 0 20px 20px 0;");
+                "-fx-border-radius: 0 20px 20px 0;");
 
         // Add
-        //rightPane.getChildren().add(buttonBox);
+        rightPane.getChildren().addAll(buttonBox,rightPaneContent);
         profilePictureHBox.getChildren().addAll(leftPane, rightPane);
         profileVBox.getChildren().add(profilePictureHBox);
 
         return profileVBox;
     }
 
+    // ____________________________________________________
+
+    public VBox displayReview() {
+        VBox reviewContainer = new VBox(10);
+        reviewContainer.setAlignment(Pos.TOP_CENTER);
+
+        Label title = new Label("Anmeldelser");
+        title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
+        FlowPane flowPane = new FlowPane();
+        flowPane.setHgap(30);
+        flowPane.setVgap(20);
+        flowPane.setAlignment(Pos.CENTER);
+
+        for (int i = 0; i < 9; i++) {
+            VBox singleReview = new VBox(5);
+            singleReview.setPadding(new Insets(10));
+            singleReview.setStyle("-fx-background-color: white; -fx-background-radius: 10px; "
+                    + "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+
+            Label header = new Label("Rigtig god klip");
+            header.setStyle("-fx-text-alignment: CENTER !important; -fx-font-weight: bold; -fx-font-size: 14px;");
+
+            Label body = new Label("Det var en rigtig god klipning, og kan varmt anbefales!");
+            body.setStyle("-fx-font-size: 10px;");
+            body.setWrapText(true);
+            body.setMaxWidth(180);
+
+            Label stars = new Label(convertToStars(getRating()));
+            stars.getStyleClass().add("star");
+
+            singleReview.getChildren().addAll(header, body, stars);
+            flowPane.getChildren().add(singleReview);
+        }
+
+
+        ScrollPane scrollPane = new ScrollPane(flowPane);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPrefViewportHeight(600);
+
+        scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+        flowPane.setStyle("-fx-background-color: transparent;");
+
+        reviewContainer.getChildren().addAll(title, scrollPane);
+        return reviewContainer;
+    }
+
+    // ____________________________________________________
+
+    public VBox displayPictures() {
+        VBox pictureContainer = new VBox(10);
+        pictureContainer.setAlignment(Pos.TOP_CENTER);
+
+        Label title = new Label("Pictures");
+        title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
+        FlowPane flowPane = new FlowPane();
+        flowPane.setHgap(30);
+        flowPane.setVgap(20);
+        flowPane.setAlignment(Pos.TOP_CENTER);
+        flowPane.setStyle("-fx-background-color: transparent;");
+
+
+        for (int i = 1; i <= 10; i++) {
+            VBox pictureBox = new VBox(5);
+            pictureBox.setAlignment(Pos.TOP_CENTER);
+            pictureBox.setPadding(new Insets(10));
+            pictureBox.setStyle("-fx-background-color: white; -fx-background-radius: 10px; "
+                    + "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+
+            Label header = new Label("Fresh fade");
+            header.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-alignment: center");
+
+            try {
+                String path = "/assets/slideshow/" + i + ".png";
+                Image image = new Image(getClass().getResource(path).toExternalForm());
+                ImageView imageView = new ImageView(image);
+                imageView.setFitWidth(180);
+                imageView.setPreserveRatio(true);
+                imageView.setSmooth(true);
+
+                pictureBox.getChildren().addAll(header, imageView);
+                flowPane.getChildren().add(pictureBox);
+            } catch (Exception e) {
+                System.out.println("Failed to load picture: " + i + ".png");
+            }
+        }
+
+        ScrollPane scrollPane = new ScrollPane(flowPane);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPrefViewportHeight(600);
+        scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+
+        pictureContainer.getChildren().addAll(title, scrollPane);
+        return pictureContainer;
+    }
 
     // ____________________________________________________
 
@@ -767,12 +886,12 @@ public class Menu extends Pane {
     public String getStudentName() {
         String[] names =
                 {
-                "Jonas MunkeDahl",
-                "Andreas Lortelort",
-                "Ebou Gedemunk",
-                "Carl-Emil Gok",
-                "Tess Something",
-                "Tine Dahl",
+                        "Jonas MunkeDahl",
+                        "Andreas Lortelort",
+                        "Ebou Gedemunk",
+                        "Carl-Emil Gok",
+                        "Tess Something",
+                        "Tine Dahl",
                 };
 
         int randomName = (int) (Math.random() * names.length);
@@ -785,12 +904,12 @@ public class Menu extends Pane {
     public String getAdress() {
         String[] adress =
                 {
-                "Bytoften 21, 2650 Hvidovre",
-                "fawfawf 11, 3650 Narko",
-                "Place 44, 5550 Ged",
-                "Lort 4, 6650 Gok",
-                "Tessfad 66, 6666 Hillerød",
-                "Wtfffff 55, 5100 Yessir",
+                        "Bytoften 21, 2650 Hvidovre",
+                        "fawfawf 11, 3650 Narko",
+                        "Place 44, 5550 Ged",
+                        "Lort 4, 6650 Gok",
+                        "Tessfad 66, 6666 Hillerød",
+                        "Wtfffff 55, 5100 Yessir",
                 };
 
         int randomAdress = (int) (Math.random() * adress.length);
@@ -851,6 +970,8 @@ public class Menu extends Pane {
 
         return message;
     }
+
+    // ____________________________________________________
 
     protected void darkmodeToggle(boolean darkmode) {
 
