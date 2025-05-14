@@ -11,6 +11,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class NextOption extends Pane {
 
@@ -32,6 +33,7 @@ public class NextOption extends Pane {
     private ComboBox<String> schoolDropdown;
     private ComboBox<String> yearDropdown;
     private Register register;
+    private Map<String, Integer> schoolMap;
 
     // ____________________________________________________
 
@@ -123,7 +125,7 @@ public class NextOption extends Pane {
 
         // Actions
         goBackButton.setOnAction(e -> goBackButtonAction());
-        registerButton.setOnAction(e -> registerButtonAction());
+        registerButton.setOnAction(e -> registerButtonActionCostumer());
 
         // HBox
         buttons.getChildren().addAll(goBackButton, registerButton);
@@ -149,12 +151,13 @@ public class NextOption extends Pane {
         studentLabel.getStyleClass().add("label");
 
         schoolDropdown = new ComboBox<>();
-        schoolDropdown.getItems().addAll("Next", "Idk", "Idk", "Idk");
+        this.schoolMap = Main.db.getSchools();
+        schoolDropdown.getItems().addAll(schoolMap.keySet());
         schoolDropdown.setPromptText("School");
         schoolDropdown.getStyleClass().add("combo-box");
 
         yearDropdown = new ComboBox<>();
-        yearDropdown.getItems().addAll("New", "1", "2", "3");
+        yearDropdown.getItems().addAll( "1", "2", "3");
         yearDropdown.setPromptText("Student Year");
         yearDropdown.getStyleClass().add("combo-box");
 
@@ -174,7 +177,7 @@ public class NextOption extends Pane {
 
         // Actions
         goBackButton.setOnAction(e -> goBackButtonAction());
-        registerButton.setOnAction(e -> registerButtonAction());
+        registerButton.setOnAction(e -> registerButtonActionStudent());
 
         // Widths
         schoolDropdown.setMaxWidth(300);
@@ -245,9 +248,87 @@ public class NextOption extends Pane {
 
     // ____________________________________________________
 
-    public void registerButtonAction(){
-        System.out.println("HUSK AT LAVE REGISTER!"); // TODO: fix
-        //Register.registerUser(); SKYD MIG IRL - okay
+    public void registerButtonActionCostumer() {
+        String username = register.getUsername();
+        String password = register.getPassword();
+        String role = register.getSelectedUserType();
+        String email = register.getEmail();
+
+        String hairType = hairTypeDropdown.getValue();
+        String hairColor = hairColorDropdown.getValue();
+        String hairLength = lengthDropdown.getValue();
+        String gender = genderDropdown.getValue();
+
+        int hairTypeId = Main.db.getOrCreateHairType(hairType, hairColor, hairLength, gender);
+
+        //i
+
+        System.out.println("Username entered: " + username);
+        System.out.println("Password entered: " + password);
+        System.out.println("Role selected: " + role);
+        System.out.println("Email entered: " + email);
+
+
+        boolean connected = Main.db.isConnected();
+        System.out.println("Database connected: " + connected);
+
+        // KALD METODE FRA DB TIL AT CREATE
+        boolean userCreated = Main.db.createUser(username, password, email, role, hairTypeId);
+
+        System.out.println("User creation attempt result: " + userCreated);
+
+        if (connected && userCreated) {
+            System.out.println("Registration successful.");
+            register.alert("Registration successful! You can now log in.");
+            Stage stage = (Stage) getScene().getWindow();
+            Main.loginPage(stage);
+        } else {
+            System.out.println("Registration failed.");
+            register.alert("Registration failed. Please try again.");
+        }
+
+        System.out.println("User registration process ended.");
+
+    }
+
+    public void registerButtonActionStudent() {
+        String username = register.getUsername();
+        String password = register.getPassword();
+        String role = register.getSelectedUserType();
+        String email = register.getEmail();
+
+        String school_name = schoolDropdown.getValue();
+        int schoolId = schoolMap.getOrDefault(school_name, 0);
+        String student_year = yearDropdown.getValue();
+
+        //i
+
+        System.out.println("Username entered: " + username);
+        System.out.println("Password entered: " + password);
+        System.out.println("Role selected: " + role);
+        System.out.println("Email entered: " + email);
+
+        boolean connected = Main.db.isConnected();
+
+        System.out.println("Database connected: " + connected);
+
+        // KALD METODE FRA DB TIL AT CREATE
+        boolean userCreated = Main.db.createUser(username, password, email, role, schoolId, student_year);
+
+        System.out.println("User creation attempt result: " + userCreated);
+
+        if (connected && userCreated) {
+            System.out.println("Registration successful.");
+            register.alert("Registration successful! You can now log in.");
+            Stage stage = (Stage) getScene().getWindow();
+            Main.loginPage(stage);
+        } else {
+            System.out.println("Registration failed.");
+            register.alert("Registration failed. Please try again.");
+        }
+
+        System.out.println("User registration process ended.");
+
     }
 
 } // Class end

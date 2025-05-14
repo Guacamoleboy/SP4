@@ -113,10 +113,6 @@ public class Login extends Pane {
         buttons.getChildren().addAll(loginButton, forgotButton); // HBox
         loginBox.getChildren().addAll(loginLabel, usernameField, passwordField, buttons, registerButton); // VBox
 
-        // Border fix
-        usernameField.setFocusTraversable(false);
-        passwordField.setFocusTraversable(false);
-        Platform.runLater(loginBox::requestFocus);
 
         // Events
         registerButton.setOnAction(e -> registerButtonAction());
