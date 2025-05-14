@@ -61,6 +61,7 @@ public class StartInfo extends VBox {
         logoView.setPreserveRatio(true);
 
         // Slideshow
+        /*
         Image slideShowPictures = new Image(getClass().getResource(getRandomImg()).toExternalForm());
         slideShow = new ImageView(slideShowPictures);
         slideShow.setPreserveRatio(true);
@@ -76,9 +77,11 @@ public class StartInfo extends VBox {
         // Slogan
         Label slogan = new Label("STØT FREMTIDENS FRISØRER - MED GOD SAMVITTIGHED");
         slogan.getStyleClass().add("label-3");
+        */
+
 
         // Add
-        sidePaneBox.getChildren().addAll(logoView, slogan, slideShow, label);
+        sidePaneBox.getChildren().add(logoView);
 
         return sidePaneBox;
 

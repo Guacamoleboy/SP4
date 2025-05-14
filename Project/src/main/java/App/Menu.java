@@ -6,13 +6,11 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.image.ImageView;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import javafx.scene.layout.Priority;
 
 public class Menu extends Pane {
 
@@ -573,6 +571,7 @@ public class Menu extends Pane {
     // ____________________________________________________
 
     public VBox displayProfile() {
+
         VBox profileVBox = new VBox(15);
         profileVBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
         profileVBox.setAlignment(Pos.TOP_CENTER);
@@ -584,6 +583,7 @@ public class Menu extends Pane {
 
         HBox profilePictureHBox = new HBox();
         profilePictureHBox.setPrefWidth(760);
+        profilePictureHBox.setPrefHeight(150);
         profilePictureHBox.setSpacing(0);
         profilePictureHBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
         profilePictureHBox.getStyleClass().add("profilePictureHBox-visuals");
@@ -599,19 +599,12 @@ public class Menu extends Pane {
         profileImageView.setFitHeight(130);
         profileImageView.setPreserveRatio(true);
 
+        Label roleLabel = new Label("Student");
+        roleLabel.setStyle("-fx-padding: 5;");
+
         VBox leftPaneInfo = new VBox();
         leftPaneInfo.setAlignment(Pos.CENTER);
-        Label roleLabel = new Label("Student");
-        roleLabel.setStyle("-fx-padding: 5"); // Little padding frfr no cap ong frfr.
         leftPaneInfo.getChildren().add(roleLabel);
-
-        // About Me + Rating section (gray background)
-        VBox contentBox = new VBox(10);
-        contentBox.setAlignment(Pos.CENTER);
-        contentBox.setPrefWidth(190);
-        contentBox.setPrefHeight(500);
-
-        Label aboutMeLabel = new Label("Om mig");
 
         TextArea aboutMeTextArea = new TextArea();
         aboutMeTextArea.setPrefRowCount(4);
@@ -630,35 +623,49 @@ public class Menu extends Pane {
         Label star = new Label(convertToStars(getRating()));
         star.getStyleClass().add("star");
         ratingBox.getChildren().add(star);
+        leftPane.getChildren().addAll(profileImageView, leftPaneInfo);
 
-        contentBox.getChildren().addAll(aboutMeLabel, aboutMeTextArea, ratingBox);
-        leftPane.getChildren().addAll(profileImageView, leftPaneInfo, contentBox);
+        VBox rightPaneBanner = new VBox();
+        rightPaneBanner.setPrefHeight(132);
+        rightPaneBanner.setPrefWidth(570);
+        rightPaneBanner.getStyleClass().add("right-pane-banner");
+        rightPaneBanner.setStyle("-fx-border-color: rgb(0, 0, 0); -fx-border-width: 0 0 2px 2px; -fx-padding: 2px 0 0 0;");
 
-        VBox rightPane = new VBox(10);
+        VBox bottomContentBox = new VBox();
+        bottomContentBox.setPrefWidth(760);
+        bottomContentBox.setAlignment(Pos.TOP_LEFT);
+        bottomContentBox.getStyleClass().add("bottom-content-box");
+
+        Region spacer = new Region();
+        spacer.setPrefHeight(2);  // 2px of space
+
+        VBox rightPane = new VBox();
         rightPane.setPrefWidth(570);
         rightPane.setPrefHeight(560);
         rightPane.setAlignment(Pos.TOP_CENTER);
-        rightPane.setPadding(new Insets(10));
 
-        // Button row
-        HBox buttonBox = new HBox(10);
-        buttonBox.setAlignment(Pos.CENTER);
-        Button review = new Button("Reviews");
-        Button bookings = new Button("Available bookings");
-        Button contact = new Button("Contact me");
-        Button pictures = new Button("Pictures");
-        review.getStyleClass().add("button");
-        bookings.getStyleClass().add("button");
-        contact.getStyleClass().add("button");
-        pictures.getStyleClass().add("button");
-        buttonBox.getChildren().addAll(review, bookings, contact, pictures);
+        HBox navRow = new HBox();
+        navRow.setPrefHeight(57);
+        navRow.setAlignment(Pos.CENTER);
+        navRow.setSpacing(0);
 
-        VBox rightPaneContent = new VBox(10); // Container til dynamisk indhold
+        HBox aboutMeBox = createNavBox("About me");
+        HBox availableBookingsBox = createNavBox("Available Bookings");
+        HBox reviewsBox = createNavBox("Reviews");
+        HBox galleryBox = createNavBox("Gallery");
+
+        navRow.getChildren().addAll(aboutMeBox, availableBookingsBox, reviewsBox, galleryBox);
+
+        VBox rightPaneContent = new VBox(10);
         rightPaneContent.setPrefWidth(550);
         rightPaneContent.setAlignment(Pos.TOP_CENTER);
 
-
-        bookings.setOnAction(e -> {
+        // Actions
+        availableBookingsBox.setOnMouseClicked(e -> {
+            aboutMeBox.getStyleClass().remove("nav-box-selected");
+            reviewsBox.getStyleClass().remove("nav-box-selected");
+            galleryBox.getStyleClass().remove("nav-box-selected");
+            availableBookingsBox.getStyleClass().add("nav-box-selected");
             setHeaderTitle("Book");
             getChildren().clear();
             getChildren().add(displayHeader());
@@ -668,49 +675,84 @@ public class Menu extends Pane {
             getChildren().add(displayExamBookings());
         });
 
-        review.setOnAction(e -> {
-            rightPaneContent.getChildren().clear();
-            rightPaneContent.getChildren().add(displayReview());
-        });
-
-        contact.setOnAction(e -> {
-            rightPaneContent.getChildren().clear();
+        aboutMeBox.setOnMouseClicked(e -> {
+            availableBookingsBox.getStyleClass().remove("nav-box-selected");
+            reviewsBox.getStyleClass().remove("nav-box-selected");
+            galleryBox.getStyleClass().remove("nav-box-selected");
+            aboutMeBox.getStyleClass().add("nav-box-selected");
+            bottomContentBox.getChildren().clear();
             System.out.println("REDIRECT ME TO PRIVATE MESSAGE TO THE PROFILE!!!");
         });
-        pictures.setOnAction(e -> {
+
+        reviewsBox.setOnMouseClicked(e -> {
+            aboutMeBox.getStyleClass().remove("nav-box-selected");
+            availableBookingsBox.getStyleClass().remove("nav-box-selected");
+            galleryBox.getStyleClass().remove("nav-box-selected");
+            reviewsBox.getStyleClass().add("nav-box-selected");
+            bottomContentBox.getChildren().clear();
+            bottomContentBox.getChildren().add(displayReview());
+        });
+
+        galleryBox.setOnMouseClicked(e -> {
+            aboutMeBox.getStyleClass().remove("nav-box-selected");
+            availableBookingsBox.getStyleClass().remove("nav-box-selected");
+            reviewsBox.getStyleClass().remove("nav-box-selected");
+            galleryBox.getStyleClass().add("nav-box-selected");
             rightPaneContent.getChildren().clear();
             rightPaneContent.getChildren().add(displayPictures());
             System.out.println("PICTURES");
         });
 
+        // CSS
+        leftPane.getStyleClass().add("left-pane");
+        leftPaneInfo.getStyleClass().add("left-pane-info");
+        aboutMeTextArea.getStyleClass().add("about-me-text-area");
+        rightPane.getStyleClass().add("right-pane");
 
-        //VISUALS
-        leftPane.setStyle("-fx-background-color: #ADD8E6FF; -fx-background-radius: 20px 0 0 20px; " +
-                "-fx-border-radius: 20px 0 0 20px; -fx-text-alignment: center");
-        leftPaneInfo.setStyle("-fx-background-color: #d0e6f7;"); //Label
-        contentBox.setStyle("-fx-padding: 10; -fx-background-color: #686868; " +
-                "-fx-background-radius: 0 0 0 20px;");
-        aboutMeLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #FFF");
-        aboutMeTextArea.setStyle("-fx-font-size: 15px; -fx-text-fill: white;");
-        rightPane.setStyle("-fx-background-color: #D3D3D3FF; -fx-background-radius: 0 20px 20px 0; " +
-                "-fx-border-radius: 0 20px 20px 0;");
+        // Default Selected Box
+        aboutMeBox.getStyleClass().add("nav-box-selected");
 
         // Add
-        rightPane.getChildren().addAll(buttonBox,rightPaneContent);
+        rightPane.getChildren().addAll(rightPaneBanner, navRow, rightPaneContent);
         profilePictureHBox.getChildren().addAll(leftPane, rightPane);
-        profileVBox.getChildren().add(profilePictureHBox);
+        profileVBox.getChildren().addAll(profilePictureHBox, bottomContentBox);
 
         return profileVBox;
     }
 
     // ____________________________________________________
 
+    private HBox createNavBox(String title) {
+
+        HBox box = new HBox();
+        box.setAlignment(Pos.CENTER);
+        box.setPrefWidth(570/4);
+        box.setPrefHeight(40);
+        box.setSpacing(0);
+        box.setPadding(Insets.EMPTY);
+        box.getStyleClass().add("nav-box");
+
+        Label label = new Label(title);
+        label.getStyleClass().add("nav-label");
+
+        HBox.setHgrow(label, Priority.ALWAYS);
+
+        box.getChildren().add(label);
+
+        return box;
+
+    }
+
+    // ____________________________________________________
+
     public VBox displayReview() {
+
         VBox reviewContainer = new VBox(10);
         reviewContainer.setAlignment(Pos.TOP_CENTER);
 
-        Label title = new Label("Anmeldelser");
-        title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        Label title = new Label("My Recent Reviews");
+        title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #FFF; -fx-border-width: 0 0 2px 0; -fx-border-color: orange");
+        VBox.setMargin(title, new Insets(5, 0, 10, 0));
 
         FlowPane flowPane = new FlowPane();
         flowPane.setHgap(30);
@@ -719,9 +761,9 @@ public class Menu extends Pane {
 
         for (int i = 0; i < 9; i++) {
             VBox singleReview = new VBox(5);
-            singleReview.setPadding(new Insets(10));
+            singleReview.setPadding(new Insets(30));
             singleReview.setStyle("-fx-background-color: white; -fx-background-radius: 10px; "
-                    + "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+            + "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);");
 
             Label header = new Label("Rigtig god klip");
             header.setStyle("-fx-text-alignment: CENTER !important; -fx-font-weight: bold; -fx-font-size: 14px;");
@@ -729,7 +771,7 @@ public class Menu extends Pane {
             Label body = new Label("Det var en rigtig god klipning, og kan varmt anbefales!");
             body.setStyle("-fx-font-size: 10px;");
             body.setWrapText(true);
-            body.setMaxWidth(180);
+            body.setMaxWidth(760/2);
 
             Label stars = new Label(convertToStars(getRating()));
             stars.getStyleClass().add("star");
@@ -738,13 +780,16 @@ public class Menu extends Pane {
             flowPane.getChildren().add(singleReview);
         }
 
-
         ScrollPane scrollPane = new ScrollPane(flowPane);
         scrollPane.setFitToWidth(true);
         scrollPane.setPrefViewportHeight(600);
 
-        scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
-        flowPane.setStyle("-fx-background-color: transparent;");
+        scrollPane.setStyle("-fx-padding: 10px 0 20px 0; -fx-background: transparent; -fx-background-color: transparent;");
+        flowPane.setStyle("-fx-padding: 10px 0 20px 0; -fx-background-color: transparent;");
+
+        // Remove scroll visuals
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
         reviewContainer.getChildren().addAll(title, scrollPane);
         return reviewContainer;
