@@ -24,7 +24,7 @@ public class Menu extends Pane {
     private int sceneWidth;
     private int sceneHeight;
     private static final String DB_URL = "jdbc:sqlite:identifier.sqlite";
-    private boolean isDarkMode = false;
+    private boolean isDarkMode = true;
 
     // OBJECT //
     private TextArea chatArea;
@@ -255,7 +255,7 @@ public class Menu extends Pane {
 
         // Buttons
         Button setting1 = new Button("Darkmode");
-        Button setting2 = new Button("Sensitivity");
+        Button setting2 = new Button("Language");
         Button setting3 = new Button("Log Out");
         Button setting4 = new Button("Delete Account");
         Button setting5 = new Button("Change Profile Colors");
@@ -333,7 +333,7 @@ public class Menu extends Pane {
 
         // Buttons
         Button setting1 = new Button("Darkmode");
-        Button setting2 = new Button("Sensitivity");
+        Button setting2 = new Button("Language");
         Button setting3 = new Button("Log out");
         Button setting4 = new Button("Delete Account");
 
@@ -572,35 +572,25 @@ public class Menu extends Pane {
     // ____________________________________________________
 
     public VBox displayProfile() {
-
         VBox profileVBox = new VBox(15);
         profileVBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-        profileVBox.getStyleClass().add("profile-vbox");
         profileVBox.setAlignment(Pos.TOP_CENTER);
         profileVBox.setLayoutX(20);
         profileVBox.setLayoutY(20);
         profileVBox.setPrefWidth(760);
         profileVBox.setPrefHeight(560);
+        profileVBox.getStyleClass().add("profile-vbox");
 
-        // HBox
         HBox profilePictureHBox = new HBox();
         profilePictureHBox.setPrefWidth(760);
         profilePictureHBox.setSpacing(0);
         profilePictureHBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
         profilePictureHBox.getStyleClass().add("profilePictureHBox-visuals");
 
-        // Left (1/4)
         VBox leftPane = new VBox();
         leftPane.setPrefWidth(190);
-        leftPane.setStyle("-fx-background-color: #ADD8E6FF; -fx-background-radius: 20px 0 0 0; -fx-border-radius: 20px 0 0 0;");
-
-        VBox leftPaneInfo = new VBox();
-        leftPaneInfo.setAlignment(Pos.CENTER);
-        leftPaneInfo.setStyle("-fx-background-color: #d0e6f7; -fx-padding: 10px;");
-
-        Label debugLabel = new Label("Student");
-
-        leftPaneInfo.getChildren().add(debugLabel);
+        leftPane.setPrefHeight(560);
+        leftPane.setAlignment(Pos.TOP_CENTER);
 
         Image profileImage = new Image(getClass().getResource("/assets/profile/person1.png").toExternalForm());
         ImageView profileImageView = new ImageView(profileImage);
@@ -608,23 +598,83 @@ public class Menu extends Pane {
         profileImageView.setFitHeight(130);
         profileImageView.setPreserveRatio(true);
 
-        leftPane.setAlignment(Pos.CENTER);
-        leftPane.getChildren().addAll(profileImageView, leftPaneInfo);
+        VBox leftPaneInfo = new VBox();
+        leftPaneInfo.setAlignment(Pos.CENTER);
+        Label roleLabel = new Label("Student");
+        roleLabel.setStyle("-fx-padding: 5"); // Little padding frfr no cap ong frfr.
+        leftPaneInfo.getChildren().add(roleLabel);
 
-        // Right (3/4)
-        VBox rightPane = new VBox();
+        // About Me + Rating section (gray background)
+        VBox contentBox = new VBox(10);
+        contentBox.setAlignment(Pos.CENTER);
+        contentBox.setPrefWidth(190);
+        contentBox.setPrefHeight(500);
+
+        Label aboutMeLabel = new Label("Om mig");
+
+        TextArea aboutMeTextArea = new TextArea();
+        aboutMeTextArea.setPrefRowCount(4);
+        aboutMeTextArea.setPrefWidth(180);
+        aboutMeTextArea.setPrefHeight(240);
+        aboutMeTextArea.setWrapText(true);
+        aboutMeTextArea.setPromptText("Dette er hardcoded info om mig. Hej på dig");
+        boolean isOwner = false; // SKAL LAVES TIL EN METODE!!!
+        aboutMeTextArea.setDisable(!isOwner);
+        aboutMeTextArea.setEditable(isOwner);
+        aboutMeTextArea.setFocusTraversable(false);
+
+        // Rating Box
+        HBox ratingBox = new HBox(10);
+        ratingBox.setAlignment(Pos.CENTER);
+        Label star = new Label(convertToStars(getRating()));
+        star.getStyleClass().add("star");
+        ratingBox.getChildren().add(star);
+
+        contentBox.getChildren().addAll(aboutMeLabel, aboutMeTextArea, ratingBox);
+        leftPane.getChildren().addAll(profileImageView, leftPaneInfo, contentBox);
+
+        VBox rightPane = new VBox(10);
         rightPane.setPrefWidth(570);
-        rightPane.setStyle("-fx-background-color: #D3D3D3FF; -fx-background-radius: 0 20px 0 0; -fx-border-radius: 0 20px 0 0;");
+        rightPane.setPrefHeight(560);
+        rightPane.setAlignment(Pos.TOP_CENTER);
+        rightPane.setPadding(new Insets(10));
 
-        Label bannerLabel = new Label("Allow color change");
-        bannerLabel.setStyle("-fx-font-size: 24px;");
-        rightPane.setAlignment(Pos.CENTER);
-        rightPane.getChildren().add(bannerLabel);
+        // Button row
+        /*
+        HBox buttonBox = new HBox(10);
+        buttonBox.setAlignment(Pos.CENTER);
+        Button review = new Button("Reviews");
+        Button bookings = new Button("Available bookings");
+        Button contact = new Button("Contact me");
+        Button pictures = new Button("Pictures");
+        review.getStyleClass().add("button");
+        bookings.getStyleClass().add("button");
+        contact.getStyleClass().add("button");
+        pictures.getStyleClass().add("button");
+        buttonBox.getChildren().addAll(review, bookings, contact, pictures);
 
-        // Add to HBox
+
+        review.setOnAction(e -> System.out.println("REVIEW"));
+        bookings.setOnAction(e -> System.out.println("BOOKINGS"));
+        contact.setOnAction(e -> System.out.println("CONTACTC"));
+        pictures.setOnAction(e -> System.out.println("PICTURES"));
+        */
+
+
+        //VISUALS
+        leftPane.setStyle("-fx-background-color: #ADD8E6FF; -fx-background-radius: 20px 0 0 20px; " +
+        "-fx-border-radius: 20px 0 0 20px; -fx-text-alignment: center");
+        leftPaneInfo.setStyle("-fx-background-color: #d0e6f7;"); //Label
+        contentBox.setStyle("-fx-padding: 10; -fx-background-color: #686868; " +
+        "-fx-background-radius: 0 0 0 20px;");
+        aboutMeLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #FFF");
+        aboutMeTextArea.setStyle("-fx-font-size: 15px; -fx-text-fill: white;");
+        rightPane.setStyle("-fx-background-color: #D3D3D3FF; -fx-background-radius: 0 20px 20px 0; " +
+        "-fx-border-radius: 0 20px 20px 0;");
+
+        // Add
+        //rightPane.getChildren().add(buttonBox);
         profilePictureHBox.getChildren().addAll(leftPane, rightPane);
-
-        // Add to VBox
         profileVBox.getChildren().add(profilePictureHBox);
 
         return profileVBox;
@@ -811,6 +861,118 @@ public class Menu extends Pane {
             messageArea.getChildren().clear();
             messageArea.getChildren().add(setting.displayLightmodeJonas());
         }
+    }
+
+    // ____________________________________________________
+
+    public VBox displayAdminMenu() {
+
+        // VBox
+        VBox adminMenuVBox = new VBox();
+        adminMenuVBox.setLayoutX(20);
+        adminMenuVBox.setLayoutY(100);
+        adminMenuVBox.setPrefWidth(760);
+        adminMenuVBox.setPrefHeight(480);
+        adminMenuVBox.setStyle("-fx-border-color: #464646; -fx-border-width: 2px; -fx-border-radius: 20px; -fx-background-radius: 20px;");
+
+        // HBox
+        HBox messageHBox = new HBox();
+        messageHBox.getStyleClass().add("message-vbox");
+        messageHBox.setPrefWidth(760);
+        messageHBox.setPrefHeight(480);
+        messageHBox.setAlignment(Pos.TOP_LEFT);
+        messageHBox.setSpacing(0);
+
+        // Sidebar
+        VBox sidebar = new VBox(0);
+        sidebar.setPrefWidth(760 * 0.26);
+        sidebar.setAlignment(Pos.TOP_LEFT);
+        sidebar.setPadding(Insets.EMPTY);
+        sidebar.setStyle("-fx-background-color: #696969; -fx-border-radius: 20 0 0 20; -fx-background-radius: 20 0 0 20; -fx-border-width: 0 2px 0 0; -fx-border-color: #464646");
+
+        // Buttons
+        Button admin1 = new Button("Ban user");
+        Button admin2 = new Button("Unban user");
+        Button admin3 = new Button("Add school");
+        Button admin4 = new Button("Change role");
+        Button admin5 = new Button("Change profile picture"); // hvis nogen har hitler som profil billede
+        Button admin6 = new Button("Change colors");
+        Button admin7 = new Button("Change username");
+        Button admin8 = new Button("Remove school");
+        Button admin9 = new Button("Mute user");
+        Button admin10 = new Button("Change number");
+        Button admin11 = new Button("Change mail");
+
+        sidebar.getChildren().addAll(admin1, admin2, admin3, admin4, admin5, admin6, admin7, admin8, admin9, admin10, admin11);
+        admin1.getStyleClass().addAll("user-button", "user-button1");
+        admin2.getStyleClass().add("user-button");
+        admin3.getStyleClass().add("user-button");
+        admin4.getStyleClass().add("user-button");
+        admin5.getStyleClass().add("user-button");
+        admin6.getStyleClass().add("user-button");
+        admin7.getStyleClass().add("user-button");
+        admin8.getStyleClass().add("user-button");
+        admin9.getStyleClass().add("user-button");
+        admin10.getStyleClass().add("user-button");
+        admin11.getStyleClass().addAll("user-button", "user-button-last");
+
+        // Message area (4/5)
+        messageArea = new VBox(15);
+        messageArea.setPrefWidth(760 * 0.74);
+        messageArea.setPadding(new Insets(0));
+        messageArea.setAlignment(Pos.TOP_LEFT);
+        messageArea.setStyle("-fx-background-color: transparent;");
+
+        // Add to HBox (Left -> Right)
+        messageHBox.getChildren().addAll(sidebar, messageArea);
+        adminMenuVBox.getChildren().add(messageHBox);
+
+        // Actions
+        admin1.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+
+        admin2.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+
+        admin3.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+
+        admin4.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+
+        admin5.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+
+        admin6.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+
+        admin7.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+
+        admin8.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+
+        admin9.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+
+        admin10.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+
+        admin11.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+
+        return adminMenuVBox;
     }
 
 }

@@ -8,6 +8,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.BorderPane;
+import App.Support.*;
 
 public class SideMenu extends Pane {
 
@@ -28,6 +29,7 @@ public class SideMenu extends Pane {
         this.sceneHeight = sceneHeight;
         this.menu = menu;
         this.role = role;
+
 
         // Display setup
         this.setPrefWidth(sceneWidth);
@@ -238,12 +240,15 @@ public class SideMenu extends Pane {
             menu.setHeaderTitle("Tickets");
             menu.getChildren().clear();
             menu.getChildren().add(menu.displayHeader());
+            menu.getChildren().add(Support.displayTicketStatus());
+            menu.getChildren().add(Support.displayTickets(menu));
         });
 
         btn2.setOnAction(e -> {
             menu.setHeaderTitle("Admin");
             menu.getChildren().clear();
             menu.getChildren().add(menu.displayHeader());
+            menu.getChildren().add(menu.displayAdminMenu());
         });
 
         btn3.setOnAction(e -> {
