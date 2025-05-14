@@ -85,6 +85,7 @@
     -fx-border-radius: 15px;
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
+    -fx-prompt-text-fill: derive(-fx-control-inner-background, -30%);
 }
 
 .text-field:focused {

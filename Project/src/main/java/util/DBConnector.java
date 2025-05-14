@@ -1,7 +1,11 @@
 package util;
 
+import App.HairType;
+
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DBConnector {
 
@@ -139,12 +143,23 @@ public class DBConnector {
 
     // ____________________________________________________
 
-    public boolean createUser(String username, String password, String email, String role) {
+    public boolean createUser(String username, String password, String email, String role) { //måske slettes
         String query = "INSERT INTO users (username, password, email, status, role) VALUES ('" +
                 username + "', '" + password + "', '" + email + "', 'Offline', '" + role + "' )";
         return executeUpdate(query);
     }
-
+    //For costumer
+    public boolean createUser(String username, String password, String email, String role, int hairtype) {
+        String query = "INSERT INTO users (username, password, email, status, role, hair_type_id) VALUES ('" +
+                username + "', '" + password + "', '" + email + "', 'Offline', '" + role + "', '" + hairtype + "')";
+        return executeUpdate(query);
+    }
+    //For student
+    public boolean createUser(String username, String password, String email, String role, int schoolId, String student_year) {
+        String query = "INSERT INTO users (username, password, email, status, role, school_id, student_year) VALUES ('" +
+                username + "', '" + password + "', '" + email + "', 'Offline', '" + role + "', '" + schoolId + "', '" + student_year + "')";
+        return executeUpdate(query);
+    }
     // ____________________________________________________
 
     public boolean saveMessage(String sender, String receiver, String content) {
@@ -304,4 +319,103 @@ public class DBConnector {
             return executeUpdate(query);
     }
 
+    public Map<String, Integer> getSchools() {
+        Map<String, Integer> schoolMap = new HashMap<>();
+        try {
+            PreparedStatement ps = con.prepareStatement("SELECT id, name FROM schools");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                schoolMap.put(rs.getString("name"), rs.getInt("id"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return schoolMap;
+    }
+
+    public int getOrCreateHairType(String texture, String color, String length, String gender) {
+        try {
+            PreparedStatement ps = con.prepareStatement(
+                    "SELECT id FROM hair_type_id WHERE texture=? AND color=? AND length=? AND gender=?");
+
+            ps.setString(1, texture);
+            ps.setString(2, color);
+            ps.setString(3, length);
+            ps.setString(4, gender);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("id");
+            } else {
+                ps = con.prepareStatement(
+                        "INSERT INTO hair_types (texture, color, length, gender) VALUES (?, ?, ?, ?)",
+                        Statement.RETURN_GENERATED_KEYS);
+                ps.setString(1, texture);
+                ps.setString(2, color);
+                ps.setString(3, length);
+                ps.setString(4, gender);
+                ps.executeUpdate();
+                rs = ps.getGeneratedKeys();
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0; //If 0 - type not specified
+    }
+
+    //getter to the hairtype from db
+    public HairType getHairTypeById(int id) {
+        try {
+            PreparedStatement ps = con.prepareStatement(
+                    "SELECT * FROM hair_types WHERE id = ?");
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new HairType(
+                        rs.getInt("id"),
+                        rs.getString("texture"),
+                        rs.getString("color"),
+                        rs.getString("length"),
+                        rs.getString("gender")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // Run this once from main-initialize to insert customer hairtype/gender in database.
+    public void hairTypeInserter() {
+
+        //edit here 
+        String[] textures = {"Straight", "Wavy", "Curly", "Coily"};
+        String[] colors = {"Blonde", "Black", "Brown", "Red", "Grey"};
+        String[] lengths = {"Bald", "Buzz", "Short", "Medium", "Long", "Very Long", "Tied"};
+        String[] genders = {"Male", "Female"};
+
+        try {
+            PreparedStatement ps = con.prepareStatement(
+                    "INSERT INTO hair_type_id (texture, color, length, gender) VALUES (?, ?, ?, ?)"
+            );
+
+            for (String texture : textures) {
+                for (String color : colors) {
+                    for (String length : lengths) {
+                        for (String gender : genders) {
+                            ps.setString(1, texture);
+                            ps.setString(2, color);
+                            ps.setString(3, length);
+                            ps.setString(4, gender);
+                            ps.executeUpdate();
+                        }
+                    }
+                }
+            }
+
+            System.out.println("All hair type combinations inserted.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 } // DBConnector end

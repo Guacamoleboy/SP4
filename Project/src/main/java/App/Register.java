@@ -141,12 +141,6 @@ public class Register extends Pane {
         emailField.setMaxWidth(300);
         dropdownBox.setMaxWidth(300);
 
-        // Border fix
-        usernameField.setFocusTraversable(false);
-        emailField.setFocusTraversable(false);
-        passwordField.setFocusTraversable(false);
-        passwordConfirmField.setFocusTraversable(false);
-        Platform.runLater(registerBox::requestFocus);
 
         // Hover
         Animation.addHoverScaleEffect(nextButton);
@@ -155,8 +149,6 @@ public class Register extends Pane {
         // Events
         nextButton.setOnAction(e -> {
             if (validateInformation()) {
-                System.out.println("STORE IDIOT!");
-                //registerUser();
                 nextOption();
             }
         });
@@ -209,13 +201,14 @@ public class Register extends Pane {
 
     // ____________________________________________________
 
-    public void nextOption(){
+    public void nextOption() {
 
         // If user presses the next button!
         NextOption nextoption = new NextOption(600, 600, this);
         StartBorder sb = new StartBorder(3);
         StartInfo si = new StartInfo(300, 600);
         HBox nextOptionHBox = new HBox(nextoption, sb, si);
+        System.out.println(dropdownBox.getValue());
 
         si.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
         si.getStyleClass().add("orange");
@@ -227,47 +220,6 @@ public class Register extends Pane {
 
         Stage stage = (Stage) getScene().getWindow(); // Main window
         stage.setScene(registerScene);
-
-    }
-
-    // ____________________________________________________
-
-    /*
-    ###########################################################
-            !!!!!!VIGTIGT AT VI FÅR GEMT BRUGEREN!!!!!!
-    ###########################################################
-     */
-
-    public void registerUser() {
-        System.out.println("Starting user registration...");
-
-        String username = getUsername();
-        String password = getPassword();
-        String role = getSelectedUserType(); // Student eller Customer
-        String email = getEmail();
-
-        System.out.println("Username entered: " + username);
-        System.out.println("Password entered: " + password);
-        System.out.println("Role selected: " + role);
-        System.out.println("Email entered: " + email);
-
-        boolean connected = Main.db.isConnected();
-        System.out.println("Database connected: " + connected);
-
-        boolean userCreated = Main.db.createUser(username, password, email, role);
-        System.out.println("User creation attempt result: " + userCreated);
-
-        if (connected && userCreated) {
-            System.out.println("Registration successful.");
-            alert("Registration successful! You can now log in.");
-            Stage stage = (Stage) getScene().getWindow();
-            Main.loginPage(stage);
-        } else {
-            System.out.println("Registration failed.");
-            alert("Registration failed. Please try again.");
-        }
-
-        System.out.println("User registration process ended.");
     }
 
     // ____________________________________________________
