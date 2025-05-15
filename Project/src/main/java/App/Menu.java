@@ -572,7 +572,7 @@ public class Menu extends Pane {
 
     public VBox displayProfile() {
 
-        VBox profileVBox = new VBox(15);
+        VBox profileVBox = new VBox(0);
         profileVBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
         profileVBox.setAlignment(Pos.TOP_CENTER);
         profileVBox.setLayoutX(20);
@@ -681,7 +681,7 @@ public class Menu extends Pane {
             galleryBox.getStyleClass().remove("nav-box-selected");
             aboutMeBox.getStyleClass().add("nav-box-selected");
             bottomContentBox.getChildren().clear();
-            System.out.println("REDIRECT ME TO PRIVATE MESSAGE TO THE PROFILE!!!");
+            bottomContentBox.getChildren().add(displayAboutMe());
         });
 
         reviewsBox.setOnMouseClicked(e -> {
@@ -698,9 +698,8 @@ public class Menu extends Pane {
             availableBookingsBox.getStyleClass().remove("nav-box-selected");
             reviewsBox.getStyleClass().remove("nav-box-selected");
             galleryBox.getStyleClass().add("nav-box-selected");
-            rightPaneContent.getChildren().clear();
-            rightPaneContent.getChildren().add(displayPictures());
-            System.out.println("PICTURES");
+            bottomContentBox.getChildren().clear();
+            bottomContentBox.getChildren().add(displayPictures());
         });
 
         // CSS
@@ -752,7 +751,7 @@ public class Menu extends Pane {
 
         Label title = new Label("My Recent Reviews");
         title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #FFF; -fx-border-width: 0 0 2px 0; -fx-border-color: orange");
-        VBox.setMargin(title, new Insets(5, 0, 10, 0));
+        VBox.setMargin(title, new Insets(20, 0, 10, 0));
 
         FlowPane flowPane = new FlowPane();
         flowPane.setHgap(30);
@@ -798,11 +797,13 @@ public class Menu extends Pane {
     // ____________________________________________________
 
     public VBox displayPictures() {
+
         VBox pictureContainer = new VBox(10);
         pictureContainer.setAlignment(Pos.TOP_CENTER);
 
-        Label title = new Label("Pictures");
-        title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        Label title = new Label("My Recent Cuts");
+        title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #FFF; -fx-border-width: 0 0 2px 0; -fx-border-color: orange");
+        VBox.setMargin(title, new Insets(20, 0, 10, 0));
 
         FlowPane flowPane = new FlowPane();
         flowPane.setHgap(30);
@@ -810,17 +811,18 @@ public class Menu extends Pane {
         flowPane.setAlignment(Pos.TOP_CENTER);
         flowPane.setStyle("-fx-background-color: transparent;");
 
-
         for (int i = 1; i <= 10; i++) {
             VBox pictureBox = new VBox(5);
             pictureBox.setAlignment(Pos.TOP_CENTER);
-            pictureBox.setPadding(new Insets(10));
+            pictureBox.setPadding(new Insets(20));
             pictureBox.setStyle("-fx-background-color: white; -fx-background-radius: 10px; "
-                    + "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+            + "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+            pictureBox.setMaxWidth(760/2);
 
             Label header = new Label("Fresh fade");
             header.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-alignment: center");
 
+            // Fix visuals a bit more at some point
             try {
                 String path = "/assets/slideshow/" + i + ".png";
                 Image image = new Image(getClass().getResource(path).toExternalForm());
@@ -839,11 +841,88 @@ public class Menu extends Pane {
         ScrollPane scrollPane = new ScrollPane(flowPane);
         scrollPane.setFitToWidth(true);
         scrollPane.setPrefViewportHeight(600);
-        scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+        scrollPane.setStyle("-fx-padding: 10px 0 20px 0; -fx-background: transparent; -fx-background-color: transparent;");
+        flowPane.setStyle("-fx-padding: 10px 0 20px 0; -fx-background-color: transparent;");
+
+        // Remove scroll visuals
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
         pictureContainer.getChildren().addAll(title, scrollPane);
         return pictureContainer;
     }
+
+    // ____________________________________________________
+
+    public VBox displayAboutMe() {
+        VBox mainContainer = new VBox();
+        mainContainer.setPadding(Insets.EMPTY);
+        mainContainer.setSpacing(0);
+        mainContainer.setAlignment(Pos.TOP_LEFT); // avoid center gaps
+
+        HBox splitBox = new HBox();
+        splitBox.setSpacing(0);
+        splitBox.setPadding(Insets.EMPTY);
+        splitBox.setAlignment(Pos.TOP_LEFT);
+        splitBox.setPrefHeight(560);
+        splitBox.setPrefWidth(760);
+
+        VBox leftBox = new VBox();
+        leftBox.setPadding(Insets.EMPTY);
+        leftBox.setSpacing(0);
+        leftBox.setStyle("-fx-background-color: transparent; -fx-border-radius: 0 0 0 20px; -fx-background-radius: 0 0 0 20px; -fx-border-width: 0 2px 0 0; -fx-border-color: rgb(0,0,0)");
+        leftBox.setPrefWidth(190);
+        leftBox.setAlignment(Pos.TOP_LEFT);
+
+        // VBox inside HBox (leftpane)
+        VBox infoSections = new VBox(10);
+        infoSections.setAlignment(Pos.TOP_LEFT);
+
+        Label starsLabel = new Label(convertToStars(4));
+        starsLabel.setStyle("-fx-font-size: 18px; -fx-text-fill: orange;");
+
+        Label lastOnlineLabel = new Label("Last Online:");
+        Label lastOnlineValue = new Label("2 hours ago");
+
+        VBox ratingBox = new VBox(5, starsLabel);
+        VBox lastOnlineBox = new VBox(5, lastOnlineLabel, lastOnlineValue);
+        lastOnlineLabel.setStyle("-fx-font-weight: normal; -fx-font-size: 14px;");
+        lastOnlineValue.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+
+        infoSections.getChildren().addAll(ratingBox, lastOnlineBox);
+
+        leftBox.getChildren().addAll(infoSections);
+
+        VBox rightBox = new VBox();
+        rightBox.setPrefWidth(560);
+        rightBox.setPadding(Insets.EMPTY);
+        rightBox.setSpacing(0);
+        rightBox.setAlignment(Pos.TOP_LEFT);
+
+        FlowPane flowPane = new FlowPane();
+        flowPane.setHgap(0); // remove spacing for full flush
+        flowPane.setVgap(0);
+        flowPane.setPadding(Insets.EMPTY);
+        flowPane.setAlignment(Pos.TOP_LEFT);
+        flowPane.setStyle("-fx-background-color: transparent;");
+
+        ScrollPane scrollPane = new ScrollPane(flowPane);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPrefViewportHeight(560);
+        scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setPadding(Insets.EMPTY);
+
+        rightBox.getChildren().add(scrollPane);
+
+        splitBox.getChildren().addAll(leftBox, rightBox);
+        mainContainer.getChildren().add(splitBox);
+
+        return mainContainer;
+    }
+
+
 
     // ____________________________________________________
 
