@@ -11,6 +11,10 @@ import javafx.scene.image.ImageView;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javafx.scene.layout.Priority;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 
 public class Menu extends Pane {
 
@@ -253,18 +257,18 @@ public class Menu extends Pane {
         sidebar.setStyle("-fx-background-color: #696969; -fx-border-radius: 20 0 0 20; -fx-background-radius: 20 0 0 20; -fx-border-width: 0 2px 0 0; -fx-border-color: #464646");
 
         // Buttons
-        Button setting1 = new Button("Darkmode");
+        Button setting1 = new Button("Log Out");
         Button setting2 = new Button("Language");
-        Button setting3 = new Button("Log Out");
-        Button setting4 = new Button("Delete Account");
-        Button setting5 = new Button("Change Profile Colors");
+        Button setting3 = new Button("Darkmode");
+        Button setting4 = new Button("Change Profile Colors");
+        Button setting5 = new Button("Delete Account");
 
         sidebar.getChildren().addAll(setting1, setting2, setting3, setting4, setting5);
         setting1.getStyleClass().addAll("user-button", "user-button1");
         setting2.getStyleClass().add("user-button");
         setting3.getStyleClass().add("user-button");
-        setting4.getStyleClass().add("user-button-delete"); // RED
-        setting5.getStyleClass().add("user-button");
+        setting4.getStyleClass().add("user-button");
+        setting5.getStyleClass().add("user-button-delete"); // RED
 
         // Message area (4/5)
         messageArea = new VBox(15);
@@ -279,25 +283,26 @@ public class Menu extends Pane {
 
         // Actions
         setting1.setOnAction(e -> {
-            darkmodeToggle(isDarkMode);
-        });
-
-        setting2.setOnAction(e -> {
-            messageArea.getChildren().clear();
-        });
-
-        setting3.setOnAction(e -> {
             messageArea.getChildren().clear();
             messageArea.getChildren().add(setting.displayLogOutJonas());
         });
 
+        setting2.setOnAction(e -> {
+            messageArea.getChildren().clear();
+            messageArea.getChildren().add(setting.displayLanguage("spanish"));
+        });
+
+        setting3.setOnAction(e -> {
+            darkmodeToggle(isDarkMode);
+        });
+
         setting4.setOnAction(e -> {
-            messageArea.getChildren().clear(); // DUMME IDIOT JONAS FUCK JEG ER DUM JO
-            messageArea.getChildren().add(setting.displayDeleteJonas());
+            messageArea.getChildren().clear();
         });
 
         setting5.setOnAction(e -> {
-            messageArea.getChildren().clear();
+            messageArea.getChildren().clear(); // DUMME IDIOT JONAS FUCK JEG ER DUM JO
+            messageArea.getChildren().add(setting.displayDeleteJonas());
         });
 
         return settingsVBox;
@@ -490,6 +495,77 @@ public class Menu extends Pane {
 
     // ____________________________________________________
 
+    public HBox displayMyBookingMenu() {
+
+        // FRAME MOD HØJRE
+        HBox mainContainer = new HBox(0);
+        mainContainer.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        mainContainer.setPrefWidth(800);
+        mainContainer.setAlignment(Pos.TOP_LEFT);
+        mainContainer.setLayoutY(0);
+
+        HBox topMenuHBox = new HBox(10);
+        topMenuHBox.setPadding(new Insets(10, 10, 10, 10));
+        topMenuHBox.setPrefWidth(800);
+        topMenuHBox.setPrefHeight(50);
+        topMenuHBox.setStyle("-fx-border-width: 0 0 2px 0; -fx-border-color: rgb(0, 0, 0); -fx-background-color: #575757");
+
+        // Label
+        Label availableLabel = new Label("Active Bookings");
+        availableLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 20px");
+
+        // VBox for title
+        VBox availableSection = new VBox();
+        availableSection.setPrefWidth(200);
+        availableSection.setPadding(new Insets(0,0,0,0));
+        availableSection.setAlignment(Pos.TOP_LEFT);
+        availableSection.getChildren().add(availableLabel);
+
+        topMenuHBox.getChildren().add(availableSection);
+
+        mainContainer.getChildren().add(topMenuHBox);
+
+        return mainContainer;
+    }
+
+    // ____________________________________________________
+
+    public HBox displayMyLastBookingMenu() {
+
+        // FRAME MOD HØJRE
+        HBox mainContainer = new HBox(0);
+        mainContainer.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        mainContainer.setPrefWidth(800);
+        mainContainer.setAlignment(Pos.TOP_LEFT);
+        mainContainer.setLayoutY(300);
+
+        // TOP MENU MOD HØJRE MED EN FIXED HØJDE // HOLDER ALLE ELEMENTER VENSTRE -------------> HØJRE
+        HBox topMenuHBox = new HBox(0);
+        topMenuHBox.setPadding(new Insets(10, 10, 10, 10));
+        topMenuHBox.setPrefWidth(800);
+        topMenuHBox.setPrefHeight(50);
+        topMenuHBox.setStyle("-fx-border-width: 2px 0 2px 0; -fx-border-color: rgb(0, 0, 0); -fx-background-color: #575757");
+
+        // Label
+        Label availableLabel = new Label("Recent Bookings");
+        availableLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 20px");
+
+        // VBox for title
+        VBox availableSection = new VBox();
+        availableSection.setPrefWidth(200);
+        availableSection.setPadding(new Insets(0,0,0,0));
+        availableSection.setAlignment(Pos.TOP_LEFT);
+        availableSection.getChildren().add(availableLabel);
+
+        topMenuHBox.getChildren().add(availableSection);
+
+        mainContainer.getChildren().add(topMenuHBox);
+
+        return mainContainer;
+    }
+
+    // ____________________________________________________
+
     public HBox displayExamMenu() {
 
         // FRAME MOD HØJRE
@@ -500,7 +576,7 @@ public class Menu extends Pane {
         mainContainer.setLayoutY(300);
 
         // TOP MENU MOD HØJRE MED EN FIXED HØJDE // HOLDER ALLE ELEMENTER VENSTRE -------------> HØJRE
-        HBox topMenuHBox = new HBox(10);
+        HBox topMenuHBox = new HBox(0);
         topMenuHBox.setPadding(new Insets(10, 10, 10, 10));
         topMenuHBox.setPrefWidth(800);
         topMenuHBox.setPrefHeight(50);
@@ -514,7 +590,7 @@ public class Menu extends Pane {
         VBox availableSection = new VBox();
         availableSection.setPrefWidth(200);
         availableSection.setPadding(new Insets(0,0,0,0));
-        availableSection.setAlignment(Pos.CENTER);
+        availableSection.setAlignment(Pos.TOP_LEFT);
         availableSection.getChildren().add(availableLabel);
 
         topMenuHBox.getChildren().add(availableSection);
@@ -522,6 +598,33 @@ public class Menu extends Pane {
         mainContainer.getChildren().add(topMenuHBox);
 
         return mainContainer;
+    }
+
+    // ____________________________________________________
+
+    private Rectangle createOverlay(double width, double height) {
+        Rectangle overlay = new Rectangle(width, height);
+        overlay.setFill(Color.rgb(0, 0, 0, 0.5));
+        overlay.setVisible(false);  // initially hidden
+        return overlay;
+    }
+
+    // ____________________________________________________
+
+    private VBox createPopupBox() {
+
+        VBox popup = new VBox(20);
+        popup.setPrefSize(500, 500);
+        popup.setAlignment(Pos.CENTER);
+        popup.setStyle("-fx-background-color: white; -fx-border-color: black; -fx-border-width: 2px; -fx-padding: 20;");
+        popup.setVisible(false);
+
+        Label info = new Label("Booking details here...");
+        Button closeBtn = new Button("Go Back");
+
+        popup.getChildren().addAll(info, closeBtn);
+
+        return popup;
     }
 
     // ____________________________________________________
@@ -544,12 +647,13 @@ public class Menu extends Pane {
 
             // Labels
             Label date = new Label("26.03.2025");
-            Label place = new Label("Hillerød 3400" + " " + "Narkovej 69");
+            Text place = new Text("Hillerød 3400\nNarkovej 69");
+            place.setTextAlignment(TextAlignment.CENTER);
+            place.setWrappingWidth(140);
+            place.setFill(Color.WHITE);
             Label time = new Label("15:30");
             Label rating = new Label(convertToStars(4));
 
-            place.setWrapText(true);
-            place.setPadding(new Insets(0, 10, 0, 10));
             rating.setPadding(new Insets(0, 0, 20, 0));
 
             // CSS
@@ -595,6 +699,91 @@ public class Menu extends Pane {
 
     // ____________________________________________________
 
+    public HBox displayMyBookingCard() {
+
+        // Frame towards right
+        HBox cardContainer = new HBox(0);
+        cardContainer.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        cardContainer.setPrefWidth(800);
+        cardContainer.setAlignment(Pos.TOP_LEFT);
+        cardContainer.setLayoutY(52); // height + border (2px)
+
+        // cardBoxMenu (under menu)
+        HBox cardBox = new HBox();
+        cardBox.setPrefWidth(800);
+        cardBox.setPrefHeight(250); // 50 + 50 = 500 / 2
+
+        for (int i = 0; i < 1; i++) {
+
+            // Labels
+            Label date = new Label("26.03.2025");
+            Text place = new Text("Hillerød 3400\nNarkovej 69");
+            place.setTextAlignment(TextAlignment.CENTER);
+            place.setWrappingWidth(140);
+            place.setFill(Color.WHITE);
+            Label time = new Label("15:30");
+
+            // CSS
+            date.getStyleClass().add("card-visuals-header");
+            place.getStyleClass().add("card-visuals-lol");
+            time.getStyleClass().add("card-visuals-bold");
+
+            VBox cardHeader = new VBox();
+            cardHeader.setPrefHeight(70);
+            cardHeader.setAlignment(Pos.CENTER);
+            cardHeader.getStyleClass().add("card-header-visuals");
+            cardHeader.getChildren().add(date);
+
+            // Buttons container
+            HBox buttonsBox = new HBox(10);
+            buttonsBox.setAlignment(Pos.CENTER);
+            buttonsBox.setPadding(new Insets(0, 0, 20, 0));
+
+            Button cancelButton = new Button("Cancel");
+            cancelButton.getStyleClass().add("cancel-button");
+            cancelButton.setPrefWidth(90);
+            cancelButton.setPrefHeight(20);
+
+            Button payButton = new Button("Pay");
+            payButton.getStyleClass().add("pay-button");
+            payButton.setPrefWidth(50);
+            payButton.setPrefHeight(28);
+
+            // Margin
+            HBox.setMargin(payButton, new Insets(0, 10, 0, 0));
+            HBox.setMargin(cancelButton, new Insets(0, 0, 0, 10));
+
+            buttonsBox.getChildren().addAll(cancelButton, payButton);
+
+            // Card display
+            VBox card = new VBox(10);
+            card.setPrefWidth(160);
+            card.setPrefHeight(248);
+            card.setAlignment(Pos.TOP_CENTER);
+            card.getStyleClass().add("card-background-visuals");
+
+            Region spacer = new Region();
+            VBox.setVgrow(spacer, Priority.ALWAYS);
+
+            // Hover effect on card :hover
+            Animation.addHoverScaleEffectVBox(card);
+
+            // Add labels and buttons to card
+            card.getChildren().addAll(cardHeader, time, place, spacer, buttonsBox);
+
+            // Add card to CardBox
+            cardBox.getChildren().add(card);
+        }
+
+        // Add cardContainer to final HBox
+        cardContainer.getChildren().add(cardBox);
+
+        return cardContainer;
+    }
+
+
+    // ____________________________________________________
+
     public HBox displayExamCard(){
 
         // Frame towards right
@@ -613,12 +802,13 @@ public class Menu extends Pane {
 
             // Labels
             Label date = new Label("26.03.2025");
-            Label place = new Label("Hillerød 3400" + " " + "Narkovej 69");
+            Text place = new Text("Hillerød 3400\nNarkovej 69");
+            place.setTextAlignment(TextAlignment.CENTER);
+            place.setWrappingWidth(140);
+            place.setFill(Color.WHITE);
             Label time = new Label("15:30");
             Label rating = new Label(convertToStars(4));
 
-            place.setWrapText(true);
-            place.setPadding(new Insets(0, 10, 0, 10));
             rating.setPadding(new Insets(0, 0, 20, 0));
 
             // CSS
@@ -655,6 +845,79 @@ public class Menu extends Pane {
         }
 
         // Add cardContainer to final HBox
+        cardContainer.getChildren().add(cardBox);
+
+        return cardContainer;
+    }
+
+    // ____________________________________________________
+
+    public HBox displayMyLastBookingCard() {
+
+        // HBox
+        HBox cardContainer = new HBox(0);
+        cardContainer.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        cardContainer.setPrefWidth(800);
+        cardContainer.setAlignment(Pos.TOP_LEFT);
+        cardContainer.setLayoutY(354);
+
+        // cardBoxMenu
+        HBox cardBox = new HBox();
+        cardBox.setPrefWidth(800);
+        cardBox.setPrefHeight(250); // 50 + 50 = 500 / 2
+
+        for (int i = 0; i < 1; i++) {
+
+            // Labels
+            Label date = new Label("26.03.2025");
+            Text place = new Text("Hillerød 3400\nNarkovej 69");
+            place.setTextAlignment(TextAlignment.CENTER);
+            place.setWrappingWidth(140);
+            Label time = new Label("15:30");
+
+
+            time.setPadding(new Insets(10, 0, 0, 0));
+
+            // CSS
+            date.getStyleClass().add("card-visuals-header");
+            place.getStyleClass().add("card-visuals-lol");
+            time.getStyleClass().add("card-visuals-bold");
+
+            VBox cardHeader = new VBox();
+            cardHeader.setPrefHeight(70);
+            cardHeader.setAlignment(Pos.CENTER);
+            cardHeader.setStyle("-fx-background-color: grey;");
+            cardHeader.getChildren().add(date);
+
+            // "Tip" button
+            Button tipButton = new Button("Tip");
+            tipButton.setPrefWidth(80);
+            tipButton.getStyleClass().add("tip-button");
+            tipButton.setPadding(new Insets(5, 10, 5, 10));
+            VBox.setMargin(tipButton, new Insets(0, 0, 20, 0));
+
+            // TipButton :hover
+            Animation.addHoverScaleEffect(tipButton);
+
+            // Card display
+            VBox card = new VBox(10);
+            card.setPrefWidth(160);
+            card.setPrefHeight(248);
+            card.setAlignment(Pos.TOP_CENTER);
+            card.setStyle("-fx-background-color: lightgrey; -fx-border-color: rgba(0,0,0,0.7);");
+            card.getStyleClass().add("card-disabled");
+
+            Region spacer = new Region();
+            VBox.setVgrow(spacer, Priority.ALWAYS);
+
+            // Add
+            card.getChildren().addAll(cardHeader, time, place, spacer, tipButton);
+
+            // Add
+            cardBox.getChildren().add(card);
+        }
+
+        // Add
         cardContainer.getChildren().add(cardBox);
 
         return cardContainer;
@@ -846,17 +1109,11 @@ public class Menu extends Pane {
 
         // Actions
         availableBookingsBox.setOnMouseClicked(e -> {
-            aboutMeBox.getStyleClass().remove("nav-box-selected");
-            reviewsBox.getStyleClass().remove("nav-box-selected");
-            galleryBox.getStyleClass().remove("nav-box-selected");
-            availableBookingsBox.getStyleClass().add("nav-box-selected");
-            setHeaderTitle("Book");
             getChildren().clear();
-            getChildren().add(displayHeader());
-            getChildren().add(displayExamHeader("Exam"));
-            getChildren().add(displayComboBox());
             getChildren().add(displayAvailableBookings());
-            getChildren().add(displayExamBookings());
+            getChildren().add(displayBookingCard());
+            getChildren().add(displayExamMenu());
+            getChildren().add(displayExamCard());
         });
 
         aboutMeBox.setOnMouseClicked(e -> {
