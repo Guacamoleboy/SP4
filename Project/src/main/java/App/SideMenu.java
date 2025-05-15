@@ -75,13 +75,11 @@ public class SideMenu extends Pane {
 
         // Actions
         btn1.setOnAction(e -> {
-            menu.setHeaderTitle("Book");
             menu.getChildren().clear();
-            menu.getChildren().add(menu.displayHeader());
-            menu.getChildren().add(menu.displayExamHeader("Exam"));
-            menu.getChildren().add(menu.displayComboBox());
             menu.getChildren().add(menu.displayAvailableBookings());
-            menu.getChildren().add(menu.displayExamBookings());
+            menu.getChildren().add(menu.displayBookingCard());
+            menu.getChildren().add(menu.displayExamMenu());
+            menu.getChildren().add(menu.displayExamCard());
         });
 
         btn2.setOnAction(e -> {

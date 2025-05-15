@@ -2,10 +2,7 @@ package App;
 
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -229,6 +226,8 @@ public class Setting extends Pane {
 
     }
 
+    // _____________________________________________
+
     protected VBox displayDelete(){
 
         VBox deleteBox = new VBox(15); // Spacing between each element
@@ -258,6 +257,56 @@ public class Setting extends Pane {
 
         return deleteBox;
 
+    }
+
+    // _____________________________________________
+
+    protected static HBox displayBanUser() {
+
+        // HBox
+        HBox fullWidthHBox = new HBox();
+        fullWidthHBox.setAlignment(Pos.CENTER_LEFT);
+        fullWidthHBox.setPrefHeight(90);
+        fullWidthHBox.setPrefWidth(760);
+        fullWidthHBox.setStyle("-fx-border-width: 0 0 2px 0; -fx-border-color: #464646;");
+
+        // GREY region
+        VBox searchRegion = new VBox();
+        searchRegion.setPrefWidth(760 * 0.40);
+        searchRegion.setStyle("-fx-background-color: #7c7c7c; -fx-border-width: 0 2px 0 0; -fx-border-color: #464646;");
+        searchRegion.setAlignment(Pos.CENTER);
+
+        VBox greyRegion = new VBox();
+        greyRegion.setPrefWidth(760 * 0.35);
+        greyRegion.setStyle("-fx-background-color: #989898; -fx-border-width: 0 2px 0 0; -fx-border-color: #464646;");
+        greyRegion.setAlignment(Pos.CENTER);
+
+        Label banStatusLabel = new Label("Not Banned");
+        banStatusLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: white; -fx-padding: 20px;");
+        greyRegion.getChildren().add(banStatusLabel);
+
+        TextArea usernameUnbanLabel = new TextArea("Enter Username");
+        usernameUnbanLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: white;");
+        usernameUnbanLabel.getStyleClass().add("displayBanUser-label");
+        searchRegion.getChildren().add(usernameUnbanLabel);
+
+        // RED region
+        VBox redRegion = new VBox();
+        redRegion.setPrefWidth(760 * 0.25);
+        redRegion.setStyle("-fx-background-color: orange; -fx-cursor: hand; -fx-background-radius: 0 20px 0 0; -fx-border-radius: 0 20px 0 0; -fx-border-width: 0 2px 0 0; -fx-border-color: #464646;");
+        redRegion.setAlignment(Pos.CENTER);
+
+        Image profileImage = new Image(Setting.class.getResource("/assets/icons/icon18.png").toExternalForm());
+        ImageView profileImageView = new ImageView(profileImage);
+        profileImageView.setFitWidth(50);
+        profileImageView.setFitHeight(50);
+        profileImageView.setPreserveRatio(true);
+        redRegion.getChildren().add(profileImageView);
+
+        // final HBox add
+        fullWidthHBox.getChildren().addAll(searchRegion, greyRegion, redRegion);
+
+        return fullWidthHBox;
     }
 
 } // Setting end
