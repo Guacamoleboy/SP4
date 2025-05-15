@@ -586,3 +586,75 @@
     -fx-background-color: transparent;
 }
 
+.displayBanUser-label {
+    -fx-border-radius: 20px;
+    -fx-background-radius: 20px;
+    -fx-background-color: #000 !important;
+}
+
+.combo-box-availablebooking {
+    -fx-background-color: #696969;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-width: 0;
+    -fx-border-color: rgba(0,0,0,1);
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-text-fill: rgb(255, 255, 255) !important;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold !important;
+}
+
+.combo-box-availablebooking .list-cell:selected {
+    -fx-background-color: none !important;
+    -fx-text-fill: rgb(255, 255, 255); /* ComboBox Fix */
+}
+
+.combo-box-availablebooking:hover {
+    -fx-background-color: #696969; /* Same as original // To remove annoying Hover effect on ComboBox */
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+}
+
+.card-visuals-lol {
+    -fx-text-fill: #FFF;
+    -fx-font-weight: normal;
+    -fx-font-size: 14px !important;
+}
+
+.card-visuals-bold {
+    -fx-text-fill: #FFF;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px !important;
+}
+
+.card-visuals-header {
+    -fx-text-fill: #FFF;
+    -fx-font-weight: bold;
+    -fx-font-size: 25px !important;
+}
+
+.card-visuals-rating {
+    -fx-text-fill: #ffbe00;
+    -fx-font-size: 14px !important;
+}
+
+.card-background-visuals {
+    -fx-border-radius: 0;
+    -fx-background-color: rgb(140, 140, 140);
+    -fx-border-width: 0 1px 0 1px;
+    -fx-border-color: rgba(0,0,0, 0.2);
+}
+
+.card-background-visuals-hover {
+    -fx-background-color: rgb(120, 120, 120);
+
+}
+
+.card-header-visuals {
+    -fx-background-color: #ffa200;
+}
+
+.card-header-visuals-hover {
+    -fx-background-color: #e89100;
+}
