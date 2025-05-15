@@ -641,14 +641,15 @@
 
 .card-background-visuals {
     -fx-border-radius: 0;
+    -fx-background-radius: 0;
     -fx-background-color: rgb(140, 140, 140);
     -fx-border-width: 0 1px 0 1px;
-    -fx-border-color: rgba(0,0,0, 0.2);
+    -fx-border-color: rgba(0,0,0,0.7);
 }
 
-.card-background-visuals-hover {
-    -fx-background-color: rgb(120, 120, 120);
-
+.card-background-visuals:hover {
+    -fx-background-color: rgb(125, 125, 125);
+    -fx-border-color: rgba(0,0,0,1);
 }
 
 .card-header-visuals {
@@ -657,4 +658,93 @@
 
 .card-header-visuals-hover {
     -fx-background-color: #e89100;
+}
+
+.combo-box-availablebooking .list-cell {
+    -fx-alignment: center;
+    -fx-padding: 5 5 5 0;
+}
+
+.card-disabled-background {
+    -fx-background-color: #a0a0a0;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-border-color: #8c8c8c;
+    -fx-border-width: 0 1px 0 1px;
+    -fx-border-color: rgba(0,0,0,0.7);
+    -fx-cursor: default;
+}
+
+.card-disabled-header-container {
+    -fx-background-color: #b5b5b5;
+}
+
+.card-disabled-header {
+    -fx-text-fill: #5c5c5c;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+.card-disabled-text {
+    -fx-text-fill: #6d6d6d;
+    -fx-font-size: 13px;
+}
+
+.card-disabled-bold {
+    -fx-text-fill: #5c5c5c;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+.card-disabled-rating {
+    -fx-text-fill: #747474;
+    -fx-font-size: 14px;
+}
+
+.tip-button {
+    -fx-background-color: grey;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.tip-button:hover {
+    -fx-background-color: orange;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.card-disabled .card-visuals-header {
+    -fx-text-fill: #3b3b3b !important;
+}
+
+.card-disabled .card-visuals-lol {
+    -fx-text-fill: #3b3b3b !important;
+}
+
+.card-disabled .card-visuals-bold {
+    -fx-text-fill: #3b3b3b !important;
+}
+
+.cancel-button {
+    -fx-background-color: #d9534f;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.pay-button {
+    -fx-background-color: #5cb85c;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.cancel-button:hover {
+    -fx-background-color: #c9302c;
+}
+
+.pay-button:hover {
+    -fx-background-color: #4cae4c;
 }

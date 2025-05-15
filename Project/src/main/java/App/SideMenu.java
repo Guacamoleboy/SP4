@@ -2,13 +2,17 @@
 package App;
 
 // Imports
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.BorderPane;
 import App.Support.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 public class SideMenu extends Pane {
 
@@ -21,6 +25,8 @@ public class SideMenu extends Pane {
 
     // OBJECT //
     private Menu menu;
+    private Rectangle overlay;
+    private VBox modalBox;
 
     // ____________________________________________________
 
@@ -59,10 +65,9 @@ public class SideMenu extends Pane {
         Button btn1 = imageButton("/assets/icons/icon1.png", 30, 30, 50);
         Button btn2 = imageButton("/assets/icons/icon2.png", 30, 30, 50);
         Button btn3 = imageButton("/assets/icons/icon3.png", 30, 30, 50);
-        Button btn4 = imageButton("/assets/icons/icon5.png", 30, 30, 50);
 
         // Top VBox addALl
-        topBox.getChildren().addAll(profileBtn, btn1, btn2, btn3, btn4);
+        topBox.getChildren().addAll(profileBtn, btn1, btn2, btn3);
 
         // New VBox for Settings to be at the bottom
         VBox bottomBox = new VBox();
@@ -90,16 +95,11 @@ public class SideMenu extends Pane {
         });
 
         btn3.setOnAction(e -> {
-            menu.setHeaderTitle("My Bookings");
             menu.getChildren().clear();
-            menu.getChildren().add(menu.displayHeader());
-            menu.getChildren().add(menu.displayMyBookings());
-        });
-
-        btn4.setOnAction(e -> {
-            menu.setHeaderTitle("Favorites");
-            menu.getChildren().clear();
-            menu.getChildren().add(menu.displayHeader());
+            menu.getChildren().add(menu.displayMyBookingMenu());
+            menu.getChildren().add(menu.displayMyBookingCard());
+            menu.getChildren().add(menu.displayMyLastBookingMenu());
+            menu.getChildren().add(menu.displayMyLastBookingCard());
         });
 
         settingsBtn.setOnAction(e -> {
@@ -119,7 +119,6 @@ public class SideMenu extends Pane {
         Animation.addHoverScaleEffectMore(btn1);
         Animation.addHoverScaleEffectMore(btn2);
         Animation.addHoverScaleEffectMore(btn3);
-        Animation.addHoverScaleEffectMore(btn4);
         Animation.addHoverScaleEffectMore(profileBtn);
         Animation.addHoverScaleEffectMore(settingsBtn);
 
@@ -129,6 +128,31 @@ public class SideMenu extends Pane {
 
         return layout;
 
+    }
+
+    // ____________________________________________________
+
+    private Rectangle createOverlay(int width, int height) {
+        Rectangle overlay = new Rectangle(width, height);
+        overlay.setFill(Color.rgb(0, 0, 0, 0.5)); // Opacity daddy
+        overlay.setVisible(false); // Set this to true with a button to show it lol....
+        return overlay;
+    }
+
+    // ____________________________________________________
+
+    public VBox displayModalBox() {
+        VBox modal = new VBox(10);
+        modal.setPrefSize(500, 500);
+        modal.setStyle("-fx-background-color: white; -fx-border-color: black; -fx-border-width: 2;");
+        modal.setAlignment(Pos.CENTER);
+
+        Label info = new Label("Booking details here...");
+        Button closeBtn = new Button("Go Back");
+        closeBtn.setId("closeBtn");
+
+        modal.getChildren().addAll(info, closeBtn);
+        return modal;
     }
 
     // ____________________________________________________
