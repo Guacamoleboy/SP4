@@ -858,7 +858,7 @@ public class Menu extends Pane {
         VBox mainContainer = new VBox();
         mainContainer.setPadding(Insets.EMPTY);
         mainContainer.setSpacing(0);
-        mainContainer.setAlignment(Pos.TOP_LEFT); // avoid center gaps
+        mainContainer.setAlignment(Pos.TOP_LEFT);
 
         HBox splitBox = new HBox();
         splitBox.setSpacing(0);
@@ -870,13 +870,13 @@ public class Menu extends Pane {
         VBox leftBox = new VBox();
         leftBox.setPadding(Insets.EMPTY);
         leftBox.setSpacing(0);
-        leftBox.setStyle("-fx-background-color: transparent; -fx-border-radius: 0 0 0 20px; -fx-background-radius: 0 0 0 20px; -fx-border-width: 0 2px 0 0; -fx-border-color: rgb(0,0,0)");
+        leftBox.setStyle("-fx-background-color: transparent; -fx-border-radius: 0 0 0 20px; -fx-background-radius: 0 0 0 20px; -fx-border-width: 0 2px 0 0; -fx-border-color: rgb(0,0,0); -fx-padding: 20px 0 0 0");
         leftBox.setPrefWidth(190);
-        leftBox.setAlignment(Pos.TOP_LEFT);
+        leftBox.setAlignment(Pos.TOP_CENTER);
 
         // VBox inside HBox (leftpane)
         VBox infoSections = new VBox(10);
-        infoSections.setAlignment(Pos.TOP_LEFT);
+        infoSections.setAlignment(Pos.TOP_CENTER);
 
         Label starsLabel = new Label(convertToStars(4));
         starsLabel.setStyle("-fx-font-size: 18px; -fx-text-fill: orange;");
@@ -884,14 +884,39 @@ public class Menu extends Pane {
         Label lastOnlineLabel = new Label("Last Online:");
         Label lastOnlineValue = new Label("2 hours ago");
 
+        // Socials
+        Label instagramLabel = new Label("Instagram");
+        Label facebookLabel = new Label("Facebook");
+        Label githubLabel = new Label("Github");
+
+        // Socials VBox
+        VBox socialsBox = new VBox(10, instagramLabel, facebookLabel, githubLabel);
+        socialsBox.setAlignment(Pos.CENTER);
+
         VBox ratingBox = new VBox(5, starsLabel);
+        ratingBox.setAlignment(Pos.CENTER);
         VBox lastOnlineBox = new VBox(5, lastOnlineLabel, lastOnlineValue);
-        lastOnlineLabel.setStyle("-fx-font-weight: normal; -fx-font-size: 14px;");
-        lastOnlineValue.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+        lastOnlineBox.setAlignment(Pos.CENTER);
 
-        infoSections.getChildren().addAll(ratingBox, lastOnlineBox);
+        // Visuals
+        socialsBox.setStyle("-fx-border-width: 0 0 2px 0; -fx-border-color: rgb(0,0,0); -fx-padding: 0 0 10px 0");
+        lastOnlineBox.setStyle("-fx-border-width: 0 0 2px 0; -fx-border-color: rgb(0,0,0); -fx-padding: 0 0 20px 0");
+        lastOnlineLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+        instagramLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #fff");
+        facebookLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #fff");
+        githubLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #fff");
+        lastOnlineValue.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #fff");
 
-        leftBox.getChildren().addAll(infoSections);
+        // VBox add
+        infoSections.getChildren().addAll(ratingBox, lastOnlineBox, socialsBox);
+        infoSections.setAlignment(Pos.CENTER);
+
+        VBox wrapper = new VBox();
+        wrapper.setAlignment(Pos.TOP_CENTER);
+        wrapper.getChildren().add(infoSections);
+
+        leftBox.getChildren().add(infoSections);
+        leftBox.setAlignment(Pos.TOP_CENTER);
 
         VBox rightBox = new VBox();
         rightBox.setPrefWidth(560);
@@ -900,7 +925,7 @@ public class Menu extends Pane {
         rightBox.setAlignment(Pos.TOP_LEFT);
 
         FlowPane flowPane = new FlowPane();
-        flowPane.setHgap(0); // remove spacing for full flush
+        flowPane.setHgap(0);
         flowPane.setVgap(0);
         flowPane.setPadding(Insets.EMPTY);
         flowPane.setAlignment(Pos.TOP_LEFT);
@@ -921,8 +946,6 @@ public class Menu extends Pane {
 
         return mainContainer;
     }
-
-
 
     // ____________________________________________________
 
