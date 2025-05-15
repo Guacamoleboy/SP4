@@ -631,7 +631,7 @@
 .card-visuals-header {
     -fx-text-fill: #FFF;
     -fx-font-weight: bold;
-    -fx-font-size: 25px !important;
+    -fx-font-size: 22px !important;
 }
 
 .card-visuals-rating {

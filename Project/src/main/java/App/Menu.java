@@ -5,6 +5,7 @@ package App;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.image.ImageView;
@@ -13,6 +14,7 @@ import java.sql.SQLException;
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
@@ -646,7 +648,7 @@ public class Menu extends Pane {
         for(int i = 0; i < 5; i++){
 
             // Labels
-            Label date = new Label("26.03.2025");
+            Label date = new Label("26.03");
             Text place = new Text("Hillerød 3400\nNarkovej 69");
             place.setTextAlignment(TextAlignment.CENTER);
             place.setWrappingWidth(140);
@@ -654,7 +656,42 @@ public class Menu extends Pane {
             Label time = new Label("15:30");
             Label rating = new Label(convertToStars(4));
 
-            rating.setPadding(new Insets(0, 0, 20, 0));
+            time.setPadding(new Insets(30, 0, 0, 0));
+            rating.setPadding(new Insets(0, 0, 30, 0));
+
+            StackPane headerWithWave = new StackPane();
+            headerWithWave.setPrefHeight(50);
+            headerWithWave.setPrefWidth(160);
+            headerWithWave.getStyleClass().add("card-header-visuals");
+
+            SVGPath wave = new SVGPath();
+            wave.setContent(
+                    "M0 10 " +
+                    "C17.8 20, 35.6 0, 53.3 10 " +
+                    "C71.1 20, 88.9 0, 106.7 10 " +
+                    "C124.4 20, 142.2 0, 158 10 " + // 2 padding total
+                    "V50 H0 Z"
+            );
+
+            DropShadow dropShadow = new DropShadow();
+            dropShadow.setColor(Color.rgb(0, 0, 0, 0.3));
+            dropShadow.setRadius(5);
+            dropShadow.setOffsetX(0);
+            dropShadow.setOffsetY(-2);
+
+            wave.setEffect(dropShadow);
+
+            wave.setFill(Color.ORANGE);
+            wave.setScaleY(-1);
+            wave.setTranslateY(20);
+            wave.setScaleX(1);
+
+            date.getStyleClass().add("card-visuals-header");
+            StackPane.setAlignment(date, Pos.TOP_CENTER);
+            date.setPadding(new Insets(15, 0, 0, 0));
+
+            headerWithWave.getChildren().addAll(wave, date);
+
 
             // CSS
             date.getStyleClass().add("card-visuals-header");
@@ -662,15 +699,11 @@ public class Menu extends Pane {
             time.getStyleClass().add("card-visuals-bold");
             rating.getStyleClass().add("card-visuals-rating");
 
-            VBox cardHeader = new VBox();
-            cardHeader.setPrefHeight(70);
-            cardHeader.setAlignment(Pos.CENTER);
-            cardHeader.getStyleClass().add("card-header-visuals");
-            cardHeader.getChildren().add(date);
-
             // Card display
             VBox card = new VBox(10);
             card.setPrefWidth(160);
+            card.setMinWidth(160);
+            card.setMaxWidth(160);
             card.setPrefHeight(248);
             card.setAlignment(Pos.TOP_CENTER);
             card.getStyleClass().add("card-background-visuals");
@@ -684,7 +717,7 @@ public class Menu extends Pane {
             Animation.addHoverScaleEffectVBox(card);
 
             // Add labels to card
-            card.getChildren().addAll(cardHeader, time, place, spacer, rating);
+            card.getChildren().addAll(headerWithWave, time, place, spacer, rating);
 
             // Add card to CardBox
             cardBox.getChildren().add(card);
@@ -801,7 +834,7 @@ public class Menu extends Pane {
         for(int i = 0; i < 5; i++){
 
             // Labels
-            Label date = new Label("26.03.2025");
+            Label date = new Label("26.03");
             Text place = new Text("Hillerød 3400\nNarkovej 69");
             place.setTextAlignment(TextAlignment.CENTER);
             place.setWrappingWidth(140);
