@@ -31,17 +31,17 @@ public class SideMenu extends Pane {
     // ____________________________________________________
 
     public SideMenu(int sceneWidth, int sceneHeight, Menu menu, String role) {
+
         this.sceneWidth = sceneWidth;
         this.sceneHeight = sceneHeight;
         this.menu = menu;
         this.role = role;
 
-
         // Display setup
         this.setPrefWidth(sceneWidth);
         this.setPrefHeight(sceneHeight);
 
-        // Create
+        // Display correct menu depending on role
         openMenuType(this.role);
 
     }
@@ -112,7 +112,7 @@ public class SideMenu extends Pane {
         profileBtn.setOnAction(e -> {
             menu.setHeaderTitle("Profile");
             menu.getChildren().clear();
-            menu.getChildren().add(menu.displayProfileStudent());
+            menu.getChildren().add(menu.displayProfile());
         });
 
         // Hover
@@ -209,7 +209,7 @@ public class SideMenu extends Pane {
         profileBtn.setOnAction(e -> {
             menu.setHeaderTitle("Profile");
             menu.getChildren().clear();
-            menu.getChildren().add(menu.displayProfile());
+            menu.getChildren().add(menu.displayProfileStudent());
         });
 
         // Hover
@@ -289,7 +289,7 @@ public class SideMenu extends Pane {
         profileBtn.setOnAction(e -> {
             menu.setHeaderTitle("Profile");
             menu.getChildren().clear();
-            menu.getChildren().add(menu.displayProfile());
+            menu.getChildren().add(menu.displayProfileSupport());
         });
 
         // Hover
@@ -375,7 +375,7 @@ public class SideMenu extends Pane {
         profileBtn.setOnAction(e -> {
             menu.setHeaderTitle("Profile");
             menu.getChildren().clear();
-            menu.getChildren().add(menu.displayProfile());
+            menu.getChildren().add(menu.displayProfileTeacher());
         });
 
         // Hover
@@ -448,7 +448,7 @@ public class SideMenu extends Pane {
         profileBtn.setOnAction(e -> {
             menu.setHeaderTitle("Profile");
             menu.getChildren().clear();
-            menu.getChildren().add(menu.displayProfile());
+            menu.getChildren().add(menu.displayProfileSchool());
         });
 
         // Hover

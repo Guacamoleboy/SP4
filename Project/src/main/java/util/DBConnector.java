@@ -291,6 +291,21 @@ public class DBConnector {
 
     // ____________________________________________________
 
+    public String getUsername(String username) {
+        String query = "SELECT username FROM users WHERE username = '" + username + "'";
+        try {
+            ResultSet rs = executeQuery(query);
+            if (rs != null && rs.next()) {
+                return rs.getString("username");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error getting username: " + e.getMessage());
+        }
+        return null;
+    }
+
+    // ____________________________________________________
+
     public boolean changeRole(String username, String role){
         // TILFØJ HER
 
