@@ -80,12 +80,12 @@ public class DBConnector {
             stmt.execute(createUsersTable);
             stmt.execute(createMessagesTable);
 
-            // Check if bannerurl column exists, if not add it
+            // Check bannerurl, no?= add
             try {
                 ResultSet rs = stmt.executeQuery("SELECT bannerurl FROM users LIMIT 1");
                 rs.close();
             } catch (SQLException e) {
-                // Column doesn't exist, add it
+
                 stmt.execute("ALTER TABLE users ADD COLUMN bannerurl TEXT");
                 System.out.println("Added bannerurl column to users table");
             }
