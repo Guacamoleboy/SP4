@@ -748,3 +748,30 @@
 .pay-button:hover {
     -fx-background-color: #4cae4c;
 }
+
+.socials-button {
+    -fx-background-color: transparent;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 2;
+}
+
+.socials-button:hover {
+    -fx-background-color: rgba(255, 165, 0, 0.78);
+}
+
+.socials-button.selected {
+    -fx-background-color: orange;
+    -fx-border-color: darkorange;
+}
+
+.socials-button Label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.socials-button.selected Label {
+    -fx-text-fill: black;
+}

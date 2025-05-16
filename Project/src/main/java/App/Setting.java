@@ -128,14 +128,24 @@ public class Setting extends Pane {
         applyDropShadowEffect(profileImageView, 75, 75, 0.7);
         redRegion.getChildren().add(profileImageView);
 
+        // :hover on imageView
+        ScaleTransition scaleUp = new ScaleTransition(Duration.millis(100), profileImageView);
+        scaleUp.setToX(1.10);
+        scaleUp.setToY(1.10);
+        ScaleTransition scaleDown = new ScaleTransition(Duration.millis(100), profileImageView);
+        scaleDown.setToX(1.0);
+        scaleDown.setToY(1.0);
+
         // Action listener on enter / exit
         redRegion.setOnMouseEntered(e -> {
             profileImageView.setImage(iconHover);
             redRegion.setStyle("-fx-background-color: " + hoverBackground + "; -fx-cursor: hand; -fx-background-radius: 0 20px 0 0; -fx-border-radius: 0 20px 0 0;");
+            scaleUp.playFromStart();
         });
         redRegion.setOnMouseExited(e -> {
             profileImageView.setImage(iconNormal);
             redRegion.setStyle("-fx-background-color: " + normalBackground + "; -fx-cursor: hand; -fx-background-radius: 0 20px 0 0; -fx-border-radius: 0 20px 0 0;");
+            scaleDown.playFromStart();
         });
 
         // final HBox add
@@ -177,6 +187,18 @@ public class Setting extends Pane {
         ImageView profileImageView = new ImageView(profileImage);
         redRegion.getChildren().add(profileImageView);
         applyDropShadowEffect(profileImageView, 75, 75, 0.7);
+
+        // :hover on imageView
+        ScaleTransition scaleUp = new ScaleTransition(Duration.millis(100), profileImageView);
+        scaleUp.setToX(1.05);
+        scaleUp.setToY(1.05);
+        ScaleTransition scaleDown = new ScaleTransition(Duration.millis(100), profileImageView);
+        scaleDown.setToX(1.0);
+        scaleDown.setToY(1.0);
+
+        // Action listener on imageView only *dab*
+        redRegion.setOnMouseEntered(e -> scaleUp.playFromStart());
+        redRegion.setOnMouseExited(e -> scaleDown.playFromStart());
 
         // final HBox add
         fullWidthHBox.getChildren().addAll(greyRegion, redRegion);
@@ -230,6 +252,18 @@ public class Setting extends Pane {
         ImageView profileImageView = new ImageView(profileImage);
         applyDropShadowEffect(profileImageView, 75, 75, 0.7);
         redRegion.getChildren().add(profileImageView);
+
+        // :hover on imageView
+        ScaleTransition scaleUp = new ScaleTransition(Duration.millis(100), profileImageView);
+        scaleUp.setToX(1.05);
+        scaleUp.setToY(1.05);
+        ScaleTransition scaleDown = new ScaleTransition(Duration.millis(100), profileImageView);
+        scaleDown.setToX(1.0);
+        scaleDown.setToY(1.0);
+
+        // Action listener on imageView only *dab*
+        redRegion.setOnMouseEntered(e -> scaleUp.playFromStart());
+        redRegion.setOnMouseExited(e -> scaleDown.playFromStart());
 
         // final HBox add
         fullWidthHBox.getChildren().addAll(greyRegion, redRegion);
@@ -285,6 +319,18 @@ public class Setting extends Pane {
             default:
                 redRegion.setStyle(redRegion.getStyle() + "-fx-background-color: #e54545;");
         }
+
+        // :hover on imageView
+        ScaleTransition scaleUp = new ScaleTransition(Duration.millis(100), profileImageView);
+        scaleUp.setToX(1.05);
+        scaleUp.setToY(1.05);
+        ScaleTransition scaleDown = new ScaleTransition(Duration.millis(100), profileImageView);
+        scaleDown.setToX(1.0);
+        scaleDown.setToY(1.0);
+
+        // Action listener on imageView only *dab*
+        redRegion.setOnMouseEntered(e -> scaleUp.playFromStart());
+        redRegion.setOnMouseExited(e -> scaleDown.playFromStart());
 
         // final HBox add
         fullWidthHBox.getChildren().addAll(greyRegion, redRegion);

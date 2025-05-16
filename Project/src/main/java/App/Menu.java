@@ -4,6 +4,7 @@ package App;
 // Import
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
@@ -12,6 +13,9 @@ import javafx.scene.layout.*;
 import javafx.scene.image.ImageView;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -168,7 +172,6 @@ public class Menu extends Pane {
 
     public VBox displayMyMessages() {
 
-        // VBox
         VBox messageVBox = new VBox();
         messageVBox.setLayoutX(20);
         messageVBox.setLayoutY(100);
@@ -176,7 +179,6 @@ public class Menu extends Pane {
         messageVBox.setPrefHeight(480);
         messageVBox.setStyle("-fx-border-color: #464646; -fx-border-width: 2px; -fx-border-radius: 20px; -fx-background-radius: 20px;");
 
-        // HBox
         HBox messageHBox = new HBox();
         messageHBox.getStyleClass().add("message-vbox");
         messageHBox.setPrefWidth(760);
@@ -184,38 +186,69 @@ public class Menu extends Pane {
         messageHBox.setAlignment(Pos.TOP_LEFT);
         messageHBox.setSpacing(0);
 
-        // Sidebar
         VBox sidebar = new VBox(0);
         sidebar.setPrefWidth(760 * 0.26);
         sidebar.setAlignment(Pos.TOP_LEFT);
         sidebar.setPadding(Insets.EMPTY);
         sidebar.setStyle("-fx-background-color: #696969; -fx-border-radius: 20 0 0 20; -fx-background-radius: 20 0 0 20;");
 
-        // Buttons
         Button user1 = new Button("Jonas");
         Button user2 = new Button("Andreas");
         Button user3 = new Button("Ebou");
         Button user4 = new Button("Carl-Emil");
 
-        // Sidebar add
         sidebar.getChildren().addAll(user1, user2, user3, user4);
         user1.getStyleClass().addAll("user-button", "user-button1");
         user2.getStyleClass().add("user-button");
         user3.getStyleClass().add("user-button");
         user4.getStyleClass().add("user-button");
 
-        // Message area (4/5)
+        VBox rightContent = new VBox(10);
+        rightContent.setPrefWidth(760 * 0.74);
+        rightContent.setAlignment(Pos.TOP_LEFT);
+        rightContent.setPadding(new Insets(0));
+
         VBox messageArea = new VBox(15);
-        messageArea.setPrefWidth(760 * 0.74);
         messageArea.setPadding(new Insets(20));
         messageArea.setAlignment(Pos.TOP_LEFT);
         messageArea.setStyle("-fx-background-color: transparent;");
+        messageArea.setPrefHeight(420);
 
-        // Add to HBox (Left -> Right)
-        messageHBox.getChildren().addAll(sidebar, messageArea);
+        HBox inputArea = new HBox(10);
+        inputArea.setPadding(new Insets(10));
+        inputArea.setAlignment(Pos.CENTER_LEFT);
+        inputArea.setPrefHeight(40);
+
+        TextField messageInput = new TextField();
+        messageInput.setPromptText("Type your message...");
+        messageInput.setPrefWidth(480);
+
+        Image sendIcon = new Image(getClass().getResource("/assets/icons/icon17.png").toExternalForm());
+        ImageView sendIconView = new ImageView(sendIcon);
+        sendIconView.setFitWidth(30);
+        sendIconView.setFitHeight(30);
+        sendIconView.setPreserveRatio(true);
+
+        Button sendButton = new Button();
+        sendButton.setGraphic(sendIconView);
+        sendButton.setStyle("-fx-background-color: orange; -fx-border-radius: 20px; -fx-background-radius: 20px; -fx-background-insets: 0; -fx-border-insets: 0; -fx-border-width: 1.5px; -fx-border-color: rgba(0,0,0,0.5); -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0.3, 0, 2);");
+
+        sendButton.setOnAction(e -> {
+            String text = messageInput.getText().trim();
+            if (!text.isEmpty()) {
+                messageArea.getChildren().add(
+                        createMessageBubble(text, true, this.username, "Now")
+                );
+                messageInput.clear();
+            }
+        });
+
+        inputArea.getChildren().addAll(messageInput, sendButton);
+        rightContent.getChildren().addAll(messageArea, inputArea);
+
+        messageHBox.getChildren().addAll(sidebar, rightContent);
         messageVBox.getChildren().add(messageHBox);
 
-        // Actions
         user1.setOnAction(e -> {
             messageArea.getChildren().clear();
             messageArea.getChildren().addAll(
@@ -2027,7 +2060,7 @@ public class Menu extends Pane {
         VBox leftBox = new VBox();
         leftBox.setPadding(Insets.EMPTY);
         leftBox.setSpacing(0);
-        leftBox.setStyle("-fx-background-color: transparent; -fx-border-radius: 0 0 0 20px; -fx-background-radius: 0 0 0 20px; -fx-border-width: 0 2px 0 0; -fx-border-color: rgb(0,0,0); -fx-padding: 20px 0 0 0");
+        leftBox.setStyle("-fx-background-color: #575757; -fx-border-radius: 0 0 0 20px; -fx-background-radius: 0 0 0 20px; -fx-border-width: 0 2px 0 0; -fx-border-color: rgb(0,0,0); -fx-padding: 20px 0 0 0");
         leftBox.setPrefWidth(190);
         leftBox.setAlignment(Pos.TOP_CENTER);
 
@@ -2050,19 +2083,23 @@ public class Menu extends Pane {
         Label facebookLabel = new Label("Facebook");
         Label githubLabel = new Label("Github");
 
-        // Socials VBox
-        VBox socialsBox = new VBox(10, nameLabel, instagramLabel, facebookLabel, githubLabel);
+        List<VBox> socialButtons = new ArrayList<>();
+
+        VBox instagramButton = createSelectableSocialButton(instagramLabel, socialButtons);
+        VBox facebookButton = createSelectableSocialButton(facebookLabel, socialButtons);
+        VBox githubButton = createSelectableSocialButton(githubLabel, socialButtons);
+
+        socialButtons.addAll(List.of(instagramButton, facebookButton, githubButton));
+
+        VBox socialsBox = new VBox(0,nameLabel, instagramButton, facebookButton, githubButton);
         socialsBox.setAlignment(Pos.CENTER);
 
         Label cityLabel = new Label("Hillerød");
-        cityLabel.setPadding(new Insets(10, 0, 0, 0));
-        Label schoolLabel = new Label("NEXT Herlev");
+        cityLabel.setPadding(new Insets(15, 0, 0, 0));
         cityLabel.setStyle("-fx-text-fill: #FFF; -fx-font-size: 16px; " +
         "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 2, 0.5, 1, 1);");
-        schoolLabel.setStyle("-fx-text-fill: #FFF; -fx-font-size: 16px; " +
-        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 2, 0.5, 1, 1);");
 
-        VBox locationBox = new VBox(10, cityLabel, schoolLabel);
+        VBox locationBox = new VBox(10, cityLabel);
         locationBox.setAlignment(Pos.CENTER);
 
         VBox ratingBox = new VBox(5, starsLabel);
@@ -2106,15 +2143,15 @@ public class Menu extends Pane {
         ScrollPane scrollPane = new ScrollPane(flowPane);
         scrollPane.setFitToWidth(true);
         scrollPane.setPrefViewportHeight(560);
-        scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setPadding(Insets.EMPTY);
+        scrollPane.setStyle("-fx-background-color: transparent;");
 
         Label aboutHeader = new Label("Welcome stranger...");
         aboutHeader.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: orange;");
 
-        Label bioText = new Label("Hi, I'm " + username + ". I love cutting hair and making people happy. Book me today!");
+        Label bioText = new Label("Hi, I'm " + username + ". I love cutting hair and making people happy. Would you like to get farted on? I bet you do you sicko. Book me today or regret it forever!!");
         bioText.setWrapText(true);
         bioText.setStyle("-fx-font-size: 14px; -fx-text-fill: white;");
 
@@ -2126,6 +2163,7 @@ public class Menu extends Pane {
         tagsBox.setAlignment(Pos.CENTER_LEFT);
 
         String[] tags = {"Gym", "Creativity", "Gaming", "Hiking", "Farting"};
+
         for (String tag : tags) {
             Label tagLabel = new Label("#" + tag);
             tagLabel.setStyle("-fx-background-color: #333; -fx-text-fill: white; -fx-padding: 4 8 4 8; -fx-background-radius: 10; -fx-font-size: 14px");
@@ -2135,15 +2173,15 @@ public class Menu extends Pane {
         Label funFactHeader = new Label("Fun Fact");
         funFactHeader.setStyle("-fx-font-size: 16px; -fx-text-fill: #ccc; -fx-padding: 10 0 5 0;");
 
-        Label funFactText = new Label("I can fart with my arsehole..");
+        Label funFactText = new Label("A random fun fact that isnt fun at all..");
         funFactText.setWrapText(true);
-        funFactText.setStyle("-fx-text-fill: #aaa; -fx-font-size: 13px;");
+        funFactText.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 13px;");
 
         VBox rightContent = new VBox(10, aboutHeader, bioText, interestsHeader, tagsBox, funFactHeader, funFactText);
         rightContent.setPadding(new Insets(20));
-        rightContent.setStyle("-fx-background-color: #1e1e1e; -fx-background-radius: 10;");
-        rightContent.setPrefWidth(520);
-        rightContent.setMaxWidth(520);
+        rightContent.setStyle("-fx-background-color: #575757; -fx-background-radius: 0 0 20px 0; -fx-border-radius: 0 0 20px 0;");
+        rightContent.setPrefWidth(560);
+        rightContent.setPrefHeight(600);
 
         scrollPane.setContent(rightContent);
         rightBox.getChildren().add(scrollPane);
@@ -2153,6 +2191,27 @@ public class Menu extends Pane {
 
         return mainContainer;
     }
+
+    // ____________________________________________________
+
+    private VBox createSelectableSocialButton(Label label, List<VBox> allButtons) {
+        VBox container = new VBox(label);
+        container.getStyleClass().add("socials-button");
+        container.setAlignment(Pos.CENTER);
+        container.setCursor(Cursor.HAND);
+        container.setPadding(new Insets(8, 16, 8, 16));
+        container.setSpacing(0);
+
+        container.setOnMouseClicked(e -> {
+            for (VBox btn : allButtons) {
+                btn.getStyleClass().remove("selected");
+            }
+            container.getStyleClass().add("selected");
+        });
+
+        return container;
+    }
+
 
     // ____________________________________________________
 
