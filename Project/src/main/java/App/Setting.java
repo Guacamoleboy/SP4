@@ -335,7 +335,7 @@ public class Setting extends Pane {
         colorRegion.setAlignment(Pos.CENTER);
 
         // gem icon
-        Image saveIcon = new Image(getClass().getResource("/assets/icons/icon19.png").toExternalForm());
+        Image saveIcon = new Image(getClass().getResource("/assets/icons/icon20.png").toExternalForm());
         ImageView saveIconView = new ImageView(saveIcon);
         applyDropShadowEffect(saveIconView, 75, 75, 0.7);
         colorRegion.getChildren().add(saveIconView);
@@ -352,13 +352,12 @@ public class Setting extends Pane {
         colorRegion.setOnMouseExited(e -> scaleDown.playFromStart());
 
         // mouse events
-        greyRegion.setOnMouseClicked(e -> {
-
+        colorRegion.setOnMouseClicked(e -> {
             showColorPickerDialog();
         });
 
-
-        colorRegion.setOnMouseClicked(e -> {
+        /*
+        greyRegion.setOnMouseClicked(e -> {
             String profileHex = toHexString(profileColorPicker.getValue());
             String bannerHex = toHexString(bannerColorPicker.getValue());
             String roleHex = toHexString(roleColorPicker.getValue());
@@ -371,7 +370,7 @@ public class Setting extends Pane {
                 showErrorAlert("Failed to save profile colors. Please try again.");
             }
         });
-
+        */
 
         Tooltip greyTooltip = new Tooltip("Click to change profile colors");
         Tooltip.install(greyRegion, greyTooltip);
@@ -463,19 +462,19 @@ public class Setting extends Pane {
 
         // jonas nav items
         String navItemStyle = "-fx-background-color: #f0f0f0; -fx-padding: 10px; -fx-alignment: center;";
-        Label aboutLabel = new Label("About me");
+        Label aboutLabel = new Label("Text");
         aboutLabel.setPrefWidth(100);
         aboutLabel.setStyle(navItemStyle);
 
-        Label bookingsLabel = new Label("Available Bookings");
+        Label bookingsLabel = new Label("Text");
         bookingsLabel.setPrefWidth(100);
         bookingsLabel.setStyle(navItemStyle);
 
-        Label reviewsLabel = new Label("Reviews");
+        Label reviewsLabel = new Label("Text");
         reviewsLabel.setPrefWidth(100);
         reviewsLabel.setStyle(navItemStyle);
 
-        Label galleryLabel = new Label("Gallery");
+        Label galleryLabel = new Label("Text");
         galleryLabel.setPrefWidth(100);
         galleryLabel.setStyle(navItemStyle + "-fx-background-radius: 0 0 8px 0;");
 
