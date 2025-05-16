@@ -5,7 +5,6 @@ package App;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.image.ImageView;
@@ -14,7 +13,6 @@ import java.sql.SQLException;
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
@@ -300,6 +298,7 @@ public class Menu extends Pane {
 
         setting4.setOnAction(e -> {
             messageArea.getChildren().clear();
+            messageArea.getChildren().add(setting.displayProfileColors());
         });
 
         setting5.setOnAction(e -> {
@@ -648,7 +647,7 @@ public class Menu extends Pane {
         for(int i = 0; i < 5; i++){
 
             // Labels
-            Label date = new Label("26.03");
+            Label date = new Label("26.03.2025");
             Text place = new Text("Hillerød 3400\nNarkovej 69");
             place.setTextAlignment(TextAlignment.CENTER);
             place.setWrappingWidth(140);
@@ -656,42 +655,7 @@ public class Menu extends Pane {
             Label time = new Label("15:30");
             Label rating = new Label(convertToStars(4));
 
-            time.setPadding(new Insets(30, 0, 0, 0));
-            rating.setPadding(new Insets(0, 0, 30, 0));
-
-            StackPane headerWithWave = new StackPane();
-            headerWithWave.setPrefHeight(50);
-            headerWithWave.setPrefWidth(160);
-            headerWithWave.getStyleClass().add("card-header-visuals");
-
-            SVGPath wave = new SVGPath();
-            wave.setContent(
-                    "M0 10 " +
-                    "C17.8 20, 35.6 0, 53.3 10 " +
-                    "C71.1 20, 88.9 0, 106.7 10 " +
-                    "C124.4 20, 142.2 0, 158 10 " + // 2 padding total
-                    "V50 H0 Z"
-            );
-
-            DropShadow dropShadow = new DropShadow();
-            dropShadow.setColor(Color.rgb(0, 0, 0, 0.3));
-            dropShadow.setRadius(5);
-            dropShadow.setOffsetX(0);
-            dropShadow.setOffsetY(-2);
-
-            wave.setEffect(dropShadow);
-
-            wave.setFill(Color.ORANGE);
-            wave.setScaleY(-1);
-            wave.setTranslateY(20);
-            wave.setScaleX(1);
-
-            date.getStyleClass().add("card-visuals-header");
-            StackPane.setAlignment(date, Pos.TOP_CENTER);
-            date.setPadding(new Insets(15, 0, 0, 0));
-
-            headerWithWave.getChildren().addAll(wave, date);
-
+            rating.setPadding(new Insets(0, 0, 20, 0));
 
             // CSS
             date.getStyleClass().add("card-visuals-header");
@@ -699,11 +663,15 @@ public class Menu extends Pane {
             time.getStyleClass().add("card-visuals-bold");
             rating.getStyleClass().add("card-visuals-rating");
 
+            VBox cardHeader = new VBox();
+            cardHeader.setPrefHeight(70);
+            cardHeader.setAlignment(Pos.CENTER);
+            cardHeader.getStyleClass().add("card-header-visuals");
+            cardHeader.getChildren().add(date);
+
             // Card display
             VBox card = new VBox(10);
             card.setPrefWidth(160);
-            card.setMinWidth(160);
-            card.setMaxWidth(160);
             card.setPrefHeight(248);
             card.setAlignment(Pos.TOP_CENTER);
             card.getStyleClass().add("card-background-visuals");
@@ -717,7 +685,7 @@ public class Menu extends Pane {
             Animation.addHoverScaleEffectVBox(card);
 
             // Add labels to card
-            card.getChildren().addAll(headerWithWave, time, place, spacer, rating);
+            card.getChildren().addAll(cardHeader, time, place, spacer, rating);
 
             // Add card to CardBox
             cardBox.getChildren().add(card);
@@ -834,7 +802,7 @@ public class Menu extends Pane {
         for(int i = 0; i < 5; i++){
 
             // Labels
-            Label date = new Label("26.03");
+            Label date = new Label("26.03.2025");
             Text place = new Text("Hillerød 3400\nNarkovej 69");
             place.setTextAlignment(TextAlignment.CENTER);
             place.setWrappingWidth(140);
@@ -1176,7 +1144,35 @@ public class Menu extends Pane {
             bottomContentBox.getChildren().add(displayPictures());
         });
 
-        // CSS
+
+        Profile userProfile = new Profile(username);
+        String profileColor = userProfile.getProfilePictureHex();
+        String bannerColor = userProfile.getProfileBannerHex();
+        String roleColor = userProfile.getProfileRoleHex();
+        String bannerUrl = userProfile.getBannerUrl();
+
+        // apply custom colors
+        leftPane.getStyleClass().remove("left-pane");
+        leftPane.setStyle("-fx-background-color: " + profileColor + "; -fx-background-radius: 20px 0 0 20px; -fx-border-radius: 20px 0 0 20px;");
+
+        // before
+        //leftPaneInfo.getStyleClass().add("left-pane-info");
+
+        leftPaneInfo.getStyleClass().remove("left-pane-info");
+        leftPaneInfo.setStyle("-fx-background-color: " + roleColor + "; -fx-border-width: 2px 0 2px 0; -fx-border-color: rgb(0, 0, 0);");
+
+        // before
+        //rightPaneBanner.getStyleClass().add("right-pane-banner");
+
+        rightPaneBanner.getStyleClass().remove("right-pane-banner");
+
+        // tjek for url
+        if (bannerUrl != null && !bannerUrl.isEmpty()) {
+            rightPaneBanner.setStyle("-fx-background-image: url('" + bannerUrl + "'); -fx-background-size: cover; -fx-background-position: center; -fx-border-color: rgb(0, 0, 0); -fx-border-width: 0 0 2px 2px; -fx-padding: 2px 0 0 0; -fx-background-radius: 0 20px 0 0; -fx-border-radius: 0 20px 0 0;");
+        } else {
+            rightPaneBanner.setStyle("-fx-background-color: " + bannerColor + "; -fx-border-color: rgb(0, 0, 0); -fx-border-width: 0 0 2px 2px; -fx-padding: 2px 0 0 0; -fx-background-radius: 0 20px 0 0; -fx-border-radius: 0 20px 0 0;");
+        }
+
         leftPane.getStyleClass().add("left-pane");
         leftPaneInfo.getStyleClass().add("left-pane-info");
         aboutMeTextArea.getStyleClass().add("about-me-text-area");
@@ -1236,7 +1232,7 @@ public class Menu extends Pane {
             VBox singleReview = new VBox(5);
             singleReview.setPadding(new Insets(30));
             singleReview.setStyle("-fx-background-color: white; -fx-background-radius: 10px; "
-            + "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+                    + "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);");
 
             Label header = new Label("Rigtig god klip");
             header.setStyle("-fx-text-alignment: CENTER !important; -fx-font-weight: bold; -fx-font-size: 14px;");
@@ -1290,7 +1286,7 @@ public class Menu extends Pane {
             pictureBox.setAlignment(Pos.TOP_CENTER);
             pictureBox.setPadding(new Insets(20));
             pictureBox.setStyle("-fx-background-color: white; -fx-background-radius: 10px; "
-            + "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+                    + "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);");
             pictureBox.setMaxWidth(760/2);
 
             Label header = new Label("Fresh fade");

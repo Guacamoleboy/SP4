@@ -1,6 +1,7 @@
 package App;
 
 import javafx.animation.ScaleTransition;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -24,8 +25,23 @@ public class Setting extends Pane {
     private Alert alert;
     private String username;
 
+    // save for later used metods
+    private ColorPicker profileColorPicker;
+    private ColorPicker bannerColorPicker;
+    private ColorPicker roleColorPicker;
+
     public Setting(String username){
         this.username = username;
+
+        // intsanciate this shit
+        profileColorPicker = new ColorPicker(Color.web(getProfileColor()));
+        profileColorPicker.setVisible(false);
+
+        bannerColorPicker = new ColorPicker(Color.web(getBannerColor()));
+        bannerColorPicker.setVisible(false);
+
+        roleColorPicker = new ColorPicker(Color.web(getRoleColor()));
+        roleColorPicker.setVisible(false);
     }
 
     // _____________________________________________
@@ -294,6 +310,263 @@ public class Setting extends Pane {
 
     // _____________________________________________
 
+    protected HBox displayProfileColors() {
+        // HBox
+        HBox fullWidthHBox = new HBox();
+        fullWidthHBox.setAlignment(Pos.CENTER_LEFT);
+        fullWidthHBox.setPrefHeight(134);
+        fullWidthHBox.setPrefWidth(760);
+        fullWidthHBox.setStyle("-fx-border-width: 0 0 2px 0; -fx-border-color: #464646;");
+
+        // GREY region
+        VBox greyRegion = new VBox();
+        greyRegion.setPrefWidth(760 * 0.70);
+        greyRegion.setStyle("-fx-background-color: #7c7c7c; -fx-border-width: 0 2px 0 0; -fx-border-color: #464646;");
+        greyRegion.setAlignment(Pos.CENTER);
+
+        Label colorLabel = new Label("Profile Colors");
+        colorLabel.setStyle("-fx-font-size: 25px; -fx-text-fill: white; -fx-padding: 20px;");
+        greyRegion.getChildren().add(colorLabel);
+
+        // Color region
+        VBox colorRegion = new VBox();
+        colorRegion.setPrefWidth(760 * 0.30);
+        colorRegion.setStyle("-fx-background-color: rgb(94,159,196); -fx-cursor: hand; -fx-background-radius: 0 20px 0 0; -fx-border-radius: 0 20px 0 0;");
+        colorRegion.setAlignment(Pos.CENTER);
+
+        // gem icon
+        Image saveIcon = new Image(getClass().getResource("/assets/icons/icon19.png").toExternalForm());
+        ImageView saveIconView = new ImageView(saveIcon);
+        applyDropShadowEffect(saveIconView, 75, 75, 0.7);
+        colorRegion.getChildren().add(saveIconView);
+
+        // hover
+        ScaleTransition scaleUp = new ScaleTransition(Duration.millis(100), saveIconView);
+        scaleUp.setToX(1.08);
+        scaleUp.setToY(1.08);
+        ScaleTransition scaleDown = new ScaleTransition(Duration.millis(100), saveIconView);
+        scaleDown.setToX(1.0);
+        scaleDown.setToY(1.0);
+
+        colorRegion.setOnMouseEntered(e -> scaleUp.playFromStart());
+        colorRegion.setOnMouseExited(e -> scaleDown.playFromStart());
+
+        // mouse events
+        greyRegion.setOnMouseClicked(e -> {
+
+            showColorPickerDialog();
+        });
+
+
+        colorRegion.setOnMouseClicked(e -> {
+            String profileHex = toHexString(profileColorPicker.getValue());
+            String bannerHex = toHexString(bannerColorPicker.getValue());
+            String roleHex = toHexString(roleColorPicker.getValue());
+
+            boolean success = saveProfileColors(profileHex, bannerHex, roleHex, null);
+
+            if (success) {
+                showSuccessAlert("Profile colors saved successfully!");
+            } else {
+                showErrorAlert("Failed to save profile colors. Please try again.");
+            }
+        });
+
+
+        Tooltip greyTooltip = new Tooltip("Click to change profile colors");
+        Tooltip.install(greyRegion, greyTooltip);
+
+        Tooltip saveTooltip = new Tooltip("Click to save changes");
+        Tooltip.install(colorRegion, saveTooltip);
+
+        // final HBox add
+        fullWidthHBox.getChildren().addAll(greyRegion, colorRegion);
+
+        return fullWidthHBox;
+    }
+
+    private void showColorPickerDialog() {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Change Profile Colors");
+        dialog.setHeaderText("Select colors for your profile");
+
+        ButtonType saveButtonType = new ButtonType("Apply", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
+
+        VBox content = new VBox(15);
+        content.setPadding(new Insets(20, 20, 10, 20));
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(0, 0, 20, 0));
+
+        // profile color picker
+        Label profileColorLabel = new Label("Profile Background:");
+        ColorPicker profileColorPickerDialog = new ColorPicker(profileColorPicker.getValue());
+        grid.add(profileColorLabel, 0, 0);
+        grid.add(profileColorPickerDialog, 1, 0);
+
+        // banner color picker
+        Label bannerColorLabel = new Label("Banner Background:");
+        ColorPicker bannerColorPickerDialog = new ColorPicker(bannerColorPicker.getValue());
+        grid.add(bannerColorLabel, 0, 1);
+        grid.add(bannerColorPickerDialog, 1, 1);
+
+        // Role color picker
+        Label roleColorLabel = new Label("Role Label:");
+        ColorPicker roleColorPickerDialog = new ColorPicker(roleColorPicker.getValue());
+        grid.add(roleColorLabel, 0, 2);
+        grid.add(roleColorPickerDialog, 1, 2);
+
+        // add the grid to the content
+        content.getChildren().add(grid);
+
+        // create a preview section
+        Label previewLabel = new Label("Preview:");
+        previewLabel.setStyle("-fx-font-weight: bold;");
+        content.getChildren().add(previewLabel);
+
+        // create the profile preview card
+        HBox previewCard = new HBox();
+        previewCard.setPrefHeight(150);
+        previewCard.setMaxWidth(500);
+        previewCard.setStyle("-fx-border-radius: 8px; -fx-background-radius: 8px; -fx-border-color: #ccc; -fx-border-width: 1px; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 2);");
+
+        // profile picture zone
+        VBox profileArea = new VBox();
+        profileArea.setPrefWidth(100);
+        profileArea.setAlignment(Pos.CENTER);
+        profileArea.setStyle("-fx-background-color: " + toHexString(profileColorPickerDialog.getValue()) + "; -fx-background-radius: 8px 0 0 0;");
+
+        // banner color-area
+        VBox bannerArea = new VBox();
+        bannerArea.setAlignment(Pos.CENTER_LEFT);
+        bannerArea.setPrefWidth(400);
+        bannerArea.setStyle("-fx-background-color: " + toHexString(bannerColorPickerDialog.getValue()) + "; -fx-background-radius: 0 8px 0 0; -fx-padding: 10px;");
+
+        Label usernameLabel = new Label(username);
+        usernameLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: white;");
+        bannerArea.getChildren().add(usernameLabel);
+
+        // bottom navigation bar
+        HBox navBar = new HBox();
+        navBar.setPrefHeight(40);
+        navBar.setPrefWidth(500);
+
+        // Role label (Student)
+        Label roleLabel = new Label("Student");
+        roleLabel.setPrefWidth(100);
+        roleLabel.setPrefHeight(40);
+        roleLabel.setAlignment(Pos.CENTER);
+        roleLabel.setStyle("-fx-background-color: " + toHexString(roleColorPickerDialog.getValue()) + "; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 0 0 0 8px;");
+
+        // jonas nav items
+        String navItemStyle = "-fx-background-color: #f0f0f0; -fx-padding: 10px; -fx-alignment: center;";
+        Label aboutLabel = new Label("About me");
+        aboutLabel.setPrefWidth(100);
+        aboutLabel.setStyle(navItemStyle);
+
+        Label bookingsLabel = new Label("Available Bookings");
+        bookingsLabel.setPrefWidth(100);
+        bookingsLabel.setStyle(navItemStyle);
+
+        Label reviewsLabel = new Label("Reviews");
+        reviewsLabel.setPrefWidth(100);
+        reviewsLabel.setStyle(navItemStyle);
+
+        Label galleryLabel = new Label("Gallery");
+        galleryLabel.setPrefWidth(100);
+        galleryLabel.setStyle(navItemStyle + "-fx-background-radius: 0 0 8px 0;");
+
+        navBar.getChildren().addAll(roleLabel, aboutLabel, bookingsLabel, reviewsLabel, galleryLabel);
+
+        // preview
+        VBox fullPreview = new VBox();
+        fullPreview.getChildren().addAll(
+                new HBox(profileArea, bannerArea),
+                navBar
+        );
+
+        content.getChildren().add(fullPreview);
+
+        // Update preview when colors change
+        profileColorPickerDialog.setOnAction(e -> {
+            profileArea.setStyle("-fx-background-color: " + toHexString(profileColorPickerDialog.getValue()) + "; -fx-background-radius: 8px 0 0 0;");
+        });
+
+        bannerColorPickerDialog.setOnAction(e -> {
+            bannerArea.setStyle("-fx-background-color: " + toHexString(bannerColorPickerDialog.getValue()) + "; -fx-background-radius: 0 8px 0 0; -fx-padding: 10px;");
+        });
+
+        roleColorPickerDialog.setOnAction(e -> {
+            roleLabel.setStyle("-fx-background-color: " + toHexString(roleColorPickerDialog.getValue()) + "; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 0 0 0 8px;");
+        });
+
+        dialog.getDialogPane().setContent(content);
+
+        // show focus automatically
+        dialog.setOnShown(e -> profileColorPickerDialog.requestFocus());
+
+        // result conversion to colors
+        Optional<ButtonType> result = dialog.showAndWait();
+        if (result.isPresent() && result.get() == saveButtonType) {
+            profileColorPicker.setValue(profileColorPickerDialog.getValue());
+            bannerColorPicker.setValue(bannerColorPickerDialog.getValue());
+            roleColorPicker.setValue(roleColorPickerDialog.getValue());
+        }
+    }
+
+    // _____________________________________________
+
+    private String toHexString(Color color) {
+        return String.format("#%02X%02X%02X%02X",
+                (int) (color.getRed() * 255),
+                (int) (color.getGreen() * 255),
+                (int) (color.getBlue() * 255),
+                (int) (color.getOpacity() * 255));
+    }
+
+    private String getProfileColor() {
+        Profile profile = new Profile(username);
+        String color = profile.getProfilePictureHex();
+        return color != null && !color.isEmpty() ? color : "#ADD8E6FF";
+    }
+
+    private String getBannerColor() {
+        Profile profile = new Profile(username);
+        String color = profile.getProfileBannerHex();
+        return color != null && !color.isEmpty() ? color : "#D3D3D3FF";
+    }
+
+    private String getRoleColor() {
+        Profile profile = new Profile(username);
+        String color = profile.getProfileRoleHex();
+        return color != null && !color.isEmpty() ? color : "#d0e6f7";
+    }
+
+    private boolean saveProfileColors(String profileHex, String bannerHex, String roleHex, String bannerUrl) {
+        return Main.db.updateProfileColors(username, profileHex, bannerHex, roleHex, bannerUrl);
+    }
+
+    private void showSuccessAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Success");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showErrorAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    // _____________________________________________
+
     protected VBox displayLogOut(){
 
         VBox logOutBox = new VBox(15); // Spacing between each element
@@ -411,5 +684,3 @@ public class Setting extends Pane {
     }
 
 } // Setting end
-
-

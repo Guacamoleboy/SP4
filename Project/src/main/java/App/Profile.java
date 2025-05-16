@@ -84,19 +84,41 @@ public class Profile extends Pane {
     // ______________________________________
 
     public String getProfilePictureHex(){
-        return userData.get(8);
+        if (userData.size() > 7) {
+            return userData.get(7);
+        }
+        // default
+        return "#ADD8E6FF";
     }
 
     // ______________________________________
 
     public String getProfileBannerHex(){
-        return userData.get(9);
+        if (userData.size() > 8) {
+            return userData.get(8);
+        }
+        // default
+        return "#D3D3D3FF";
     }
 
     // ______________________________________
 
     public String getProfileRoleHex(){
-        return userData.get(10);
+        // check profile color
+        if (userData.size() > 9) {
+            return userData.get(9);
+        }
+        // default
+        return "#d0e6f7";
     }
 
+    // ______________________________________
+
+    public String getBannerUrl(){
+        // check for url in usedrdata
+        if (userData.size() > 11) {
+            return userData.get(11);
+        }
+        return null;
+    }
 }

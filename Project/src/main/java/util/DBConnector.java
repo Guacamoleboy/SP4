@@ -42,7 +42,6 @@ public class DBConnector {
     // ____________________________________________________
 
     private void initializeDatabase() {
-
         try {
             Statement stmt = con.createStatement();
             String createUsersTable = "CREATE TABLE IF NOT EXISTS users (" +
@@ -55,7 +54,8 @@ public class DBConnector {
                     "banned TEXT DEFAULT 'No'," +
                     "profilehex TEXT DEFAULT '#ADD8E6FF'," +
                     "bannerhex TEXT DEFAULT '#D3D3D3FF'," +
-                    "rolehex TEXT DEFAULT '#d0e6f7'" +
+                    "rolehex TEXT DEFAULT '#d0e6f7'," +
+                    "bannerurl TEXT" +
                     ")";
 
             String createMessagesTable = "CREATE TABLE IF NOT EXISTS bookings (" +
@@ -79,6 +79,16 @@ public class DBConnector {
             stmt.execute(createBookingsTable);
             stmt.execute(createUsersTable);
             stmt.execute(createMessagesTable);
+
+            // Check if bannerurl column exists, if not add it
+            try {
+                ResultSet rs = stmt.executeQuery("SELECT bannerurl FROM users LIMIT 1");
+                rs.close();
+            } catch (SQLException e) {
+                // Column doesn't exist, add it
+                stmt.execute("ALTER TABLE users ADD COLUMN bannerurl TEXT");
+                System.out.println("Added bannerurl column to users table");
+            }
 
         } catch (SQLException e) {
             System.out.println("Error initializing database: " + e.getMessage());
@@ -245,32 +255,54 @@ public class DBConnector {
         String query = "SELECT * FROM users WHERE username = '" + username + "'";
 
         try {
-
             Statement statement = con.createStatement();
             ResultSet rs = statement.executeQuery(query);
 
-            userData.add(rs.getString("id"));
-            userData.add(rs.getString("username"));
-            userData.add(rs.getString("password"));
-            userData.add(rs.getString("email"));
-            userData.add(rs.getString("status"));
-            userData.add(rs.getString("role"));
-            userData.add(rs.getString("banned"));
-            userData.add(rs.getString("profilehex"));
-            userData.add(rs.getString("bannerhex"));
-            userData.add(rs.getString("rolehex"));
+            if (rs.next()) {
+                userData.add(rs.getString("id"));
+                userData.add(rs.getString("username"));
+                userData.add(rs.getString("password"));
+                userData.add(rs.getString("email"));
+                userData.add(rs.getString("status"));
+                userData.add(rs.getString("role"));
+                userData.add(rs.getString("banned"));
 
-            /*
-            userData.add(rs.getString("profilePicture"));
-            userData.add(rs.getString("profileBanner"));
-            */
+                // Add default values if the columns don't exist or are null
+                String profileHex = rs.getString("profilehex");
+                userData.add(profileHex != null ? profileHex : "#ADD8E6FF");
+
+                String bannerHex = rs.getString("bannerhex");
+                userData.add(bannerHex != null ? bannerHex : "#D3D3D3FF");
+
+                String roleHex = rs.getString("rolehex");
+                userData.add(roleHex != null ? roleHex : "#d0e6f7");
+
+                // Add banner URL if it exists
+                try {
+                    String bannerUrl = rs.getString("bannerurl");
+                    if (bannerUrl != null) {
+                        userData.add(bannerUrl);
+                    }
+                } catch (SQLException e) {
+                    // Column might not exist, ignore
+                    System.out.println("bannerurl column not found: " + e.getMessage());
+                }
+            } else {
+                // If no user found, add default values
+                for (int i = 0; i < 10; i++) {
+                    userData.add("");
+                }
+            }
 
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error getting user data: " + e.getMessage());
+            // Add default values in case of error
+            for (int i = 0; i < 10; i++) {
+                userData.add("");
+            }
         }
 
         return userData;
-
     }
 
     // ____________________________________________________
@@ -315,8 +347,47 @@ public class DBConnector {
 
     public boolean deleteAccount(String username){
 
-            String query = "DELETE FROM users WHERE username = '" + username + "'";
-            return executeUpdate(query);
+        String query = "DELETE FROM users WHERE username = '" + username + "'";
+        return executeUpdate(query);
+    }
+
+    // ____________________________________________________
+
+    public boolean updateProfileColors(String username, String profileHex, String bannerHex, String roleHex, String bannerUrl) {
+        try {
+            // if bannerurl column exists
+            boolean bannerUrlExists = true;
+            try {
+                Statement checkStmt = con.createStatement();
+                ResultSet rs = checkStmt.executeQuery("SELECT bannerurl FROM users LIMIT 1");
+                rs.close();
+            } catch (SQLException e) {
+                bannerUrlExists = false;
+
+                Statement alterStmt = con.createStatement();
+                alterStmt.execute("ALTER TABLE users ADD COLUMN bannerurl TEXT");
+
+            }
+
+            StringBuilder query = new StringBuilder("UPDATE users SET ");
+
+            // update the color hex values
+            query.append("profilehex = '").append(profileHex).append("', ")
+                    .append("bannerhex = '").append(bannerHex).append("', ")
+                    .append("rolehex = '").append(roleHex).append("'");
+
+            // banner URL is provide
+            if (bannerUrl != null && !bannerUrl.trim().isEmpty()) {
+                query.append(", bannerurl = '").append(bannerUrl).append("'");
+            }
+
+            query.append(" WHERE username = '").append(username).append("'");
+
+            return executeUpdate(query.toString());
+        } catch (Exception e) {
+            System.out.println("Error updating profile colors: " + e.getMessage());
+            return false;
+        }
     }
 
     public Map<String, Integer> getSchools() {
