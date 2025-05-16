@@ -267,7 +267,7 @@ public class DBConnector {
                 userData.add(rs.getString("role"));
                 userData.add(rs.getString("banned"));
 
-                // Add default values if the columns don't exist or are null
+                // add default values if the columns dontt exist
                 String profileHex = rs.getString("profilehex");
                 userData.add(profileHex != null ? profileHex : "#ADD8E6FF");
 
@@ -277,18 +277,18 @@ public class DBConnector {
                 String roleHex = rs.getString("rolehex");
                 userData.add(roleHex != null ? roleHex : "#d0e6f7");
 
-                // Add banner URL if it exists
+                // add banner URL if it exists
                 try {
                     String bannerUrl = rs.getString("bannerurl");
                     if (bannerUrl != null) {
                         userData.add(bannerUrl);
                     }
                 } catch (SQLException e) {
-                    // Column might not exist, ignore
+                    // column might not exist, ignore
                     System.out.println("bannerurl column not found: " + e.getMessage());
                 }
             } else {
-                // If no user found, add default values
+                //  add default values
                 for (int i = 0; i < 10; i++) {
                     userData.add("");
                 }
@@ -296,7 +296,6 @@ public class DBConnector {
 
         } catch (SQLException e) {
             System.out.println("Error getting user data: " + e.getMessage());
-            // Add default values in case of error
             for (int i = 0; i < 10; i++) {
                 userData.add("");
             }
