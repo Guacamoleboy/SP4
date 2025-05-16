@@ -1323,6 +1323,9 @@ public class Menu extends Pane {
         profilePictureHBox.getChildren().addAll(leftPane, rightPane);
         profileVBox.getChildren().addAll(profilePictureHBox, bottomContentBox);
 
+        // Load about me by default
+        bottomContentBox.getChildren().add(displayAboutMe());
+
         return profileVBox;
     }
 
@@ -1455,6 +1458,9 @@ public class Menu extends Pane {
         rightPane.getChildren().addAll(rightPaneBanner, navRow, rightPaneContent);
         profilePictureHBox.getChildren().addAll(leftPane, rightPane);
         profileVBox.getChildren().addAll(profilePictureHBox, bottomContentBox);
+
+        // Load about me by default
+        bottomContentBox.getChildren().add(displayAboutMe());
 
         return profileVBox;
     }
@@ -1590,6 +1596,146 @@ public class Menu extends Pane {
         profilePictureHBox.getChildren().addAll(leftPane, rightPane);
         profileVBox.getChildren().addAll(profilePictureHBox, bottomContentBox);
 
+        // Load about me by default
+        bottomContentBox.getChildren().add(displayAboutMe());
+
+        return profileVBox;
+    }
+
+    // ____________________________________________________
+
+    public VBox displayProfileTeacher() {
+
+        VBox profileVBox = new VBox(0);
+        profileVBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        profileVBox.setAlignment(Pos.TOP_CENTER);
+        profileVBox.setLayoutX(20);
+        profileVBox.setLayoutY(20);
+        profileVBox.setPrefWidth(760);
+        profileVBox.setPrefHeight(560);
+        profileVBox.getStyleClass().add("profile-vbox");
+
+        HBox profilePictureHBox = new HBox();
+        profilePictureHBox.setPrefWidth(760);
+        profilePictureHBox.setPrefHeight(150);
+        profilePictureHBox.setSpacing(0);
+        profilePictureHBox.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        profilePictureHBox.getStyleClass().add("profilePictureHBox-visuals");
+
+        VBox leftPane = new VBox();
+        leftPane.setPrefWidth(190);
+        leftPane.setPrefHeight(560);
+        leftPane.setAlignment(Pos.TOP_CENTER);
+
+        Image profileImage = new Image(getClass().getResource("/assets/profile/person1.png").toExternalForm());
+        ImageView profileImageView = new ImageView(profileImage);
+        profileImageView.setFitWidth(150);
+        profileImageView.setFitHeight(130);
+        profileImageView.setPreserveRatio(true);
+
+        Label roleLabel = new Label("Teacher");
+        roleLabel.setStyle("-fx-padding: 5;");
+
+        VBox leftPaneInfo = new VBox();
+        leftPaneInfo.setAlignment(Pos.CENTER);
+        leftPaneInfo.getChildren().add(roleLabel);
+
+        // Rating Box
+        HBox ratingBox = new HBox(10);
+        ratingBox.setAlignment(Pos.CENTER);
+        Label star = new Label(convertToStars(getRating()));
+        star.getStyleClass().add("star");
+        ratingBox.getChildren().add(star);
+        leftPane.getChildren().addAll(profileImageView, leftPaneInfo);
+
+        VBox rightPaneBanner = new VBox();
+        rightPaneBanner.setPrefHeight(132);
+        rightPaneBanner.setPrefWidth(570);
+        rightPaneBanner.getStyleClass().add("right-pane-banner");
+        rightPaneBanner.setStyle("-fx-border-color: rgb(0, 0, 0); -fx-border-width: 0 0 2px 2px; -fx-padding: 2px 0 0 0;");
+
+        VBox bottomContentBox = new VBox();
+        bottomContentBox.setPrefWidth(760);
+        bottomContentBox.setAlignment(Pos.TOP_LEFT);
+        bottomContentBox.getStyleClass().add("bottom-content-box");
+
+        Region spacer = new Region();
+        spacer.setPrefHeight(2);  // 2px of space
+
+        VBox rightPane = new VBox();
+        rightPane.setPrefWidth(570);
+        rightPane.setPrefHeight(560);
+        rightPane.setAlignment(Pos.TOP_CENTER);
+
+        HBox navRow = new HBox();
+        navRow.setPrefHeight(57);
+        navRow.setAlignment(Pos.CENTER);
+        navRow.setSpacing(0);
+
+        HBox aboutMeBox = createNavBox("F&Q");
+        HBox contactBox = createNavBox("Contact");
+        HBox reviewsBox = createNavBox("Students");
+        HBox galleryBox = createNavBox("Reviews of us");
+
+        navRow.getChildren().addAll(aboutMeBox, reviewsBox, contactBox, galleryBox);
+
+        VBox rightPaneContent = new VBox(10);
+        rightPaneContent.setPrefWidth(550);
+        rightPaneContent.setAlignment(Pos.TOP_CENTER);
+
+        // Actions
+        contactBox.setOnMouseClicked(e -> {
+            getChildren().clear();
+            getChildren().add(displayAvailableBookings());
+            getChildren().add(displayBookingCard());
+            getChildren().add(displayExamMenu());
+            getChildren().add(displayExamCard());
+        });
+
+        aboutMeBox.setOnMouseClicked(e -> {
+            contactBox.getStyleClass().remove("nav-box-selected");
+            reviewsBox.getStyleClass().remove("nav-box-selected");
+            galleryBox.getStyleClass().remove("nav-box-selected");
+            aboutMeBox.getStyleClass().add("nav-box-selected");
+            bottomContentBox.getChildren().clear();
+            bottomContentBox.getChildren().add(displayAboutMe());
+        });
+
+        reviewsBox.setOnMouseClicked(e -> {
+            aboutMeBox.getStyleClass().remove("nav-box-selected");
+            contactBox.getStyleClass().remove("nav-box-selected");
+            galleryBox.getStyleClass().remove("nav-box-selected");
+            reviewsBox.getStyleClass().add("nav-box-selected");
+            bottomContentBox.getChildren().clear();
+            bottomContentBox.getChildren().add(displayReview());
+        });
+
+        galleryBox.setOnMouseClicked(e -> {
+            aboutMeBox.getStyleClass().remove("nav-box-selected");
+            contactBox.getStyleClass().remove("nav-box-selected");
+            reviewsBox.getStyleClass().remove("nav-box-selected");
+            galleryBox.getStyleClass().add("nav-box-selected");
+            bottomContentBox.getChildren().clear();
+            bottomContentBox.getChildren().add(displayPictures());
+        });
+
+        // CSS
+        leftPane.getStyleClass().add("left-pane");
+        leftPaneInfo.getStyleClass().add("left-pane-info");
+        contactBox.getStyleClass().add("about-me-text-area");
+        rightPane.getStyleClass().add("right-pane");
+
+        // Default Selected Box
+        aboutMeBox.getStyleClass().add("nav-box-selected");
+
+        // Add
+        rightPane.getChildren().addAll(rightPaneBanner, navRow, rightPaneContent);
+        profilePictureHBox.getChildren().addAll(leftPane, rightPane);
+        profileVBox.getChildren().addAll(profilePictureHBox, bottomContentBox);
+
+        // Load about me by default
+        bottomContentBox.getChildren().add(displayAboutMe());
+
         return profileVBox;
     }
 
@@ -1723,6 +1869,9 @@ public class Menu extends Pane {
         rightPane.getChildren().addAll(rightPaneBanner, navRow, rightPaneContent);
         profilePictureHBox.getChildren().addAll(leftPane, rightPane);
         profileVBox.getChildren().addAll(profilePictureHBox, bottomContentBox);
+
+        // Load about me by default
+        bottomContentBox.getChildren().add(displayAboutMe());
 
         return profileVBox;
     }
@@ -1892,14 +2041,29 @@ public class Menu extends Pane {
         Label lastOnlineLabel = new Label("Last Online:");
         Label lastOnlineValue = new Label("2 hours ago");
 
+        // Person info
+        Label nameLabel = new Label(this.username);
+        nameLabel.setStyle("-fx-text-fill: orange; -fx-font-size: 18px;");
+
         // Socials
         Label instagramLabel = new Label("Instagram");
         Label facebookLabel = new Label("Facebook");
         Label githubLabel = new Label("Github");
 
         // Socials VBox
-        VBox socialsBox = new VBox(10, instagramLabel, facebookLabel, githubLabel);
+        VBox socialsBox = new VBox(10, nameLabel, instagramLabel, facebookLabel, githubLabel);
         socialsBox.setAlignment(Pos.CENTER);
+
+        Label cityLabel = new Label("Hillerød");
+        cityLabel.setPadding(new Insets(10, 0, 0, 0));
+        Label schoolLabel = new Label("NEXT Herlev");
+        cityLabel.setStyle("-fx-text-fill: #FFF; -fx-font-size: 16px; " +
+        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 2, 0.5, 1, 1);");
+        schoolLabel.setStyle("-fx-text-fill: #FFF; -fx-font-size: 16px; " +
+        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 2, 0.5, 1, 1);");
+
+        VBox locationBox = new VBox(10, cityLabel, schoolLabel);
+        locationBox.setAlignment(Pos.CENTER);
 
         VBox ratingBox = new VBox(5, starsLabel);
         ratingBox.setAlignment(Pos.CENTER);
@@ -1916,7 +2080,7 @@ public class Menu extends Pane {
         lastOnlineValue.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #fff");
 
         // VBox add
-        infoSections.getChildren().addAll(ratingBox, lastOnlineBox, socialsBox);
+        infoSections.getChildren().addAll(ratingBox, lastOnlineBox, socialsBox, locationBox);
         infoSections.setAlignment(Pos.CENTER);
 
         VBox wrapper = new VBox();
@@ -1947,6 +2111,41 @@ public class Menu extends Pane {
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setPadding(Insets.EMPTY);
 
+        Label aboutHeader = new Label("Welcome stranger...");
+        aboutHeader.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: orange;");
+
+        Label bioText = new Label("Hi, I'm " + username + ". I love cutting hair and making people happy. Book me today!");
+        bioText.setWrapText(true);
+        bioText.setStyle("-fx-font-size: 14px; -fx-text-fill: white;");
+
+        Label interestsHeader = new Label("Interests");
+        interestsHeader.setStyle("-fx-font-size: 16px; -fx-text-fill: #ccc; -fx-padding: 10 0 5 0;");
+
+        HBox tagsBox = new HBox(5);
+        tagsBox.setPadding(new Insets(5, 0, 0, 0));
+        tagsBox.setAlignment(Pos.CENTER_LEFT);
+
+        String[] tags = {"Gym", "Creativity", "Gaming", "Hiking", "Farting"};
+        for (String tag : tags) {
+            Label tagLabel = new Label("#" + tag);
+            tagLabel.setStyle("-fx-background-color: #333; -fx-text-fill: white; -fx-padding: 4 8 4 8; -fx-background-radius: 10; -fx-font-size: 14px");
+            tagsBox.getChildren().add(tagLabel);
+        }
+
+        Label funFactHeader = new Label("Fun Fact");
+        funFactHeader.setStyle("-fx-font-size: 16px; -fx-text-fill: #ccc; -fx-padding: 10 0 5 0;");
+
+        Label funFactText = new Label("I can fart with my arsehole..");
+        funFactText.setWrapText(true);
+        funFactText.setStyle("-fx-text-fill: #aaa; -fx-font-size: 13px;");
+
+        VBox rightContent = new VBox(10, aboutHeader, bioText, interestsHeader, tagsBox, funFactHeader, funFactText);
+        rightContent.setPadding(new Insets(20));
+        rightContent.setStyle("-fx-background-color: #1e1e1e; -fx-background-radius: 10;");
+        rightContent.setPrefWidth(520);
+        rightContent.setMaxWidth(520);
+
+        scrollPane.setContent(rightContent);
         rightBox.getChildren().add(scrollPane);
 
         splitBox.getChildren().addAll(leftBox, rightBox);
