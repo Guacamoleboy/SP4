@@ -258,7 +258,7 @@ public class Setting extends Pane {
         greyRegion.setStyle("-fx-background-color: #7c7c7c; -fx-border-width: 0 2px 0 0; -fx-border-color: #464646;");
         greyRegion.setAlignment(Pos.CENTER);
 
-        Label logoutLabel = new Label("Change language here...");
+        Label logoutLabel = new Label("Change language");
         logoutLabel.setStyle("-fx-font-size: 25px; -fx-text-fill: white; -fx-padding: 20px;");
         greyRegion.getChildren().add(logoutLabel);
 
@@ -276,7 +276,7 @@ public class Setting extends Pane {
             case "spanish":
                 redRegion.setStyle(redRegion.getStyle() + "-fx-background-color: rgb(229, 69, 69);");
                 break;
-            case "nigger":
+            case "niger":
                 redRegion.setStyle(redRegion.getStyle() + "-fx-background-color: rgb(255, 153, 51);");
                 break;
             case "danish":
