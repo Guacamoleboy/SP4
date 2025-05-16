@@ -112,7 +112,7 @@ public class SideMenu extends Pane {
         profileBtn.setOnAction(e -> {
             menu.setHeaderTitle("Profile");
             menu.getChildren().clear();
-            menu.getChildren().add(menu.displayProfile());
+            menu.getChildren().add(menu.displayProfileStudent());
         });
 
         // Hover
