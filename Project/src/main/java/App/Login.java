@@ -156,11 +156,12 @@ public class Login extends Pane {
     // ____________________________________________________
 
     public void forgotButtonAction(){
+
         // If user presses the Register button!
+
         Forgot forgot = new Forgot(600, 600);
-        StartBorder sb = new StartBorder(3);
         StartInfo si = new StartInfo(300, 600);
-        HBox forgotHBox = new HBox(forgot, sb, si);
+        HBox forgotHBox = new HBox(forgot, si);
 
         si.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
         si.getStyleClass().add("orange");
@@ -172,6 +173,7 @@ public class Login extends Pane {
 
         Stage stage = (Stage) getScene().getWindow(); // Main window
         stage.setScene(forgotScene);
+
     }
 
     // ____________________________________________________

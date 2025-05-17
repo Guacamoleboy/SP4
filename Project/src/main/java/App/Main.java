@@ -38,6 +38,7 @@ public class Main extends Application { // Client class
     private static Login login = new Login(600, 600);
     private StartInfo startinfo = new StartInfo(300, 600);
     public static DBConnector db;
+    public static String lang = "Spanish";
 
     // ____________________________________________________
 
@@ -114,6 +115,10 @@ public class Main extends Application { // Client class
 
     public static void loginPage(Stage stage) {
         login.goToLoginPage(stage);
+    }
+
+    public static void setLang(String tmplang) {
+        lang = tmplang;
     }
 
 } // Class end
