@@ -21,15 +21,15 @@ public class ResetConfirmation {
         HashMapStorage.saveCode(email, String.valueOf(code));
 
         // Email content
-        String subject = "Password confirmation email from Netflix (SP3)";
+        String subject = "Password confirmation email from Elevtiden (SP4)";
         String msg = "Your password confirmation code is:\n\n" + code +
-                "\n\nCode is valid for 5 minutes.\n\nThanks for using Netflix.";
+        "\n\nCode is valid for 5 minutes";
 
         // Email server properties
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", "smtp.one.com");
+        props.put("mail.smtp.host", "send.one.com");
         props.put("mail.smtp.port", "587");
 
         // Authenticated session
