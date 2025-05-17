@@ -11,20 +11,21 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.image.ImageView;
-
 import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 public class Menu extends Pane {
 
@@ -40,6 +41,14 @@ public class Menu extends Pane {
     private boolean isDarkMode = true;
 
     // OBJECT //
+    private DatePicker datePicker;
+    private TextField addressField;
+    private ComboBox<String> timePicker;
+    private ComboBox<String> hairTypeDropdown;
+    private ComboBox<String> genderDropdown;
+    private ComboBox<String> lengthDropdown;
+    private ComboBox<String> hairColorDropdown;
+    private ComboBox<Integer> reviewPicker;
     private TextArea chatArea;
     private TextField messageField;
     private String currentChatPartner;
@@ -739,35 +748,34 @@ public class Menu extends Pane {
 
     // ____________________________________________________
 
-    public HBox displayBookingCard(){
-
-        // Frame towards right
+    public HBox displayBookingCard() {
         HBox cardContainer = new HBox(0);
         cardContainer.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
         cardContainer.setPrefWidth(800);
         cardContainer.setAlignment(Pos.TOP_LEFT);
-        cardContainer.setLayoutY(57); // height + border (2px)
+        cardContainer.setLayoutY(57);
 
-        // cardBoxMenu (under menu)
         HBox cardBox = new HBox();
         cardBox.setPrefWidth(800);
-        cardBox.setPrefHeight(250); // 50 + 50 = 500 / 2
+        cardBox.setPrefHeight(250);
 
-        for(int i = 0; i < 5; i++){
-            String[] booking = randomBooking();
-            String d = booking[0];
-            String p = booking[1];
-            String t = booking[2];
-            double r = getRating();
+        List<BookingCard> bookings = Main.db.getBookings(false);
 
-            // Labels
-            Label date = new Label(d);
-            Text place = new Text(p);
+        for (BookingCard booking : bookings) {
+            String dateStr = booking.getDate();
+            String timeStr = booking.getTime();
+            String addressStr = booking.getAddress();
+            int ratingInt = 3; //booking.getReview(); // TODO: not set up
+            String hairTypeStr = Main.db.getHairTypeSummary(booking.getHairtypeId()); // e.g., "Curly, Brown, Medium, Female"
+
+            Label date = new Label(dateStr);
+            Text place = new Text(addressStr + "\n" + hairTypeStr);
             place.setTextAlignment(TextAlignment.CENTER);
             place.setWrappingWidth(140);
             place.setFill(Color.WHITE);
-            Label time = new Label(t);
-            Label rating = new Label(convertToStars(r));
+
+            Label time = new Label(timeStr);
+            Label rating = new Label(convertToStars(ratingInt));
 
             time.setPadding(new Insets(30, 0, 0, 0));
             rating.setPadding(new Insets(0, 0, 30, 0));
@@ -778,20 +786,12 @@ public class Menu extends Pane {
             headerWithWave.getStyleClass().add("card-header-visuals");
 
             SVGPath wave = new SVGPath();
-            wave.setContent(
-                    "M0 30 " +
-                            "C26 10, 26 50, 52 30 " +
-                            "C78 10, 78 50, 104 30 " +
-                            "C130 10, 130 50, 158 30 " +
-                            "V50 H0 Z"
-            );
-
+            wave.setContent("M0 30 C26 10, 26 50, 52 30 C78 10, 78 50, 104 30 C130 10, 130 50, 158 30 V50 H0 Z");
             DropShadow dropShadow = new DropShadow();
             dropShadow.setColor(Color.rgb(0, 0, 0, 0.2));
             dropShadow.setRadius(5);
             dropShadow.setOffsetX(0);
             dropShadow.setOffsetY(-2);
-
             wave.setEffect(dropShadow);
             wave.setFill(Color.web("#ffa200"));
             wave.setScaleY(-1);
@@ -800,17 +800,14 @@ public class Menu extends Pane {
             date.getStyleClass().add("card-visuals-header");
             StackPane.setAlignment(date, Pos.TOP_CENTER);
             date.setPadding(new Insets(15, 0, 0, 0));
-
             headerWithWave.getChildren().addAll(wave, date);
             wave.toBack();
 
-            // CSS
-            date.getStyleClass().add("card-visuals-header");
+            // Apply CSS
             place.getStyleClass().add("card-visuals-lol");
             time.getStyleClass().add("card-visuals-bold");
             rating.getStyleClass().add("card-visuals-rating");
 
-            // Card display
             VBox card = new VBox(10);
             card.setPrefWidth(160);
             card.setMinWidth(160);
@@ -819,28 +816,105 @@ public class Menu extends Pane {
             card.setAlignment(Pos.TOP_CENTER);
             card.getStyleClass().add("card-background-visuals");
 
-            // SKYD MIG
+            Region spacer = new Region();
+            VBox.setVgrow(spacer, Priority.ALWAYS);
+
+            String p = "500kr";
+
+            card.setOnMouseClicked(event -> {
+                DialogBox.displayBook(dateStr,p, timeStr, convertToStars(4));
+            });
+
+            Animation.addHoverScaleEffectVBox(card);
+
+            card.getChildren().addAll(headerWithWave, time, place, spacer, rating);
+            cardBox.getChildren().add(card);
+        }
+
+        cardContainer.getChildren().add(cardBox);
+        return cardContainer;
+    }
+
+    // ______________________________________________________
+
+    public HBox displayBookingCardStudent(int student_id) {
+        HBox cardContainer = new HBox(0);
+        cardContainer.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        cardContainer.setPrefWidth(800);
+        cardContainer.setAlignment(Pos.TOP_LEFT);
+        cardContainer.setLayoutY(57);
+
+        HBox cardBox = new HBox();
+        cardBox.setPrefWidth(800);
+        cardBox.setPrefHeight(250);
+
+        List<BookingCard> bookings = Main.db.getBookings(Main.db.getUserID(username), false);
+
+        for (BookingCard booking : bookings) {
+            String dateStr = booking.getDate();
+            String timeStr = booking.getTime();
+            String addressStr = booking.getAddress();
+            int ratingInt = booking.getReview(); // 0 if you haven't set up yet
+            String hairTypeStr = Main.db.getHairTypeSummary(booking.getHairtypeId()); // e.g., "Curly, Brown, Medium, Female"
+
+            Label date = new Label(dateStr);
+            Text place = new Text(addressStr + "\n" + hairTypeStr);
+            place.setTextAlignment(TextAlignment.CENTER);
+            place.setWrappingWidth(140);
+            place.setFill(Color.WHITE);
+
+            Label time = new Label(timeStr);
+            Label rating = new Label(convertToStars(ratingInt)); // Optional
+
+            time.setPadding(new Insets(30, 0, 0, 0));
+            rating.setPadding(new Insets(0, 0, 30, 0));
+
+            StackPane headerWithWave = new StackPane();
+            headerWithWave.setPrefHeight(50);
+            headerWithWave.setPrefWidth(160);
+            headerWithWave.getStyleClass().add("card-header-visuals");
+
+            SVGPath wave = new SVGPath();
+            wave.setContent("M0 30 C26 10, 26 50, 52 30 C78 10, 78 50, 104 30 C130 10, 130 50, 158 30 V50 H0 Z");
+            DropShadow dropShadow = new DropShadow();
+            dropShadow.setColor(Color.rgb(0, 0, 0, 0.2));
+            dropShadow.setRadius(5);
+            dropShadow.setOffsetX(0);
+            dropShadow.setOffsetY(-2);
+            wave.setEffect(dropShadow);
+            wave.setFill(Color.web("#ffa200"));
+            wave.setScaleY(-1);
+            wave.setTranslateY(30);
+
+            date.getStyleClass().add("card-visuals-header");
+            StackPane.setAlignment(date, Pos.TOP_CENTER);
+            date.setPadding(new Insets(15, 0, 0, 0));
+            headerWithWave.getChildren().addAll(wave, date);
+            wave.toBack();
+
+            // Apply CSS
+            place.getStyleClass().add("card-visuals-lol");
+            time.getStyleClass().add("card-visuals-bold");
+            rating.getStyleClass().add("card-visuals-rating");
+
+            VBox card = new VBox(10);
+            card.setPrefWidth(160);
+            card.setMinWidth(160);
+            card.setMaxWidth(160);
+            card.setPrefHeight(248);
+            card.setAlignment(Pos.TOP_CENTER);
+            card.getStyleClass().add("card-background-visuals");
 
             Region spacer = new Region();
             VBox.setVgrow(spacer, Priority.ALWAYS);
 
-            // Hover effect on card :hover
             Animation.addHoverScaleEffectVBox(card);
 
-            // Add labels to card
             card.getChildren().addAll(headerWithWave, time, place, spacer, rating);
-
-            card.setOnMouseClicked(event -> {
-                DialogBox.displayBook(d,p,t, convertToStars(r));
-            });
-            // Add card to CardBox
             cardBox.getChildren().add(card);
-
         }
 
-        // Add cardContainer to final HBox
         cardContainer.getChildren().add(cardBox);
-
         return cardContainer;
     }
 
@@ -994,38 +1068,38 @@ public class Menu extends Pane {
         return cardContainer;
     }
 
-
     // ____________________________________________________
 
-    public HBox displayExamCard(){
+    public HBox displayExamCard() {
 
-        // Frame towards right
         HBox cardContainer = new HBox(0);
         cardContainer.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
         cardContainer.setPrefWidth(800);
         cardContainer.setAlignment(Pos.TOP_LEFT);
         cardContainer.setLayoutY(354);
 
-        // cardBoxMenu (under menu)
         HBox cardBox = new HBox();
         cardBox.setPrefWidth(800);
-        cardBox.setPrefHeight(250); // 50 + 50 = 500 / 2
+        cardBox.setPrefHeight(250);
 
-        for(int i = 0; i < 5; i++){
-            String[] booking = randomBooking();
-            String d = booking[0];
-            String p = booking[1];
-            String t = booking[2];
-            double r = getRating();
+        List<BookingCard> bookings = Main.db.getBookings(true);
 
-            // Labels
-            Label date = new Label(d);
-            Text place = new Text(p);
+        for (BookingCard booking : bookings) {
+
+            String dateStr = booking.getDate();
+            String timeStr = booking.getTime();
+            String addressStr = booking.getAddress();
+            int ratingInt = 3; //booking.getReview(); // TODO: not set up
+            String hairTypeStr = Main.db.getHairTypeSummary(booking.getHairtypeId()); // e.g., "Curly, Brown, Medium, Female"
+
+            Label date = new Label(dateStr);
+            Text place = new Text(addressStr + "\n" + hairTypeStr);
             place.setTextAlignment(TextAlignment.CENTER);
             place.setWrappingWidth(140);
             place.setFill(Color.WHITE);
-            Label time = new Label(t);
-            Label rating = new Label(convertToStars(r));
+
+            Label time = new Label(timeStr);
+            Label rating = new Label(convertToStars(ratingInt));
 
             time.setPadding(new Insets(30, 0, 0, 0));
             rating.setPadding(new Insets(0, 0, 30, 0));
@@ -1036,20 +1110,12 @@ public class Menu extends Pane {
             headerWithWave.getStyleClass().add("card-header-visuals");
 
             SVGPath wave = new SVGPath();
-            wave.setContent(
-                    "M0 30 " +
-                            "C26 10, 26 50, 52 30 " +
-                            "C78 10, 78 50, 104 30 " +
-                            "C130 10, 130 50, 158 30 " +
-                            "V50 H0 Z"
-            );
-
+            wave.setContent("M0 30 C26 10, 26 50, 52 30 C78 10, 78 50, 104 30 C130 10, 130 50, 158 30 V50 H0 Z");
             DropShadow dropShadow = new DropShadow();
             dropShadow.setColor(Color.rgb(0, 0, 0, 0.2));
             dropShadow.setRadius(5);
             dropShadow.setOffsetX(0);
             dropShadow.setOffsetY(-2);
-
             wave.setEffect(dropShadow);
             wave.setFill(Color.web("#ffa200"));
             wave.setScaleY(-1);
@@ -1058,17 +1124,14 @@ public class Menu extends Pane {
             date.getStyleClass().add("card-visuals-header");
             StackPane.setAlignment(date, Pos.TOP_CENTER);
             date.setPadding(new Insets(15, 0, 0, 0));
-
             headerWithWave.getChildren().addAll(wave, date);
             wave.toBack();
 
-            // CSS
-            date.getStyleClass().add("card-visuals-header");
+            // Apply CSS
             place.getStyleClass().add("card-visuals-lol");
             time.getStyleClass().add("card-visuals-bold");
             rating.getStyleClass().add("card-visuals-rating");
 
-            // Card display
             VBox card = new VBox(10);
             card.setPrefWidth(160);
             card.setMinWidth(160);
@@ -1077,28 +1140,106 @@ public class Menu extends Pane {
             card.setAlignment(Pos.TOP_CENTER);
             card.getStyleClass().add("card-background-visuals");
 
-            // SKYD MIG
+            Region spacer = new Region();
+            VBox.setVgrow(spacer, Priority.ALWAYS);
+
+            String p = "500kr";
+
+            card.setOnMouseClicked(event -> {
+                DialogBox.displayBook(dateStr,p, timeStr, convertToStars(4));
+            });
+
+            Animation.addHoverScaleEffectVBox(card);
+
+            card.getChildren().addAll(headerWithWave, time, place, spacer, rating);
+            cardBox.getChildren().add(card);
+        }
+
+        cardContainer.getChildren().add(cardBox);
+        return cardContainer;
+    }
+
+    // ____________________________________________________
+
+    public HBox displayExamCardStudent() {
+
+        HBox cardContainer = new HBox(0);
+        cardContainer.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        cardContainer.setPrefWidth(800);
+        cardContainer.setAlignment(Pos.TOP_LEFT);
+        cardContainer.setLayoutY(354);
+
+        HBox cardBox = new HBox();
+        cardBox.setPrefWidth(800);
+        cardBox.setPrefHeight(250);
+
+        List<BookingCard> bookings = Main.db.getBookings(true);
+
+        for (BookingCard booking : bookings) {
+            String dateStr = booking.getDate();
+            String timeStr = booking.getTime();
+            String addressStr = booking.getAddress();
+            int ratingInt = 3; //booking.getReview(); // TODO: not set up
+            String hairTypeStr = Main.db.getHairTypeSummary(booking.getHairtypeId()); // e.g., "Curly, Brown, Medium, Female"
+
+            Label date = new Label(dateStr);
+            Text place = new Text(addressStr + "\n" + hairTypeStr);
+            place.setTextAlignment(TextAlignment.CENTER);
+            place.setWrappingWidth(140);
+            place.setFill(Color.WHITE);
+
+            Label time = new Label(timeStr);
+            Label rating = new Label(convertToStars(ratingInt));
+
+            time.setPadding(new Insets(30, 0, 0, 0));
+            rating.setPadding(new Insets(0, 0, 30, 0));
+
+            StackPane headerWithWave = new StackPane();
+            headerWithWave.setPrefHeight(50);
+            headerWithWave.setPrefWidth(160);
+            headerWithWave.getStyleClass().add("card-header-visuals");
+
+            SVGPath wave = new SVGPath();
+            wave.setContent("M0 30 C26 10, 26 50, 52 30 C78 10, 78 50, 104 30 C130 10, 130 50, 158 30 V50 H0 Z");
+            DropShadow dropShadow = new DropShadow();
+            dropShadow.setColor(Color.rgb(0, 0, 0, 0.2));
+            dropShadow.setRadius(5);
+            dropShadow.setOffsetX(0);
+            dropShadow.setOffsetY(-2);
+            wave.setEffect(dropShadow);
+            wave.setFill(Color.web("#ffa200"));
+            wave.setScaleY(-1);
+            wave.setTranslateY(30);
+
+            date.getStyleClass().add("card-visuals-header");
+            StackPane.setAlignment(date, Pos.TOP_CENTER);
+            date.setPadding(new Insets(15, 0, 0, 0));
+            headerWithWave.getChildren().addAll(wave, date);
+            wave.toBack();
+
+            // Apply CSS
+            place.getStyleClass().add("card-visuals-lol");
+            time.getStyleClass().add("card-visuals-bold");
+            rating.getStyleClass().add("card-visuals-rating");
+
+            VBox card = new VBox(10);
+            card.setPrefWidth(160);
+            card.setMinWidth(160);
+            card.setMaxWidth(160);
+            card.setPrefHeight(248);
+            card.setAlignment(Pos.TOP_CENTER);
+            card.getStyleClass().add("card-background-visuals");
 
             Region spacer = new Region();
             VBox.setVgrow(spacer, Priority.ALWAYS);
 
-            // Hover effect on card :hover
             Animation.addHoverScaleEffectVBox(card);
 
-            card.setOnMouseClicked(event -> {
-                DialogBox.displayBook(d,p,t, convertToStars(r));
-            });
-            // Add labels to card
             card.getChildren().addAll(headerWithWave, time, place, spacer, rating);
-
-            // Add card to CardBox
             cardBox.getChildren().add(card);
-
         }
 
-        // Add cardContainer to final HBox
         cardContainer.getChildren().add(cardBox);
-
         return cardContainer;
     }
 
@@ -2732,6 +2873,207 @@ public class Menu extends Pane {
         return mainContainer;
     }
 
+    public HBox displayBookingsStudent() {
+        //billede til knap
+        Image plusIcon = new Image(getClass().getResource("/assets/icons/icon20.png").toExternalForm());
 
+
+        ImageView plusView = new ImageView(plusIcon);
+        plusView.setFitWidth(20);
+        plusView.setFitHeight(20);
+
+        // FRAME MOD HØJRE
+        HBox mainContainer = new HBox(0);
+        mainContainer.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        mainContainer.setPrefWidth(800);
+        mainContainer.setAlignment(Pos.TOP_LEFT);
+        mainContainer.setLayoutY(0);
+
+        HBox topMenuHBox = new HBox(10);
+        topMenuHBox.setPadding(new Insets(10, 10, 10, 10));
+        topMenuHBox.setPrefWidth(800);
+        topMenuHBox.setPrefHeight(50);
+        topMenuHBox.setStyle("-fx-border-width: 0 0 2px 0; -fx-border-color: rgb(0, 0, 0); -fx-background-color: #575757");
+
+        // Label
+        Label bookingLabel = new Label("Create new booking");
+        bookingLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 20px");
+
+        // VBox for title
+        VBox availableSection = new VBox();
+        availableSection.setPrefWidth(200);
+        availableSection.setPadding(new Insets(0, 0, 0, 0));
+        availableSection.setAlignment(Pos.TOP_LEFT);
+        availableSection.getChildren().add(bookingLabel);
+
+        Button addBooking = new Button();
+        addBooking.setGraphic(plusView);
+
+        // 50px Top Menu Header
+        topMenuHBox.getChildren().addAll(availableSection, addBooking);
+
+        addBooking.setOnAction(e -> {
+            bookingPopup();
+        });
+
+
+        // First load
+        // Check om personen har aktive bookings. Hvis ja så skal de jo også loades ved load af menuen.
+        //Og tilføj nye bookings
+        mainContainer.getChildren().addAll(topMenuHBox); // VBox
+
+        return mainContainer;
+    }
+
+    // ____________________________________________________
+
+    private void bookingPopup() {
+
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Create new booking");
+        dialog.setHeaderText("Select new booking information");
+
+        ButtonType saveButtonType = new ButtonType("Apply", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
+
+        VBox content = new VBox(15);
+        content.setPadding(new Insets(20, 20, 10, 20));
+
+        datePicker = new DatePicker();
+        datePicker.setPrefHeight(30);
+
+        addressField = new TextField();
+        addressField.setPrefHeight(30);
+        addressField.getStyleClass().add("text-field");
+
+        timePicker = createTimePicker();
+        timePicker.setPrefHeight(30);
+
+        hairTypeDropdown = new ComboBox<>();
+        hairTypeDropdown.getItems().addAll("Straight", "Wavy", "Curly", "Coily");
+        hairTypeDropdown.setPromptText("Choose Hairtype");
+        hairTypeDropdown.getStyleClass().add("combo-box");
+
+        hairColorDropdown = new ComboBox<>();
+        hairColorDropdown.getItems().addAll("Blonde", "Black", "Brown", "Red", "Grey");
+        hairColorDropdown.setPromptText("Hair Color");
+        hairColorDropdown.getStyleClass().add("combo-box");
+
+        lengthDropdown = new ComboBox<>();
+        lengthDropdown.getItems().addAll("Bald", "Buzz", "Short", "Medium", "Long", "Very Long", "Tied");
+        lengthDropdown.setPromptText("Hair Length");
+        lengthDropdown.getStyleClass().add("combo-box");
+
+        genderDropdown = new ComboBox<>();
+        genderDropdown.getItems().addAll("Male", "Female");
+        genderDropdown.setPromptText("Gender");
+        genderDropdown.getStyleClass().add("combo-box");
+
+        CheckBox examCheckBox = new CheckBox("Mark if this is for exam");
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(0, 0, 20, 0));
+
+        // Date picker
+        Label dateLabel = new Label("Date:");
+        grid.add(dateLabel, 0, 0);
+        grid.add(datePicker, 1, 0);
+
+        // Address writer/setter
+        Label addressLabel = new Label("Full address:");
+        grid.add(addressLabel, 0, 1);
+        grid.add(addressField, 1, 1);
+
+        // Time picker
+        Label timeLabel = new Label("Time:");
+        grid.add(timeLabel, 0, 2);
+        grid.add(timePicker, 1, 2);
+
+        //Hairtype selecter
+        Label hairtypeLabel = new Label("Preferred hair type:");
+        grid.add(hairtypeLabel, 0, 3);
+        grid.add(hairTypeDropdown, 1, 3);
+
+        //Haircolor selecter
+        Label hairColorLabel = new Label("Preferred hair color:");
+        grid.add(hairColorLabel, 0, 4);
+        grid.add(hairColorDropdown, 1, 4);
+
+        //Hairlength selecter
+        Label lengthLabel = new Label("Preferred hair Length:");
+        grid.add(lengthLabel, 0, 5);
+        grid.add(lengthDropdown, 1, 5);
+
+        //Gender select
+        Label genderLabel = new Label("Preferred gender:");
+        grid.add(genderLabel, 0, 6);
+        grid.add(genderDropdown, 1, 6);
+
+        //Exam or nah?
+        Label examLabel = new Label("Is it an exam?");
+        grid.add(examLabel, 0, 7);
+        grid.add(examCheckBox, 1, 7);
+
+        // Adding grid content vbox
+        content.getChildren().add(grid);
+
+        // adding content to dialogpane
+        dialog.getDialogPane().setContent(content);
+
+        Optional<ButtonType> result = dialog.showAndWait();
+
+        if (result.isPresent() && result.get().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+
+            LocalDate selectedDate = datePicker.getValue();
+            String selectedTime = timePicker.getValue();
+            String selectedAddress = addressField.getText();
+
+            String hairType = hairTypeDropdown.getValue();
+            String hairColor = hairColorDropdown.getValue();
+            String hairLength = lengthDropdown.getValue();
+            String gender = genderDropdown.getValue();
+            boolean isExam = examCheckBox.isSelected();
+
+            // Check for missing required fields
+            if (selectedDate == null || selectedTime == null || selectedAddress == null || selectedAddress.isBlank()
+                    || hairType == null || hairColor == null || hairLength == null || gender == null) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Missing Information");
+                alert.setHeaderText("Please fill in all fields before applying.");
+                alert.setContentText("Make sure to select date, time, address, hair type, color, length, and gender.");
+                alert.showAndWait();
+                return; // Exit early, do not save
+            }
+
+            int currentStudent_id = Main.db.getUserID(username);
+            int hairtypeId = Main.db.getOrCreateHairType(hairType, hairColor, hairLength, gender);
+
+            BookingCard card = new BookingCard(selectedDate, selectedTime, selectedAddress, hairtypeId, isExam, currentStudent_id);
+            card.createBooking();
+
+        }
+    }
+    // ____________________________________________________
+
+    private ComboBox<String> createTimePicker () {
+
+        ComboBox<String> timePicker = new ComboBox<>();
+        timePicker.setPromptText("Select Time");
+
+        // Populate times: 00:00 to 23:30
+        for (int hour = 0; hour < 24; hour++) {
+            String h = String.format("%02d", hour);
+            timePicker.getItems().add(h + ":00");
+            timePicker.getItems().add(h + ":30");
+        }
+
+        // Optional styling
+        timePicker.setPrefWidth(120);
+        timePicker.setStyle("-fx-font-size: 14px;");
+
+        return timePicker;
+    }
 
 }
