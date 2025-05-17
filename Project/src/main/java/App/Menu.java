@@ -15,10 +15,9 @@ import javafx.scene.image.ImageView;
 import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Objects;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
@@ -393,7 +392,7 @@ public class Menu extends Pane {
 
         setting2.setOnAction(e -> {
             messageArea.getChildren().clear();
-            messageArea.getChildren().add(setting.displayLanguage("spanish"));
+            messageArea.getChildren().add(setting.displayLanguage(Main.lang));
         });
 
         setting3.setOnAction(e -> {
@@ -755,15 +754,20 @@ public class Menu extends Pane {
         cardBox.setPrefHeight(250); // 50 + 50 = 500 / 2
 
         for(int i = 0; i < 5; i++){
+            String[] booking = randomBooking();
+            String d = booking[0];
+            String p = booking[1];
+            String t = booking[2];
+            double r = getRating();
 
             // Labels
-            Label date = new Label("26.03");
-            Text place = new Text("Hillerød 3400\nNarkovej 69");
+            Label date = new Label(d);
+            Text place = new Text(p);
             place.setTextAlignment(TextAlignment.CENTER);
             place.setWrappingWidth(140);
             place.setFill(Color.WHITE);
-            Label time = new Label("15:30");
-            Label rating = new Label(convertToStars(4));
+            Label time = new Label(t);
+            Label rating = new Label(convertToStars(r));
 
             time.setPadding(new Insets(30, 0, 0, 0));
             rating.setPadding(new Insets(0, 0, 30, 0));
@@ -776,10 +780,10 @@ public class Menu extends Pane {
             SVGPath wave = new SVGPath();
             wave.setContent(
                     "M0 30 " +
-                    "C26 10, 26 50, 52 30 " +
-                    "C78 10, 78 50, 104 30 " +
-                    "C130 10, 130 50, 158 30 " +
-                    "V50 H0 Z"
+                            "C26 10, 26 50, 52 30 " +
+                            "C78 10, 78 50, 104 30 " +
+                            "C130 10, 130 50, 158 30 " +
+                            "V50 H0 Z"
             );
 
             DropShadow dropShadow = new DropShadow();
@@ -826,6 +830,9 @@ public class Menu extends Pane {
             // Add labels to card
             card.getChildren().addAll(headerWithWave, time, place, spacer, rating);
 
+            card.setOnMouseClicked(event -> {
+                DialogBox.displayBook(d,p,t, convertToStars(r));
+            });
             // Add card to CardBox
             cardBox.getChildren().add(card);
 
@@ -835,6 +842,31 @@ public class Menu extends Pane {
         cardContainer.getChildren().add(cardBox);
 
         return cardContainer;
+    }
+
+    // ____________________________________________________
+
+    //TEMP, for the hardcoded version!!!!
+    private String[] randomBooking() {
+        Random random = new Random();
+        LocalDate randomDate = LocalDate.now().plusDays(random.nextInt(30));
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM");
+        String date = randomDate.format(dateFormatter);
+
+        int hour = 6 + random.nextInt(11);
+        int minute = random.nextBoolean() ? 0 : 30;
+        String time = String.format("%02d:%02d", hour, minute);
+
+        String[] addresses = {
+                "Hillerød 3400\nNarkovej 69",
+                "Adresse 2\nNarkovej 420",
+                "Adresse 3\nNarkovej 5",
+                "Adresse 4\nNarkovej 3",
+                "Adresse 1\nNarkovej 2",
+        };
+        String address = addresses[random.nextInt(addresses.length)];
+
+        return new String[] { date, address, time };
     }
 
     // ____________________________________________________
@@ -923,8 +955,10 @@ public class Menu extends Pane {
             payButton.setPrefWidth(50);
             payButton.setPrefHeight(28);
 
+            String p = "500dkk";
+
             payButton.setOnAction(e -> {
-                DialogBox.displayPay();
+                DialogBox.displayPay(d, t, p);
             });
 
             // Margin
@@ -978,15 +1012,20 @@ public class Menu extends Pane {
         cardBox.setPrefHeight(250); // 50 + 50 = 500 / 2
 
         for(int i = 0; i < 5; i++){
+            String[] booking = randomBooking();
+            String d = booking[0];
+            String p = booking[1];
+            String t = booking[2];
+            double r = getRating();
 
             // Labels
-            Label date = new Label("26.03");
-            Text place = new Text("Hillerød 3400\nNarkovej 69");
+            Label date = new Label(d);
+            Text place = new Text(p);
             place.setTextAlignment(TextAlignment.CENTER);
             place.setWrappingWidth(140);
             place.setFill(Color.WHITE);
-            Label time = new Label("15:30");
-            Label rating = new Label(convertToStars(4));
+            Label time = new Label(t);
+            Label rating = new Label(convertToStars(r));
 
             time.setPadding(new Insets(30, 0, 0, 0));
             rating.setPadding(new Insets(0, 0, 30, 0));
@@ -999,10 +1038,10 @@ public class Menu extends Pane {
             SVGPath wave = new SVGPath();
             wave.setContent(
                     "M0 30 " +
-                    "C26 10, 26 50, 52 30 " +
-                    "C78 10, 78 50, 104 30 " +
-                    "C130 10, 130 50, 158 30 " +
-                    "V50 H0 Z"
+                            "C26 10, 26 50, 52 30 " +
+                            "C78 10, 78 50, 104 30 " +
+                            "C130 10, 130 50, 158 30 " +
+                            "V50 H0 Z"
             );
 
             DropShadow dropShadow = new DropShadow();
@@ -1046,6 +1085,9 @@ public class Menu extends Pane {
             // Hover effect on card :hover
             Animation.addHoverScaleEffectVBox(card);
 
+            card.setOnMouseClicked(event -> {
+                DialogBox.displayBook(d,p,t, convertToStars(r));
+            });
             // Add labels to card
             card.getChildren().addAll(headerWithWave, time, place, spacer, rating);
 
