@@ -12,17 +12,16 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import java.sql.*;
 import java.util.Optional;
-import App.Menu.*;
 import javafx.util.Duration;
 
 public class Setting extends Pane {
 
     // Attributes
+    private Alert alert;
+    private String username;
 
     // OBJECT //
     Connection con;
-    private Alert alert;
-    private String username;
 
     public Setting(String username){
         this.username = username;
@@ -84,6 +83,10 @@ public class Setting extends Pane {
         // Action listener on imageView only *dab*
         redRegion.setOnMouseEntered(e -> scaleUp.playFromStart());
         redRegion.setOnMouseExited(e -> scaleDown.playFromStart());
+        redRegion.setOnMouseClicked(e -> {
+            Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+            Main.loginPage(stage);
+        });
 
         // final HBox add
         fullWidthHBox.getChildren().addAll(greyRegion, redRegion);
@@ -146,6 +149,13 @@ public class Setting extends Pane {
             profileImageView.setImage(iconNormal);
             redRegion.setStyle("-fx-background-color: " + normalBackground + "; -fx-cursor: hand; -fx-background-radius: 0 20px 0 0; -fx-border-radius: 0 20px 0 0;");
             scaleDown.playFromStart();
+        });
+
+        redRegion.setOnMouseClicked(e -> {
+            if (Main.db.deleteAccount(this.username)) {
+                Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+                Main.loginPage(stage);
+            }
         });
 
         // final HBox add
@@ -307,13 +317,10 @@ public class Setting extends Pane {
             case "english":
                 redRegion.setStyle(redRegion.getStyle() + "-fx-background-color: rgb(52,71,117);");
                 break;
-            case "spanish":
+            case "español":
                 redRegion.setStyle(redRegion.getStyle() + "-fx-background-color: rgb(229, 69, 69);");
                 break;
-            case "niger":
-                redRegion.setStyle(redRegion.getStyle() + "-fx-background-color: rgb(255, 153, 51);");
-                break;
-            case "danish":
+            case "dansk":
                 redRegion.setStyle(redRegion.getStyle() + "-fx-background-color: rgb(198, 12, 48);");
                 break;
             default:
@@ -331,6 +338,9 @@ public class Setting extends Pane {
         // Action listener on imageView only *dab*
         redRegion.setOnMouseEntered(e -> scaleUp.playFromStart());
         redRegion.setOnMouseExited(e -> scaleDown.playFromStart());
+        redRegion.setOnMouseClicked(e -> {
+            Main.setLang(DialogBox.chooseLanguage(language));
+        });
 
         // final HBox add
         fullWidthHBox.getChildren().addAll(greyRegion, redRegion);
@@ -358,7 +368,6 @@ public class Setting extends Pane {
         Animation.addHoverScaleEffectMore(logOutButton);
 
         // Action
-        //Stage stage = (Stage) getScene().getWindow();
         logOutButton.setOnAction(e -> {
             if (acceptAlert("Logging out", "Are you sure?")) { // (TITLE, MESSAGE) FUCK JER
                 Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();

@@ -334,6 +334,8 @@ public class DBConnector {
             return executeUpdate(query);
     }
 
+    // ____________________________________________________
+
     public Map<String, Integer> getSchools() {
         Map<String, Integer> schoolMap = new HashMap<>();
         try {
