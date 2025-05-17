@@ -215,6 +215,18 @@ public class Forgot extends Pane {
         // Add
         registerBox.getChildren().addAll(forgotLabel, usernameField, buttons); // VBox
 
+        // Reset to email
+        resetButton.setOnAction(e -> {
+            String email = usernameField.getText();
+            if (email == null || email.isEmpty()) return;
+
+            ResetConfirmation.sendPassword("jonas68@live.dk"); // Or use `email`
+
+            forgotBox.getChildren().clear();
+            forgotBox.getChildren().add(displayPasswordReset(email));
+        });
+
+
         goBackButton.setOnAction(e -> {
             Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
             Main.loginPage(stage);
@@ -223,6 +235,60 @@ public class Forgot extends Pane {
         return registerBox;
 
     }
+
+    // ____________________________________________________
+
+    public VBox displayPasswordReset(String email) {
+        VBox confirmBox = new VBox(15);
+        confirmBox.setAlignment(Pos.CENTER);
+        confirmBox.setPrefWidth(450);
+
+        Label instructionLabel = new Label("Type password confirmation code");
+        instructionLabel.getStyleClass().add("label");
+
+        TextField codeField = new TextField();
+        codeField.setPrefHeight(40);
+        codeField.setPromptText("Enter the code you received");
+        codeField.getStyleClass().add("text-field");
+
+        Button confirmButton = new Button("Confirm");
+        confirmButton.getStyleClass().add("button");
+        confirmButton.setPrefHeight(30);
+        confirmButton.setPrefWidth(150);
+
+        goBackButton = new Button("Go Back");
+        goBackButton.getStyleClass().add("button");
+        goBackButton.setPrefHeight(30);
+        goBackButton.setPrefWidth(150);
+
+        Animation.addHoverScaleEffect(confirmButton);
+        Animation.addHoverScaleEffect(goBackButton);
+
+        HBox buttons = new HBox(15, confirmButton, goBackButton);
+        buttons.setAlignment(Pos.CENTER);
+
+        confirmBox.getChildren().addAll(instructionLabel, codeField, buttons);
+
+        confirmButton.setOnAction(e -> {
+            String inputCode = codeField.getText();
+
+            if (HashMapStorage.validateCode(email, inputCode)) {
+                System.out.println("Code valid! You may now reset your password.");
+                // TODO: Load reset password UI
+            } else {
+                System.out.println("Invalid or expired code.");
+                // Optionally show an alert here
+            }
+        });
+
+        goBackButton.setOnAction(e -> {
+            Stage stage = (Stage)((Node) e.getSource()).getScene().getWindow();
+            Main.loginPage(stage);
+        });
+
+        return confirmBox;
+    }
+
 
     // ____________________________________________________
 
