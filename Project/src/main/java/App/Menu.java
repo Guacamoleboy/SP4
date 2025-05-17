@@ -11,10 +11,14 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.image.ImageView;
+
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+import java.util.Objects;
 
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
@@ -64,11 +68,11 @@ public class Menu extends Pane {
         this.setPrefHeight(sceneHeight);
         this.setPrefWidth(sceneWidth);
 
-        // instantiate (forstår du?)
+        // instantiate
         setting = new Setting(this.username);
 
         // Create
-        this.getChildren().add(displayHeader());
+        this.getChildren().add(displayWelcome());
 
     }
 
@@ -495,9 +499,13 @@ public class Menu extends Pane {
 
         //DETTE SKAL LAVES!
         //if (BOOKINGS != null) {
+
         //String stars = convertToStars(getRating());//getRating();
-        Label dateLabel = new Label(getDate());
-        Label timeLabel = new Label(getTime());
+        String date = getDate();
+        String time = getTime();
+
+        Label dateLabel = new Label(date);
+        Label timeLabel = new Label(time);
         Label placeLabel = new Label(getAdress());
         Label studentLabel = new Label(getStudentName());
         Label ratingLabel = new Label(convertToStars(getRating()));
@@ -521,10 +529,13 @@ public class Menu extends Pane {
         cancelButton.setPrefHeight(30);
         cancelButton.setPrefWidth(200/2); // Half the card width
 
+        cancelButton.setOnAction(e -> {
+            System.out.println("Work1");
+            System.out.println("Work2");
+        });
+
         // Hover
         Animation.addHoverScaleEffect(cancelButton);
-
-        cancelButton.setOnAction(e -> removeBooking());
 
         // Add our Display Card
         topMenu.getChildren().addAll(dateLabel);
@@ -845,12 +856,14 @@ public class Menu extends Pane {
         for (int i = 0; i < 1; i++) {
 
             // Labels
-            Label date = new Label("26.03");
+            String d = "26.03";
+            String t = "15:30";
+            Label date = new Label(d);
             Text place = new Text("Hillerød 3400\nNarkovej 69");
             place.setTextAlignment(TextAlignment.CENTER);
             place.setWrappingWidth(140);
             place.setFill(Color.WHITE);
-            Label time = new Label("15:30");
+            Label time = new Label(t);
 
             time.setPadding(new Insets(30, 0, 0, 0));
 
@@ -901,10 +914,18 @@ public class Menu extends Pane {
             cancelButton.setPrefWidth(90);
             cancelButton.setPrefHeight(20);
 
+            cancelButton.setOnAction(e -> {
+                DialogBox.displayAlert(d, d);
+            });
+
             Button payButton = new Button("Pay");
             payButton.getStyleClass().add("pay-button");
             payButton.setPrefWidth(50);
             payButton.setPrefHeight(28);
+
+            payButton.setOnAction(e -> {
+                DialogBox.displayPay();
+            });
 
             // Margin
             HBox.setMargin(payButton, new Insets(0, 10, 0, 0));
@@ -1057,8 +1078,11 @@ public class Menu extends Pane {
 
         for (int i = 0; i < 5; i++) {
 
+            String d = "26.03";
+            String t = "15:00";
+
             // Labels
-            Label date = new Label("26.03");
+            Label date = new Label(d);
             Label brand = new Label("Frisør Narko");
 
             brand.setPadding(new Insets(60, 0, 0, 0));
@@ -1105,6 +1129,8 @@ public class Menu extends Pane {
             tipButton.getStyleClass().add("tip-button");
             tipButton.setPadding(new Insets(5, 10, 5, 10));
             VBox.setMargin(tipButton, new Insets(0, 0, 20, 0));
+
+            tipButton.setOnAction(e -> DialogBox.displayTip(d, t));
 
             // TipButton :hover
             Animation.addHoverScaleEffect(tipButton);
@@ -1206,6 +1232,98 @@ public class Menu extends Pane {
 
     // ____________________________________________________
 
+    public VBox displayWelcome(){
+        VBox container = new VBox(20);
+        container.setPadding(new Insets(20));
+
+        Label header = new Label("Welcome, " + this.username + "!");
+        header.setStyle(
+        "-fx-background-color: #4a4a4a;" +
+        "-fx-text-fill: white;" +
+        "-fx-font-size: 18px;" +
+        "-fx-font-weight: bold;" +
+        "-fx-padding: 10 20 10 20;" +
+        "-fx-background-radius: 15;"
+        );
+        header.setAlignment(Pos.CENTER_LEFT);
+        header.setMaxWidth(Region.USE_COMPUTED_SIZE);
+
+        HBox contentRow = new HBox(20);
+
+        VBox textBox = new VBox();
+        textBox.setPrefSize(500, 450);
+        textBox.setStyle("-fx-background-color: rgb(80,80,80); -fx-padding: 20; -fx-background-radius: 25px; -fx-border-radius: 25px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 2, 0.5, 1, 1);");
+
+        Label headerLabel = new Label(getMessage("src/main/java/constants/welcomeHeader.txt"));
+        headerLabel.setWrapText(true);
+        headerLabel.setMaxWidth(460);
+        headerLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: orange; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 2, 0.5, 1, 1);");
+        headerLabel.setPadding(new Insets(0,0,15,0));
+
+        Label endContent = new Label(getMessage("src/main/java/constants/welcomeEnd.txt"));
+        endContent.setWrapText(true);
+        endContent.setMaxWidth(460);
+        endContent.setStyle("-fx-font-size: 14px; -fx-text-fill: white;");
+        endContent.setPadding(new Insets(140,0,0,0));
+
+        Label content = new Label(getMessage("src/main/java/constants/welcomeMessage.txt"));
+        content.setWrapText(true);
+        content.setMaxWidth(460);
+        content.setStyle("-fx-font-size: 14px; -fx-text-fill: white;");
+
+        textBox.getChildren().addAll(headerLabel, content, endContent);
+
+        VBox imageBoxes = new VBox(20);
+        imageBoxes.setPrefWidth(200);
+
+        for (int i = 0; i < 3; i++) {
+            String path = "/assets/school/" + (i + 1) + ".png";
+            Image image = new Image(Objects.requireNonNull(getClass().getResource(path), "Billedet findes ikke: " + path).toExternalForm());
+            ImageView imageView = new ImageView(image);
+            imageView.setFitWidth(200);
+            imageView.setFitHeight(200);
+            imageView.setPreserveRatio(true);
+
+            // Hover
+            Animation.addHoverScaleEffectImage(imageView);
+
+            // Bypass for rounded corners on Image
+            Rectangle clip = new Rectangle(200, 150);
+            clip.setArcWidth(25);
+            clip.setArcHeight(25);
+
+            // nigga
+
+            imageView.setClip(clip);
+
+            imageBoxes.getChildren().add(imageView);
+        }
+
+        contentRow.getChildren().addAll(textBox, imageBoxes);
+        container.getChildren().addAll(header, contentRow);
+
+        return container;
+    }
+
+    // ____________________________________________________
+
+    public String getMessage(String path) {
+        String message = "";
+        File file = new File(path);
+        try {
+            Scanner scan = new Scanner(file);
+            while (scan.hasNextLine()) {
+                message += scan.nextLine() + "\n";}
+        }
+        catch (Exception e) {
+            System.out.println("File not found?!?!");
+        }
+
+        return message;
+    }
+
+    // ____________________________________________________
+
     public VBox displayExamHeader(String exam){
 
         VBox title = new VBox(15);
@@ -1249,6 +1367,7 @@ public class Menu extends Pane {
         leftPane.setPrefWidth(190);
         leftPane.setPrefHeight(560);
         leftPane.setAlignment(Pos.TOP_CENTER);
+        leftPane.setPadding(new Insets(0,0,0,0));
 
         Image profileImage = new Image(getClass().getResource("/assets/profile/person1.png").toExternalForm());
         ImageView profileImageView = new ImageView(profileImage);
@@ -1257,11 +1376,12 @@ public class Menu extends Pane {
         profileImageView.setPreserveRatio(true);
 
         Label roleLabel = new Label("Customer");
-        roleLabel.setStyle("-fx-padding: 5;");
+        roleLabel.setPadding(new Insets(5,0,5,0));
 
         VBox leftPaneInfo = new VBox();
         leftPaneInfo.setAlignment(Pos.CENTER);
         leftPaneInfo.getChildren().add(roleLabel);
+        leftPaneInfo.setPrefWidth(190);
 
         // Rating Box
         HBox ratingBox = new HBox(10);
@@ -1308,24 +1428,25 @@ public class Menu extends Pane {
 
         // Actions
         contactBox.setOnMouseClicked(e -> {
-            getChildren().clear();
-            getChildren().add(displayAvailableBookings());
-            getChildren().add(displayBookingCard());
-            getChildren().add(displayExamMenu());
-            getChildren().add(displayExamCard());
+            contactBox.getStyleClass().add("nav-box-selected");
+            reviewsBox.getStyleClass().remove("nav-box-selected");
+            galleryBox.getStyleClass().remove("nav-box-selected");
+            aboutMeBox.getStyleClass().remove("nav-box-selected-first");
+            bottomContentBox.getChildren().clear();
+            bottomContentBox.getChildren().add(displayContactMe());
         });
 
         aboutMeBox.setOnMouseClicked(e -> {
             contactBox.getStyleClass().remove("nav-box-selected");
             reviewsBox.getStyleClass().remove("nav-box-selected");
             galleryBox.getStyleClass().remove("nav-box-selected");
-            aboutMeBox.getStyleClass().add("nav-box-selected");
+            aboutMeBox.getStyleClass().add("nav-box-selected-first");
             bottomContentBox.getChildren().clear();
             bottomContentBox.getChildren().add(displayAboutMe());
         });
 
         reviewsBox.setOnMouseClicked(e -> {
-            aboutMeBox.getStyleClass().remove("nav-box-selected");
+            aboutMeBox.getStyleClass().remove("nav-box-selected-first");
             contactBox.getStyleClass().remove("nav-box-selected");
             galleryBox.getStyleClass().remove("nav-box-selected");
             reviewsBox.getStyleClass().add("nav-box-selected");
@@ -1334,7 +1455,7 @@ public class Menu extends Pane {
         });
 
         galleryBox.setOnMouseClicked(e -> {
-            aboutMeBox.getStyleClass().remove("nav-box-selected");
+            aboutMeBox.getStyleClass().remove("nav-box-selected-first");
             contactBox.getStyleClass().remove("nav-box-selected");
             reviewsBox.getStyleClass().remove("nav-box-selected");
             galleryBox.getStyleClass().add("nav-box-selected");
@@ -1349,7 +1470,7 @@ public class Menu extends Pane {
         rightPane.getStyleClass().add("right-pane");
 
         // Default Selected Box
-        aboutMeBox.getStyleClass().add("nav-box-selected");
+        aboutMeBox.getStyleClass().add("nav-box-selected-first");
 
         // Add
         rightPane.getChildren().addAll(rightPaneBanner, navRow, rightPaneContent);
@@ -1456,13 +1577,13 @@ public class Menu extends Pane {
             availableBookingsBox.getStyleClass().remove("nav-box-selected");
             reviewsBox.getStyleClass().remove("nav-box-selected");
             galleryBox.getStyleClass().remove("nav-box-selected");
-            aboutMeBox.getStyleClass().add("nav-box-selected");
+            aboutMeBox.getStyleClass().add("nav-box-selected-first");
             bottomContentBox.getChildren().clear();
             bottomContentBox.getChildren().add(displayAboutMe());
         });
 
         reviewsBox.setOnMouseClicked(e -> {
-            aboutMeBox.getStyleClass().remove("nav-box-selected");
+            aboutMeBox.getStyleClass().remove("nav-box-selected-first");
             availableBookingsBox.getStyleClass().remove("nav-box-selected");
             galleryBox.getStyleClass().remove("nav-box-selected");
             reviewsBox.getStyleClass().add("nav-box-selected");
@@ -1471,7 +1592,7 @@ public class Menu extends Pane {
         });
 
         galleryBox.setOnMouseClicked(e -> {
-            aboutMeBox.getStyleClass().remove("nav-box-selected");
+            aboutMeBox.getStyleClass().remove("nav-box-selected-first");
             availableBookingsBox.getStyleClass().remove("nav-box-selected");
             reviewsBox.getStyleClass().remove("nav-box-selected");
             galleryBox.getStyleClass().add("nav-box-selected");
@@ -1485,7 +1606,7 @@ public class Menu extends Pane {
         rightPane.getStyleClass().add("right-pane");
 
         // Default Selected Box
-        aboutMeBox.getStyleClass().add("nav-box-selected");
+        aboutMeBox.getStyleClass().add("nav-box-selected-first");
 
         // Add
         rightPane.getChildren().addAll(rightPaneBanner, navRow, rightPaneContent);
@@ -1592,13 +1713,13 @@ public class Menu extends Pane {
             contactBox.getStyleClass().remove("nav-box-selected");
             reviewsBox.getStyleClass().remove("nav-box-selected");
             galleryBox.getStyleClass().remove("nav-box-selected");
-            aboutMeBox.getStyleClass().add("nav-box-selected");
+            aboutMeBox.getStyleClass().add("nav-box-selected-first");
             bottomContentBox.getChildren().clear();
             bottomContentBox.getChildren().add(displayAboutMe());
         });
 
         reviewsBox.setOnMouseClicked(e -> {
-            aboutMeBox.getStyleClass().remove("nav-box-selected");
+            aboutMeBox.getStyleClass().remove("nav-box-selected-first");
             contactBox.getStyleClass().remove("nav-box-selected");
             galleryBox.getStyleClass().remove("nav-box-selected");
             reviewsBox.getStyleClass().add("nav-box-selected");
@@ -1607,7 +1728,7 @@ public class Menu extends Pane {
         });
 
         galleryBox.setOnMouseClicked(e -> {
-            aboutMeBox.getStyleClass().remove("nav-box-selected");
+            aboutMeBox.getStyleClass().remove("nav-box-selected-first");
             contactBox.getStyleClass().remove("nav-box-selected");
             reviewsBox.getStyleClass().remove("nav-box-selected");
             galleryBox.getStyleClass().add("nav-box-selected");
@@ -1622,7 +1743,7 @@ public class Menu extends Pane {
         rightPane.getStyleClass().add("right-pane");
 
         // Default Selected Box
-        aboutMeBox.getStyleClass().add("nav-box-selected");
+        aboutMeBox.getStyleClass().add("nav-box-selected-first");
 
         // Add
         rightPane.getChildren().addAll(rightPaneBanner, navRow, rightPaneContent);
@@ -1729,13 +1850,13 @@ public class Menu extends Pane {
             contactBox.getStyleClass().remove("nav-box-selected");
             reviewsBox.getStyleClass().remove("nav-box-selected");
             galleryBox.getStyleClass().remove("nav-box-selected");
-            aboutMeBox.getStyleClass().add("nav-box-selected");
+            aboutMeBox.getStyleClass().add("nav-box-selected-first");
             bottomContentBox.getChildren().clear();
             bottomContentBox.getChildren().add(displayAboutMe());
         });
 
         reviewsBox.setOnMouseClicked(e -> {
-            aboutMeBox.getStyleClass().remove("nav-box-selected");
+            aboutMeBox.getStyleClass().remove("nav-box-selected-first");
             contactBox.getStyleClass().remove("nav-box-selected");
             galleryBox.getStyleClass().remove("nav-box-selected");
             reviewsBox.getStyleClass().add("nav-box-selected");
@@ -1744,7 +1865,7 @@ public class Menu extends Pane {
         });
 
         galleryBox.setOnMouseClicked(e -> {
-            aboutMeBox.getStyleClass().remove("nav-box-selected");
+            aboutMeBox.getStyleClass().remove("nav-box-selected-first");
             contactBox.getStyleClass().remove("nav-box-selected");
             reviewsBox.getStyleClass().remove("nav-box-selected");
             galleryBox.getStyleClass().add("nav-box-selected");
@@ -1759,7 +1880,7 @@ public class Menu extends Pane {
         rightPane.getStyleClass().add("right-pane");
 
         // Default Selected Box
-        aboutMeBox.getStyleClass().add("nav-box-selected");
+        aboutMeBox.getStyleClass().add("nav-box-selected-first");
 
         // Add
         rightPane.getChildren().addAll(rightPaneBanner, navRow, rightPaneContent);
@@ -2509,5 +2630,66 @@ public class Menu extends Pane {
 
         return adminMenuVBox;
     }
+
+    // ____________________________________________________
+
+    public VBox displayContactMe() {
+        VBox mainContainer = new VBox();
+        mainContainer.setPadding(Insets.EMPTY);
+        mainContainer.setSpacing(0);
+        mainContainer.setAlignment(Pos.TOP_CENTER);
+        mainContainer.setStyle("-fx-background-color: #2d2d2d; -fx-background-radius: 0 0 20px 20px; -fx-border-radius: 0 0 20px 20px;");
+
+        Label header = new Label("Contact Me");
+        header.setStyle("-fx-font-size: 26px; -fx-text-fill: orange; -fx-font-weight: bold;");
+
+        Label subHeader = new Label("I'm glad you're here.");
+        subHeader.setStyle("-fx-font-size: 16px; -fx-text-fill: #cccccc;");
+
+        Label bioText = new Label("Hi, I'm " + username + ". I love cutting hair and making people happy.\nNeed a fresh cut or just wanna talk? Reach out!");
+        bioText.setWrapText(true);
+        bioText.setTextAlignment(TextAlignment.CENTER);
+        bioText.setAlignment(Pos.CENTER);
+        bioText.setStyle("-fx-font-size: 14px; -fx-text-fill: white;");
+
+        Label emailLabel = new Label("Email: fuckdig@fedme.dk");
+        emailLabel.setStyle("-fx-text-fill: #fff; -fx-font-size: 14px;");
+        emailLabel.setTextAlignment(TextAlignment.CENTER);
+
+        Label phoneLabel = new Label("Phone: 12345678");
+        phoneLabel.setStyle("-fx-text-fill: #fff; -fx-font-size: 14px;");
+        phoneLabel.setTextAlignment(TextAlignment.CENTER);
+
+        HBox socialLinks = new HBox(10);
+        socialLinks.setAlignment(Pos.CENTER);
+
+        String[] socials = {"Instagram", "Facebook", "GitHub"};
+        for (String social : socials) {
+            Label link = new Label(social);
+            link.setStyle("-fx-background-color: #595959; -fx-text-fill: white; -fx-padding: 6 12 6 12; -fx-background-radius: 8; -fx-font-size: 13px; -fx-cursor: hand;");
+            socialLinks.getChildren().add(link);
+        }
+
+        Button contactButton = new Button("Send a Message");
+        contactButton.setStyle("-fx-background-color: orange;-fx-background-insets: 0; -fx-border-insets: 0; -fx-cursor: hand; -fx-text-fill: black; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 15px; -fx-border-radius: 15px;");
+        contactButton.setPrefWidth(200);
+
+        // Hover
+        Animation.addHoverScaleEffectMore(contactButton);
+
+        VBox contentBox = new VBox(15, header, subHeader, bioText, emailLabel, phoneLabel, socialLinks, contactButton);
+        contentBox.setPadding(new Insets(30));
+        contentBox.setAlignment(Pos.TOP_CENTER);
+        contentBox.setPrefHeight(600);
+        contentBox.setPrefWidth(Double.MAX_VALUE);
+        contentBox.setStyle("-fx-background-color: #3b3b3b; -fx-background-radius: 0 0 20px 20px; -fx-border-radius: 0 0 20px 20px;");
+
+        mainContainer.getChildren().add(contentBox);
+        VBox.setVgrow(contentBox, Priority.ALWAYS);
+
+        return mainContainer;
+    }
+
+
 
 }
