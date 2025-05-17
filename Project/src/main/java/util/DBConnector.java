@@ -1,10 +1,12 @@
 package util;
 
-import App.HairType;
+import App.BookingCard;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DBConnector {
@@ -148,12 +150,14 @@ public class DBConnector {
                 username + "', '" + password + "', '" + email + "', 'Offline', '" + role + "' )";
         return executeUpdate(query);
     }
+
     //For costumer
     public boolean createUser(String username, String password, String email, String role, int hairtype) {
         String query = "INSERT INTO users (username, password, email, status, role, hair_type_id) VALUES ('" +
                 username + "', '" + password + "', '" + email + "', 'Offline', '" + role + "', '" + hairtype + "')";
         return executeUpdate(query);
     }
+
     //For student
     public boolean createUser(String username, String password, String email, String role, int schoolId, String student_year) {
         String query = "INSERT INTO users (username, password, email, status, role, school_id, student_year) VALUES ('" +
@@ -240,6 +244,23 @@ public class DBConnector {
 
     // ____________________________________________________
 
+    public int getUserID(String username) {
+        int id = -1; // default value if not found
+        String query = "SELECT id FROM users WHERE username = ?";
+
+        try (PreparedStatement stmt = con.prepareStatement(query)) {
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                id = rs.getInt("id"); // parse the column to int
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return id;
+    }
+
     public ArrayList<String> getUserData(String username) {
         ArrayList<String> userData = new ArrayList<String>();
         String query = "SELECT * FROM users WHERE username = '" + username + "'";
@@ -275,7 +296,7 @@ public class DBConnector {
 
     // ____________________________________________________
 
-    public boolean changePassword(String username, String password){
+    public boolean changePassword(String username, String password) {
         // TILFØJ HER
 
         return false;
@@ -283,7 +304,7 @@ public class DBConnector {
 
     // ____________________________________________________
 
-    public boolean changeBannerColor(String color){
+    public boolean changeBannerColor(String color) {
         // TILFØJ HER
 
         return false;
@@ -291,12 +312,12 @@ public class DBConnector {
 
     // ____________________________________________________
 
-    public boolean changeRole(String username, String role){
+    public boolean changeRole(String username, String role) {
         // TILFØJ HER
 
-        if(role.equalsIgnoreCase("School")){
+        if (role.equalsIgnoreCase("School")) {
             // FUNKTION HER
-        } else if (role.equalsIgnoreCase("Support")){
+        } else if (role.equalsIgnoreCase("Support")) {
             // FUNKTION HER
         }
 
@@ -305,7 +326,7 @@ public class DBConnector {
 
     // ____________________________________________________
 
-    public boolean changeLanguage(String language){
+    public boolean changeLanguage(String language) {
         // TILFØJ HER
 
         return false;
@@ -313,10 +334,10 @@ public class DBConnector {
 
     // ____________________________________________________
 
-    public boolean deleteAccount(String username){
+    public boolean deleteAccount(String username) {
 
-            String query = "DELETE FROM users WHERE username = '" + username + "'";
-            return executeUpdate(query);
+        String query = "DELETE FROM users WHERE username = '" + username + "'";
+        return executeUpdate(query);
     }
 
     public Map<String, Integer> getSchools() {
@@ -364,26 +385,23 @@ public class DBConnector {
     }
 
     //getter to the hairtype from db
-    public HairType getHairTypeById(int id) {
-        try {
-            PreparedStatement ps = con.prepareStatement(
-                    "SELECT * FROM hair_types WHERE id = ?");
+    public String getHairTypeSummary(int id) {
+        String sql = "SELECT texture, color, length, gender FROM hair_type_id WHERE id = ?";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return new HairType(
-                        rs.getInt("id"),
-                        rs.getString("texture"),
-                        rs.getString("color"),
-                        rs.getString("length"),
-                        rs.getString("gender")
-                );
+                return rs.getString("texture") + ", " +
+                        rs.getString("color") + ", " +
+                        rs.getString("length") + ", " +
+                        rs.getString("gender");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return "Unknown";
     }
+
 
     // Run this once from main-initialize to insert customer hairtype/gender in database.
     public void hairTypeInserter() {
@@ -418,4 +436,75 @@ public class DBConnector {
             e.printStackTrace();
         }
     }
+
+    public void createBooking(LocalDate date, String time, String address, int hairtype_id, boolean exam, int student_id) {
+        String sql = "INSERT INTO bookings (date, time, address, hairtypeId, exam, student_id) VALUES (?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, date.toString());
+            ps.setString(2, time);
+            ps.setString(3, address);
+            ps.setInt(4, hairtype_id);
+            ps.setInt(5, exam ? 1 : 0);
+            ps.setInt(6, student_id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ____________________________________________________
+
+    public List<BookingCard> getBookings(boolean isExam) {
+        List<BookingCard> bookings = new ArrayList<>();
+        String sql = "SELECT * FROM bookings WHERE exam = ?";
+
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setBoolean(1, isExam);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                LocalDate date = LocalDate.parse(rs.getString("date"));
+                String time = rs.getString("time");
+                String address = rs.getString("address");
+                int hairtypeId = rs.getInt("hairtypeId");
+                int studentId = rs.getInt("student_id");
+
+                BookingCard booking = new BookingCard(date, time, address, hairtypeId, isExam, studentId);
+                bookings.add(booking);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return bookings;
+    }
+
+    // ____________________________________________________
+
+    public List<BookingCard> getBookings(int studentId, boolean isExam) {
+        List<BookingCard> bookings = new ArrayList<>();
+        String sql = "SELECT * FROM bookings WHERE student_id = ? AND exam = ?";
+
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, studentId);
+            ps.setBoolean(2, isExam);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                LocalDate date = LocalDate.parse(rs.getString("date"));
+                String time = rs.getString("time");
+                String address = rs.getString("address");
+                int hairtypeId = rs.getInt("hairtypeId");
+
+                BookingCard booking = new BookingCard(date, time, address, hairtypeId, isExam, studentId);
+                bookings.add(booking);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return bookings;
+    }
+
 } // DBConnector end

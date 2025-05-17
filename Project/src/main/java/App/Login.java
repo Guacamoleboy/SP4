@@ -190,7 +190,7 @@ public class Login extends Pane {
 
             Menu menu = new Menu(username, password, 800, 600);
             Support.setMenu(menu);
-            SideMenu sm = new SideMenu(100, 600, menu, Main.db.getRole(username));
+            SideMenu sm = new SideMenu(100, 600, menu, Main.db.getRole(username), username);
 
             sm.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
             sm.getStyleClass().add("sideMenu-color");
@@ -237,6 +237,7 @@ public class Login extends Pane {
     }
 
     // ____________________________________________________
+
 
     public String getUsername(){
         this.username = usernameField.getText();

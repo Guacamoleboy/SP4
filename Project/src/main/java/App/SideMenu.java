@@ -22,6 +22,7 @@ public class SideMenu extends Pane {
     private int sceneWidth;
     private int sceneHeight;
     private String role;
+    private String username;
 
     // OBJECT //
     private Menu menu;
@@ -30,11 +31,12 @@ public class SideMenu extends Pane {
 
     // ____________________________________________________
 
-    public SideMenu(int sceneWidth, int sceneHeight, Menu menu, String role) {
+    public SideMenu(int sceneWidth, int sceneHeight, Menu menu, String role, String username) {
         this.sceneWidth = sceneWidth;
         this.sceneHeight = sceneHeight;
         this.menu = menu;
         this.role = role;
+        this.username = username;
 
 
         // Display setup
@@ -190,13 +192,12 @@ public class SideMenu extends Pane {
 
         // Actions
         btn1.setOnAction(e -> {
-            menu.setHeaderTitle("Book");
             menu.getChildren().clear();
-            menu.getChildren().add(menu.displayHeader());
-            menu.getChildren().add(menu.displayExamHeader("Exam"));
-            menu.getChildren().add(menu.displayComboBox());
-            menu.getChildren().add(menu.displayAvailableBookings());
-            menu.getChildren().add(menu.displayExamBookings());
+            menu.getChildren().add(menu.displayBookingsStudent());
+            menu.getChildren().add(menu.displayBookingCardStudent(Main.db.getUserID(username)));
+            menu.getChildren().add(menu.displayExamMenu());
+            menu.getChildren().add(menu.displayExamCardStudent());
+
         });
 
         settingsBtn.setOnAction(e -> {
