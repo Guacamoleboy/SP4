@@ -6,6 +6,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
@@ -313,6 +314,82 @@ public class Menu extends Pane {
 
     // ____________________________________________________
 
+    public VBox displayRating() {
+
+        VBox messageVBox = new VBox();
+        messageVBox.setLayoutX(20);
+        messageVBox.setLayoutY(100);
+        messageVBox.setPrefWidth(760);
+        messageVBox.setPrefHeight(480);
+        messageVBox.setStyle("-fx-border-color: #464646; -fx-border-width: 2px; -fx-border-radius: 20px; -fx-background-radius: 20px;");
+
+        HBox messageHBox = new HBox();
+        messageHBox.getStyleClass().add("message-vbox");
+        messageHBox.setPrefWidth(760);
+        messageHBox.setPrefHeight(480);
+        messageHBox.setAlignment(Pos.TOP_LEFT);
+        messageHBox.setSpacing(0);
+
+        VBox sidebar = new VBox(0);
+        sidebar.setPrefWidth(760 * 0.26);
+        sidebar.setAlignment(Pos.TOP_LEFT);
+        sidebar.setPadding(Insets.EMPTY);
+        sidebar.setStyle("-fx-background-color: #696969; -fx-border-radius: 20 0 0 20; -fx-background-radius: 20 0 0 20;");
+
+        Button user1 = new Button("Jonas");
+        Button user2 = new Button("Andreas");
+        Button user3 = new Button("Ebou");
+        Button user4 = new Button("Carl-Emil");
+
+        sidebar.getChildren().addAll(user1, user2, user3, user4);
+        user1.getStyleClass().addAll("user-button", "user-button1");
+        user2.getStyleClass().add("user-button");
+        user3.getStyleClass().add("user-button");
+        user4.getStyleClass().add("user-button");
+
+        VBox rightContent = new VBox(10);
+        rightContent.setPrefWidth(760 * 0.74);
+        rightContent.setAlignment(Pos.TOP_LEFT);
+        rightContent.setPadding(new Insets(0));
+
+        VBox messageArea = new VBox(15);
+        messageArea.setPadding(new Insets(20));
+        messageArea.setAlignment(Pos.TOP_LEFT);
+        messageArea.setStyle("-fx-background-color: transparent;");
+        messageArea.setPrefHeight(480);
+
+        HBox inputArea = new HBox(10);
+        inputArea.setPadding(new Insets(10));
+        inputArea.setAlignment(Pos.CENTER_LEFT);
+        inputArea.setPrefHeight(40);
+
+        rightContent.getChildren().addAll(messageArea);
+
+        messageHBox.getChildren().addAll(sidebar, rightContent);
+        messageVBox.getChildren().add(messageHBox);
+
+        user1.setOnAction(e -> {
+            messageArea.getChildren().clear();
+            messageArea.getChildren().add(displayExamReview());
+        });
+        user2.setOnAction(e -> {
+            messageArea.getChildren().clear();
+            messageArea.getChildren().add(displayExamReview());
+        });
+        user3.setOnAction(e -> {
+            messageArea.getChildren().clear();
+            messageArea.getChildren().add(displayExamReview());
+        });
+        user4.setOnAction(e -> {
+            messageArea.getChildren().clear();
+            messageArea.getChildren().add(displayExamReview());
+        });
+
+        return messageVBox;
+    }
+
+    // ____________________________________________________
+
     private VBox createMessageBubble(String messageText, boolean rightAlign, String senderName, String timestamp) {
 
         // Sender + timestamp with a padding depending on the boolean in Parameter
@@ -452,12 +529,12 @@ public class Menu extends Pane {
         });
 
         setting4.setOnAction(e -> {
-            messageArea.getChildren().clear(); // DUMME IDIOT JONAS FUCK JEG ER DUM JO
+            messageArea.getChildren().clear();
             messageArea.getChildren().add(setting.displayProfileColors());
         });
 
         setting5.setOnAction(e -> {
-            messageArea.getChildren().clear(); // DUMME IDIOT JONAS FUCK JEG ER DUM JO
+            messageArea.getChildren().clear();
             messageArea.getChildren().add(setting.displayDeleteJonas());
         });
 
@@ -496,12 +573,14 @@ public class Menu extends Pane {
         Button setting2 = new Button("Remove Student");
         Button setting3 = new Button("Remove Teacher");
         Button setting4 = new Button("Add Teacher");
+        Button setting5 = new Button("Add Student");
 
-        sidebar.getChildren().addAll(setting1, setting2, setting3, setting4);
+        sidebar.getChildren().addAll(setting1, setting2, setting3, setting4, setting5);
         setting1.getStyleClass().addAll("user-button", "user-button1");
         setting2.getStyleClass().add("user-button-delete");
         setting3.getStyleClass().add("user-button-delete");
         setting4.getStyleClass().add("user-button");
+        setting5.getStyleClass().add("user-button");
 
         // Message area (4/5)
         messageArea = new VBox(15);
@@ -517,18 +596,27 @@ public class Menu extends Pane {
         // Actions
         setting1.setOnAction(e -> {
             messageArea.getChildren().clear();
+            messageArea.getChildren().add(displayAcceptStudentRequests());
         });
 
         setting2.setOnAction(e -> {
             messageArea.getChildren().clear();
+            messageArea.getChildren().add(displayRemoveStudents());
         });
 
         setting3.setOnAction(e -> {
             messageArea.getChildren().clear();
+            messageArea.getChildren().add(displayRemoveTeacher());
         });
 
         setting4.setOnAction(e -> {
             messageArea.getChildren().clear();
+            messageArea.getChildren().add(displayAddTeacher());
+        });
+
+        setting5.setOnAction(e -> {
+            messageArea.getChildren().clear();
+            messageArea.getChildren().add(displayAddStudent());
         });
 
         return settingsVBox;
@@ -564,16 +652,12 @@ public class Menu extends Pane {
         // Buttons
         Button setting1 = new Button("Accept Student");
         Button setting2 = new Button("Remove Student");
-        Button setting3 = new Button("Add Homework");
-        Button setting4 = new Button("Add Booking");
-        Button setting5 = new Button("Add Exam");
+        Button setting3 = new Button("Add Student");
 
-        sidebar.getChildren().addAll(setting1, setting2, setting3, setting4, setting5);
+        sidebar.getChildren().addAll(setting1, setting2, setting3);
         setting1.getStyleClass().addAll("user-button", "user-button1");
         setting2.getStyleClass().add("user-button-delete");
         setting3.getStyleClass().add("user-button");
-        setting4.getStyleClass().add("user-button");
-        setting5.getStyleClass().add("user-button");
 
         // Message area (4/5)
         messageArea = new VBox(15);
@@ -589,18 +673,17 @@ public class Menu extends Pane {
         // Actions
         setting1.setOnAction(e -> {
             messageArea.getChildren().clear();
+            messageArea.getChildren().add(displayAcceptStudentRequests());
         });
 
         setting2.setOnAction(e -> {
             messageArea.getChildren().clear();
+            messageArea.getChildren().add(displayRemoveStudents());
         });
 
         setting3.setOnAction(e -> {
             messageArea.getChildren().clear();
-        });
-
-        setting4.setOnAction(e -> {
-            messageArea.getChildren().clear();
+            messageArea.getChildren().add(displayAddStudent());
         });
 
         return settingsVBox;
@@ -657,17 +740,1028 @@ public class Menu extends Pane {
         // Actions
         setting1.setOnAction(e -> {
             messageArea.getChildren().clear();
+            messageArea.getChildren().add(createBookingRequestsContent());
         });
 
         setting2.setOnAction(e -> {
             messageArea.getChildren().clear();
+            messageArea.getChildren().add(displayActiveBookinsCancel());
         });
 
         setting3.setOnAction(e -> {
             messageArea.getChildren().clear();
+            messageArea.getChildren().add(createTipsContent());
         });
 
         return settingsVBox;
+    }
+
+    // ____________________________________________________
+
+    private Node createTipsContent() {
+        VBox tipsBox = new VBox(15);
+        tipsBox.setPadding(new Insets(10, 10, 10, 10));
+        tipsBox.setPrefHeight(480);
+        tipsBox.setPrefWidth(Double.MAX_VALUE);
+        tipsBox.setStyle("-fx-background-color: #e1e1e1; -fx-background-radius: 0 20px 20px 0; -fx-border-radius: 0 20px 20px 0; -fx-border-color: #ccc; -fx-border-width: 1px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 4);");
+
+        Label header = new Label("Recent tips");
+        header.setStyle("-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #4d4d4d; -fx-border-width: 0 0 2px 0; -fx-border-color: orange;");
+
+        // Tip list container
+        VBox tipList = new VBox(10);
+
+        String[] comments = {
+                "Tak for sidst!",
+                "Slap af en fade bro! :fire:",
+                "Du fuckede op, men respekt nok. Du får lige lidt."
+        };
+        String[] amounts = { "$50", "$30", "$75" };
+
+        for (int i = 0; i < comments.length; i++) {
+
+            VBox singleTipBox = new VBox();
+            singleTipBox.setPadding(new Insets(10));
+            singleTipBox.setStyle("-fx-background-color: #d0d0d0; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0.3, 0, 3); -fx-background-radius: 15; -fx-border-color: #dddddd; -fx-border-radius: 15;");
+
+            HBox tipLine = new HBox();
+            tipLine.setAlignment(Pos.CENTER_LEFT);
+
+            Label commentLabel = new Label(comments[i]);
+            commentLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #444;");
+
+            Label amountLabel = new Label(amounts[i]);
+            amountLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #41bd25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0.3, 0, 1);");
+
+            HBox.setHgrow(commentLabel, Priority.ALWAYS);
+            commentLabel.setMaxWidth(Double.MAX_VALUE);
+
+            tipLine.getChildren().addAll(commentLabel, amountLabel);
+            singleTipBox.getChildren().add(tipLine);
+
+            tipList.getChildren().add(singleTipBox);
+        }
+
+        VBox.setVgrow(tipList, Priority.ALWAYS);
+
+        HBox summaryBox = new HBox(10);
+        summaryBox.setAlignment(Pos.CENTER);
+        summaryBox.setPadding(new Insets(10, 0, 0, 0));
+
+        VBox totalTipsBox = new VBox();
+        totalTipsBox.setAlignment(Pos.CENTER);
+        totalTipsBox.setPadding(new Insets(10));
+        totalTipsBox.setStyle("-fx-background-color: #e0ffe0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0.3, 0, 3);");
+        Label totalLabel = new Label("Total Tips");
+        totalLabel.setStyle("-fx-font-weight: bold;");
+        Label totalAmount = new Label("$155");
+        totalTipsBox.getChildren().addAll(totalLabel, totalAmount);
+
+        VBox monthTipsBox = new VBox();
+        monthTipsBox.setAlignment(Pos.CENTER);
+        monthTipsBox.setPadding(new Insets(10));
+        monthTipsBox.setStyle("-fx-background-color: #e0f7ff; -fx-border-radius: 8; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0.3, 0, 3);");
+        Label monthLabel = new Label("This Month");
+        monthLabel.setStyle("-fx-font-weight: bold;");
+        Label monthAmount = new Label("$80");
+        monthTipsBox.getChildren().addAll(monthLabel, monthAmount);
+
+        HBox.setHgrow(totalTipsBox, Priority.ALWAYS);
+        HBox.setHgrow(monthTipsBox, Priority.ALWAYS);
+        totalTipsBox.setMaxWidth(Double.MAX_VALUE);
+        monthTipsBox.setMaxWidth(Double.MAX_VALUE);
+
+        summaryBox.getChildren().addAll(totalTipsBox, monthTipsBox);
+
+        // Add all to main VBox
+        tipsBox.getChildren().addAll(header, tipList, summaryBox);
+        return tipsBox;
+    }
+
+    // ____________________________________________________
+
+    private Node createBookingRequestsContent() {
+        VBox bookingsBox = new VBox(15);
+        bookingsBox.setPadding(new Insets(10));
+        bookingsBox.setPrefHeight(480);
+        bookingsBox.setPrefWidth(Double.MAX_VALUE);
+        bookingsBox.setStyle("-fx-background-color: #e1e1e1; -fx-background-radius: 0 20px 20px 0; -fx-border-radius: 0 20px 20px 0; -fx-border-color: #ccc; -fx-border-width: 1px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 4);");
+
+        Label header = new Label("Booking Requests");
+        header.setStyle("-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #4d4d4d; -fx-border-width: 0 0 2px 0; -fx-border-color: orange;");
+
+        VBox bookingList = new VBox(10);
+
+        String[] bookings = {
+                "Haircut with Jonas - 26.03 - 14:00",
+                "Fade with Andreas - 27.03 - 11:30",
+                "Beard trim with Carl Emil - 28.03 - 16:00"
+        };
+
+        for (String booking : bookings) {
+            VBox singleBookingBox = new VBox();
+            singleBookingBox.setPadding(new Insets(10));
+            singleBookingBox.setStyle("-fx-background-color: #d0d0d0; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0.3, 0, 3); -fx-background-radius: 15; -fx-border-color: #dddddd; -fx-border-radius: 15;");
+
+            HBox bookingLine = new HBox(10);
+            bookingLine.setAlignment(Pos.CENTER_LEFT);
+
+            Label bookingLabel = new Label(booking);
+            bookingLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #444;");
+            HBox.setHgrow(bookingLabel, Priority.ALWAYS);
+            bookingLabel.setMaxWidth(Double.MAX_VALUE);
+
+            Button acceptBtn = new Button("Accept");
+            acceptBtn.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; " +
+            "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+
+            Button denyBtn = new Button("Deny");
+            denyBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; " +
+            "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+
+            // Hover
+            Animation.addHoverScaleEffectMore(acceptBtn);
+            Animation.addHoverScaleEffectMore(denyBtn);
+
+            acceptBtn.setOnAction(e -> {
+                // Alert and backend here
+            });
+
+            denyBtn.setOnAction(e -> {
+                // Alert and backend here
+            });
+
+            bookingLine.getChildren().addAll(bookingLabel, acceptBtn, denyBtn);
+            singleBookingBox.getChildren().add(bookingLine);
+
+            bookingList.getChildren().add(singleBookingBox);
+        }
+
+        VBox.setVgrow(bookingList, Priority.ALWAYS);
+
+        bookingsBox.getChildren().addAll(header, bookingList);
+        return bookingsBox;
+    }
+
+    // ____________________________________________________
+
+    private Node displayActiveBookinsCancel() {
+        VBox bookingsBox = new VBox(15);
+        bookingsBox.setPadding(new Insets(10));
+        bookingsBox.setPrefHeight(480);
+        bookingsBox.setPrefWidth(Double.MAX_VALUE);
+        bookingsBox.setStyle("-fx-background-color: #e1e1e1; -fx-background-radius: 0 20px 20px 0; -fx-border-radius: 0 20px 20px 0; -fx-border-color: #ccc; -fx-border-width: 1px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 4);");
+
+        Label header = new Label("Cancel booking");
+        header.setStyle("-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #4d4d4d; -fx-border-width: 0 0 2px 0; -fx-border-color: orange;");
+
+        VBox bookingList = new VBox(10);
+
+        String[] bookings = {
+                "Haircut with Jonas - 26.03 - 14:00",
+                "Fade with Andreas - 27.03 - 11:30",
+                "Beard trim with Carl Emil - 28.03 - 16:00"
+        };
+
+        for (String booking : bookings) {
+            VBox singleBookingBox = new VBox();
+            singleBookingBox.setPadding(new Insets(10));
+            singleBookingBox.setStyle("-fx-background-color: #d0d0d0; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0.3, 0, 3); -fx-background-radius: 15; -fx-border-color: #dddddd; -fx-border-radius: 15;");
+
+            HBox bookingLine = new HBox(10);
+            bookingLine.setAlignment(Pos.CENTER_LEFT);
+
+            Label bookingLabel = new Label(booking);
+            bookingLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #444;");
+            HBox.setHgrow(bookingLabel, Priority.ALWAYS);
+            bookingLabel.setMaxWidth(Double.MAX_VALUE);
+
+            Button denyBtn = new Button("Cancel");
+            denyBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; " +
+                    "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+
+            // Hover
+            Animation.addHoverScaleEffectMore(denyBtn);
+
+            denyBtn.setOnAction(e -> {
+                // Alert and backend here
+            });
+
+            bookingLine.getChildren().addAll(bookingLabel, denyBtn);
+            singleBookingBox.getChildren().add(bookingLine);
+
+            bookingList.getChildren().add(singleBookingBox);
+        }
+
+        VBox.setVgrow(bookingList, Priority.ALWAYS);
+
+        bookingsBox.getChildren().addAll(header, bookingList);
+        return bookingsBox;
+    }
+
+    // ____________________________________________________
+
+    private Node displayRemoveStudents() {
+        VBox studentsBox = new VBox(15);
+        studentsBox.setPadding(new Insets(10));
+        studentsBox.setPrefHeight(480);
+        studentsBox.setPrefWidth(Double.MAX_VALUE);
+        studentsBox.setStyle("-fx-background-color: #e1e1e1; -fx-background-radius: 0 20px 20px 0; -fx-border-radius: 0 20px 20px 0; -fx-border-color: #ccc; -fx-border-width: 1px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 4);");
+
+        Label header = new Label("Remove Student");
+        header.setStyle("-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #4d4d4d; -fx-border-width: 0 0 2px 0; -fx-border-color: orange;");
+
+        VBox studentList = new VBox(10);
+
+        String[] students = {
+                "Jonas",
+                "Andreas",
+                "Carl Emil",
+                "Ebou",
+                "Momen",
+                "Tess",
+
+        };
+
+        for (String student : students) {
+            VBox studentBox = new VBox();
+            studentBox.setPadding(new Insets(10));
+            studentBox.setStyle("-fx-background-color: #d0d0d0; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0.3, 0, 3); -fx-background-radius: 15; -fx-border-color: #dddddd; -fx-border-radius: 15;");
+
+            HBox studentLine = new HBox(10);
+            studentLine.setAlignment(Pos.CENTER_LEFT);
+
+            Label studentLabel = new Label(student);
+            studentLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #444;");
+            HBox.setHgrow(studentLabel, Priority.ALWAYS);
+            studentLabel.setMaxWidth(Double.MAX_VALUE);
+
+            Button removeBtn = new Button("Remove");
+            removeBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; " +
+            "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+
+            // Hover
+            Animation.addHoverScaleEffectMore(removeBtn);
+
+            // Action
+            removeBtn.setOnAction(e -> {
+                // Remove here
+            });
+
+            studentLine.getChildren().addAll(studentLabel, removeBtn);
+            studentBox.getChildren().add(studentLine);
+
+            studentList.getChildren().add(studentBox);
+        }
+
+        VBox.setVgrow(studentList, Priority.ALWAYS);
+
+        studentsBox.getChildren().addAll(header, studentList);
+        return studentsBox;
+    }
+
+    // ____________________________________________________
+
+    private Node displayRemoveTeacher() {
+        VBox studentsBox = new VBox(15);
+        studentsBox.setPadding(new Insets(10));
+        studentsBox.setPrefHeight(480);
+        studentsBox.setPrefWidth(Double.MAX_VALUE);
+        studentsBox.setStyle("-fx-background-color: #e1e1e1; -fx-background-radius: 0 20px 20px 0; -fx-border-radius: 0 20px 20px 0; -fx-border-color: #ccc; -fx-border-width: 1px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 4);");
+
+        Label header = new Label("Remove Teacher");
+        header.setStyle("-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #4d4d4d; -fx-border-width: 0 0 2px 0; -fx-border-color: orange;");
+
+        VBox studentList = new VBox(10);
+
+        String[] students = {
+                "Tess",
+                "Tine",
+                "Idk",
+                "John",
+                "Ged"
+        };
+
+        for (String student : students) {
+            VBox studentBox = new VBox();
+            studentBox.setPadding(new Insets(10));
+            studentBox.setStyle("-fx-background-color: #d0d0d0; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0.3, 0, 3); -fx-background-radius: 15; -fx-border-color: #dddddd; -fx-border-radius: 15;");
+
+            HBox studentLine = new HBox(10);
+            studentLine.setAlignment(Pos.CENTER_LEFT);
+
+            Label studentLabel = new Label(student);
+            studentLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #444;");
+            HBox.setHgrow(studentLabel, Priority.ALWAYS);
+            studentLabel.setMaxWidth(Double.MAX_VALUE);
+
+            Button removeBtn = new Button("Remove");
+            removeBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; " +
+                    "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+
+            // Hover
+            Animation.addHoverScaleEffectMore(removeBtn);
+
+            // Action
+            removeBtn.setOnAction(e -> {
+                // Remove here
+            });
+
+            studentLine.getChildren().addAll(studentLabel, removeBtn);
+            studentBox.getChildren().add(studentLine);
+
+            studentList.getChildren().add(studentBox);
+        }
+
+        VBox.setVgrow(studentList, Priority.ALWAYS);
+
+        studentsBox.getChildren().addAll(header, studentList);
+        return studentsBox;
+    }
+
+    // ____________________________________________________
+
+    private Node displayAddTeacher() {
+
+        VBox addTeacherBox = new VBox(15);
+        addTeacherBox.setPadding(new Insets(10));
+        addTeacherBox.setPrefWidth(Double.MAX_VALUE);
+        addTeacherBox.setAlignment(Pos.TOP_LEFT);
+        addTeacherBox.setStyle("-fx-background-color: #e1e1e1; -fx-background-radius: 0 20px 20px 0; -fx-border-radius: 0 20px 20px 0; " +
+        "-fx-border-color: #ccc; -fx-border-width: 1px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 4);");
+
+        Label header = new Label("Add Teacher");
+        header.setStyle("-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #4d4d4d; " +
+        "-fx-border-width: 0 0 2px 0; -fx-border-color: orange;");
+
+        HBox inputBox = new HBox(20);
+        inputBox.setPrefWidth(400);
+        inputBox.setAlignment(Pos.CENTER_LEFT);
+
+        TextField teacherInput = new TextField();
+        teacherInput.setPromptText("Enter teacher name, id or email...");
+        teacherInput.setPrefWidth(300);
+        teacherInput.setPrefHeight(50);
+        teacherInput.setStyle("-fx-font-size: 14px; -fx-background-radius: 10px; -fx-border-radius: 10px;");
+
+        Button addButton = new Button("Add");
+        addButton.setStyle("-fx-background-color: orange; -fx-text-fill: white; -fx-font-weight: bold; " +
+        "-fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+        addButton.setPrefHeight(50);
+
+        // Hover
+        Animation.addHoverScaleEffectMore(addButton);
+
+        // Action
+        addButton.setOnAction(e -> {
+            String newTeacher = teacherInput.getText().trim();
+            // BACKEND HERE
+        });
+
+        HBox.setHgrow(teacherInput, Priority.ALWAYS);
+        inputBox.getChildren().addAll(teacherInput, addButton);
+
+        addTeacherBox.getChildren().addAll(header, inputBox);
+        return addTeacherBox;
+    }
+
+    // ____________________________________________________
+
+    private Node displayAddStudent() {
+
+        VBox addTeacherBox = new VBox(15);
+        addTeacherBox.setPadding(new Insets(10));
+        addTeacherBox.setPrefWidth(Double.MAX_VALUE);
+        addTeacherBox.setAlignment(Pos.TOP_LEFT);
+        addTeacherBox.setStyle("-fx-background-color: #e1e1e1; -fx-background-radius: 0 20px 20px 0; -fx-border-radius: 0 20px 20px 0; " +
+                "-fx-border-color: #ccc; -fx-border-width: 1px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 4);");
+
+        Label header = new Label("Add Student");
+        header.setStyle("-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #4d4d4d; " +
+                "-fx-border-width: 0 0 2px 0; -fx-border-color: orange;");
+
+        HBox inputBox = new HBox(20);
+        inputBox.setPrefWidth(400);
+        inputBox.setAlignment(Pos.CENTER_LEFT);
+
+        TextField teacherInput = new TextField();
+        teacherInput.setPromptText("Enter student name, id or email...");
+        teacherInput.setPrefWidth(300);
+        teacherInput.setPrefHeight(50);
+        teacherInput.setStyle("-fx-font-size: 14px; -fx-background-radius: 10px; -fx-border-radius: 10px;");
+
+        Button addButton = new Button("Add");
+        addButton.setStyle("-fx-background-color: orange; -fx-text-fill: white; -fx-font-weight: bold; " +
+                "-fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+        addButton.setPrefHeight(50);
+
+        // Hover
+        Animation.addHoverScaleEffectMore(addButton);
+
+        // Action
+        addButton.setOnAction(e -> {
+            String newTeacher = teacherInput.getText().trim();
+            // BACKEND HERE
+        });
+
+        HBox.setHgrow(teacherInput, Priority.ALWAYS);
+        inputBox.getChildren().addAll(teacherInput, addButton);
+
+        addTeacherBox.getChildren().addAll(header, inputBox);
+        return addTeacherBox;
+    }
+
+    // ____________________________________________________
+
+    private Node displayBanStudent() {
+
+        VBox addTeacherBox = new VBox(15);
+        addTeacherBox.setPadding(new Insets(10));
+        addTeacherBox.setPrefWidth(Double.MAX_VALUE);
+        addTeacherBox.setAlignment(Pos.TOP_LEFT);
+        addTeacherBox.setStyle("-fx-background-color: #e1e1e1; -fx-background-radius: 0 20px 20px 0; -fx-border-radius: 0 20px 20px 0; " +
+                "-fx-border-color: #ccc; -fx-border-width: 1px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 4);");
+
+        Label header = new Label("Ban Student");
+        header.setStyle("-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #4d4d4d; " +
+                "-fx-border-width: 0 0 2px 0; -fx-border-color: orange;");
+
+        HBox inputBox = new HBox(20);
+        inputBox.setPrefWidth(400);
+        inputBox.setAlignment(Pos.CENTER_LEFT);
+
+        TextField teacherInput = new TextField();
+        teacherInput.setPromptText("Enter student name, id or email...");
+        teacherInput.setPrefWidth(300);
+        teacherInput.setPrefHeight(50);
+        teacherInput.setStyle("-fx-font-size: 14px; -fx-background-radius: 10px; -fx-border-radius: 10px;");
+
+        Button addButton = new Button("Ban");
+        addButton.setStyle("-fx-background-color: #ff0000; -fx-text-fill: white; -fx-font-weight: bold; " +
+                "-fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+        addButton.setPrefHeight(50);
+
+        // Hover
+        Animation.addHoverScaleEffectMore(addButton);
+
+        // Action
+        addButton.setOnAction(e -> {
+            String newTeacher = teacherInput.getText().trim();
+            // BACKEND HERE
+        });
+
+        HBox.setHgrow(teacherInput, Priority.ALWAYS);
+        inputBox.getChildren().addAll(teacherInput, addButton);
+
+        addTeacherBox.getChildren().addAll(header, inputBox);
+        return addTeacherBox;
+    }
+
+    // ____________________________________________________
+
+    private Node displayUnban() {
+
+        VBox addTeacherBox = new VBox(15);
+        addTeacherBox.setPadding(new Insets(10));
+        addTeacherBox.setPrefWidth(Double.MAX_VALUE);
+        addTeacherBox.setAlignment(Pos.TOP_LEFT);
+        addTeacherBox.setStyle("-fx-background-color: #e1e1e1; -fx-background-radius: 0 20px 20px 0; -fx-border-radius: 0 20px 20px 0; " +
+                "-fx-border-color: #ccc; -fx-border-width: 1px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 4);");
+
+        Label header = new Label("Unban user");
+        header.setStyle("-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #4d4d4d; " +
+                "-fx-border-width: 0 0 2px 0; -fx-border-color: orange;");
+
+        HBox inputBox = new HBox(20);
+        inputBox.setPrefWidth(400);
+        inputBox.setAlignment(Pos.CENTER_LEFT);
+
+        TextField teacherInput = new TextField();
+        teacherInput.setPromptText("Enter user name, id or email...");
+        teacherInput.setPrefWidth(300);
+        teacherInput.setPrefHeight(50);
+        teacherInput.setStyle("-fx-font-size: 14px; -fx-background-radius: 10px; -fx-border-radius: 10px;");
+
+        Button addButton = new Button("Unban");
+        addButton.setStyle("-fx-background-color: #00ff22; -fx-text-fill: white; -fx-font-weight: bold; " +
+                "-fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+        addButton.setPrefHeight(50);
+
+        // Hover
+        Animation.addHoverScaleEffectMore(addButton);
+
+        // Action
+        addButton.setOnAction(e -> {
+            String newTeacher = teacherInput.getText().trim();
+            // BACKEND HERE
+        });
+
+        HBox.setHgrow(teacherInput, Priority.ALWAYS);
+        inputBox.getChildren().addAll(teacherInput, addButton);
+
+        addTeacherBox.getChildren().addAll(header, inputBox);
+        return addTeacherBox;
+
+    }
+
+    // ____________________________________________________
+
+    private Node displayAddSchool() {
+
+        VBox addTeacherBox = new VBox(15);
+        addTeacherBox.setPadding(new Insets(10));
+        addTeacherBox.setPrefWidth(Double.MAX_VALUE);
+        addTeacherBox.setAlignment(Pos.TOP_LEFT);
+        addTeacherBox.setStyle("-fx-background-color: #e1e1e1; -fx-background-radius: 0 20px 20px 0; -fx-border-radius: 0 20px 20px 0; " +
+                "-fx-border-color: #ccc; -fx-border-width: 1px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 4);");
+
+        Label header = new Label("Add School");
+        header.setStyle("-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #4d4d4d; " +
+                "-fx-border-width: 0 0 2px 0; -fx-border-color: orange;");
+
+        HBox firstRow = new HBox(20);
+        firstRow.setAlignment(Pos.CENTER_LEFT);
+
+        TextField schoolInput = new TextField();
+        schoolInput.setPromptText("Enter school name, id or email...");
+        schoolInput.setPrefWidth(300);
+        schoolInput.setPrefHeight(50);
+        schoolInput.setStyle("-fx-font-size: 14px; -fx-background-radius: 10px; -fx-border-radius: 10px;");
+
+        Button addButton = new Button("Add");
+        addButton.setStyle("-fx-background-color: orange; -fx-text-fill: white; -fx-font-weight: bold; " +
+                "-fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+        addButton.setPrefHeight(50);
+
+        Animation.addHoverScaleEffectMore(addButton);
+
+        addButton.setOnAction(e -> {
+            String input = schoolInput.getText().trim();
+            // BACKEND HERE
+        });
+
+        HBox.setHgrow(schoolInput, Priority.ALWAYS);
+        firstRow.getChildren().addAll(schoolInput, addButton);
+
+        HBox secondRow = new HBox(20);
+        secondRow.setAlignment(Pos.CENTER_LEFT);
+
+        TextField addressInput = new TextField();
+        addressInput.setPromptText("Address");
+        addressInput.setPrefWidth(300);
+        addressInput.setPrefHeight(50);
+        addressInput.setStyle("-fx-font-size: 14px; -fx-background-radius: 10px; -fx-border-radius: 10px;");
+
+        TextField cityInput = new TextField();
+        cityInput.setPromptText("City");
+        cityInput.setPrefWidth(300);
+        cityInput.setPrefHeight(50);
+        cityInput.setStyle("-fx-font-size: 14px; -fx-background-radius: 10px; -fx-border-radius: 10px;");
+
+        HBox.setHgrow(addressInput, Priority.ALWAYS);
+        HBox.setHgrow(cityInput, Priority.ALWAYS);
+        secondRow.getChildren().addAll(addressInput, cityInput);
+
+        addTeacherBox.getChildren().addAll(header, firstRow, secondRow);
+        return addTeacherBox;
+    }
+
+    // ____________________________________________________
+
+    private Node displayUsernameChange() {
+
+        VBox addTeacherBox = new VBox(15);
+        addTeacherBox.setPadding(new Insets(10));
+        addTeacherBox.setPrefWidth(Double.MAX_VALUE);
+        addTeacherBox.setAlignment(Pos.TOP_LEFT);
+        addTeacherBox.setStyle("-fx-background-color: #e1e1e1; -fx-background-radius: 0 20px 20px 0; -fx-border-radius: 0 20px 20px 0; " +
+                "-fx-border-color: #ccc; -fx-border-width: 1px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 4);");
+
+        Label header = new Label("Change username");
+        header.setStyle("-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #4d4d4d; " +
+                "-fx-border-width: 0 0 2px 0; -fx-border-color: orange;");
+
+        HBox inputBox = new HBox(20);
+        inputBox.setAlignment(Pos.CENTER_LEFT);
+
+        TextField teacherInput = new TextField();
+        teacherInput.setPromptText("Username");
+        teacherInput.setPrefHeight(50);
+        teacherInput.setStyle("-fx-font-size: 14px; -fx-background-radius: 10px; -fx-border-radius: 10px;");
+
+        TextField roleInput = new TextField();
+        roleInput.setPromptText("New username");
+        roleInput.setPrefHeight(50);
+        roleInput.setStyle("-fx-font-size: 14px; -fx-background-radius: 10px; -fx-border-radius: 10px;");
+
+        Button addButton = new Button("Change");
+        addButton.setStyle("-fx-background-color: orange; -fx-text-fill: white; -fx-font-weight: bold; " +
+                "-fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+        addButton.setPrefHeight(50);
+
+        Animation.addHoverScaleEffectMore(addButton);
+
+        addButton.setOnAction(e -> {
+            String newTeacher = teacherInput.getText().trim();
+            // BACKEND HERE
+        });
+
+        HBox.setHgrow(teacherInput, Priority.ALWAYS);
+        HBox.setHgrow(roleInput, Priority.ALWAYS);
+
+        inputBox.getChildren().addAll(teacherInput, roleInput, addButton);
+        addTeacherBox.getChildren().addAll(header, inputBox);
+        return addTeacherBox;
+    }
+
+    // ____________________________________________________
+
+    private Node displayChangeNumberAdmin() {
+
+        VBox addTeacherBox = new VBox(15);
+        addTeacherBox.setPadding(new Insets(10));
+        addTeacherBox.setPrefWidth(Double.MAX_VALUE);
+        addTeacherBox.setAlignment(Pos.TOP_LEFT);
+        addTeacherBox.setStyle("-fx-background-color: #e1e1e1; -fx-background-radius: 0 20px 20px 0; -fx-border-radius: 0 20px 20px 0; " +
+                "-fx-border-color: #ccc; -fx-border-width: 1px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 4);");
+
+        Label header = new Label("Change number");
+        header.setStyle("-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #4d4d4d; " +
+                "-fx-border-width: 0 0 2px 0; -fx-border-color: orange;");
+
+        HBox inputBox = new HBox(20);
+        inputBox.setAlignment(Pos.CENTER_LEFT);
+
+        TextField teacherInput = new TextField();
+        teacherInput.setPromptText("Username");
+        teacherInput.setPrefHeight(50);
+        teacherInput.setStyle("-fx-font-size: 14px; -fx-background-radius: 10px; -fx-border-radius: 10px;");
+
+        TextField roleInput = new TextField();
+        roleInput.setPromptText("New number");
+        roleInput.setPrefHeight(50);
+        roleInput.setStyle("-fx-font-size: 14px; -fx-background-radius: 10px; -fx-border-radius: 10px;");
+
+        Button addButton = new Button("Change");
+        addButton.setStyle("-fx-background-color: orange; -fx-text-fill: white; -fx-font-weight: bold; " +
+                "-fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+        addButton.setPrefHeight(50);
+
+        Animation.addHoverScaleEffectMore(addButton);
+
+        addButton.setOnAction(e -> {
+            String newTeacher = teacherInput.getText().trim();
+            // BACKEND HERE
+        });
+
+        HBox.setHgrow(teacherInput, Priority.ALWAYS);
+        HBox.setHgrow(roleInput, Priority.ALWAYS);
+
+        inputBox.getChildren().addAll(teacherInput, roleInput, addButton);
+        addTeacherBox.getChildren().addAll(header, inputBox);
+        return addTeacherBox;
+    }
+
+    // ____________________________________________________
+
+    private Node displayChangeEmailAdmin() {
+
+        VBox addTeacherBox = new VBox(15);
+        addTeacherBox.setPadding(new Insets(10));
+        addTeacherBox.setPrefWidth(Double.MAX_VALUE);
+        addTeacherBox.setAlignment(Pos.TOP_LEFT);
+        addTeacherBox.setStyle("-fx-background-color: #e1e1e1; -fx-background-radius: 0 20px 20px 0; -fx-border-radius: 0 20px 20px 0; " +
+                "-fx-border-color: #ccc; -fx-border-width: 1px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 4);");
+
+        Label header = new Label("Change email");
+        header.setStyle("-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #4d4d4d; " +
+                "-fx-border-width: 0 0 2px 0; -fx-border-color: orange;");
+
+        HBox inputBox = new HBox(20);
+        inputBox.setAlignment(Pos.CENTER_LEFT);
+
+        TextField teacherInput = new TextField();
+        teacherInput.setPromptText("Username");
+        teacherInput.setPrefHeight(50);
+        teacherInput.setStyle("-fx-font-size: 14px; -fx-background-radius: 10px; -fx-border-radius: 10px;");
+
+        TextField roleInput = new TextField();
+        roleInput.setPromptText("New email");
+        roleInput.setPrefHeight(50);
+        roleInput.setStyle("-fx-font-size: 14px; -fx-background-radius: 10px; -fx-border-radius: 10px;");
+
+        Button addButton = new Button("Change");
+        addButton.setStyle("-fx-background-color: orange; -fx-text-fill: white; -fx-font-weight: bold; " +
+                "-fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+        addButton.setPrefHeight(50);
+
+        Animation.addHoverScaleEffectMore(addButton);
+
+        addButton.setOnAction(e -> {
+            String newTeacher = teacherInput.getText().trim();
+            // BACKEND HERE
+        });
+
+        HBox.setHgrow(teacherInput, Priority.ALWAYS);
+        HBox.setHgrow(roleInput, Priority.ALWAYS);
+
+        inputBox.getChildren().addAll(teacherInput, roleInput, addButton);
+        addTeacherBox.getChildren().addAll(header, inputBox);
+        return addTeacherBox;
+    }
+
+    // ____________________________________________________
+
+    private Node displayChangeRole() {
+
+        VBox addTeacherBox = new VBox(15);
+        addTeacherBox.setPadding(new Insets(10));
+        addTeacherBox.setPrefWidth(Double.MAX_VALUE);
+        addTeacherBox.setAlignment(Pos.TOP_LEFT);
+        addTeacherBox.setStyle("-fx-background-color: #e1e1e1; -fx-background-radius: 0 20px 20px 0; -fx-border-radius: 0 20px 20px 0; " +
+                "-fx-border-color: #ccc; -fx-border-width: 1px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 4);");
+
+        Label header = new Label("Change role");
+        header.setStyle("-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #4d4d4d; " +
+                "-fx-border-width: 0 0 2px 0; -fx-border-color: orange;");
+
+        HBox inputBox = new HBox(20);
+        inputBox.setAlignment(Pos.CENTER_LEFT);
+
+        TextField teacherInput = new TextField();
+        teacherInput.setPromptText("Username");
+        teacherInput.setPrefHeight(50);
+        teacherInput.setStyle("-fx-font-size: 14px; -fx-background-radius: 10px; -fx-border-radius: 10px;");
+
+        TextField roleInput = new TextField();
+        roleInput.setPromptText("Role");
+        roleInput.setPrefHeight(50);
+        roleInput.setStyle("-fx-font-size: 14px; -fx-background-radius: 10px; -fx-border-radius: 10px;");
+
+        Button addButton = new Button("Add");
+        addButton.setStyle("-fx-background-color: orange; -fx-text-fill: white; -fx-font-weight: bold; " +
+                "-fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+        addButton.setPrefHeight(50);
+
+        Animation.addHoverScaleEffectMore(addButton);
+
+        addButton.setOnAction(e -> {
+            String newTeacher = teacherInput.getText().trim();
+            // BACKEND HERE
+        });
+
+        HBox.setHgrow(teacherInput, Priority.ALWAYS);
+        HBox.setHgrow(roleInput, Priority.ALWAYS);
+
+        inputBox.getChildren().addAll(teacherInput, roleInput, addButton);
+        addTeacherBox.getChildren().addAll(header, inputBox);
+        return addTeacherBox;
+    }
+
+    // ____________________________________________________
+
+    private Node displayResetProfilePicture() {
+
+        VBox addTeacherBox = new VBox(15);
+        addTeacherBox.setPadding(new Insets(10));
+        addTeacherBox.setPrefWidth(Double.MAX_VALUE);
+        addTeacherBox.setAlignment(Pos.TOP_LEFT);
+        addTeacherBox.setStyle("-fx-background-color: #e1e1e1; -fx-background-radius: 0 20px 20px 0; -fx-border-radius: 0 20px 20px 0; " +
+                "-fx-border-color: #ccc; -fx-border-width: 1px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 4);");
+
+        Label header = new Label("Reset Profile Picture");
+        header.setStyle("-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #4d4d4d; " +
+                "-fx-border-width: 0 0 2px 0; -fx-border-color: orange;");
+
+        HBox inputBox = new HBox(20);
+        inputBox.setPrefWidth(400);
+        inputBox.setAlignment(Pos.CENTER_LEFT);
+
+        TextField teacherInput = new TextField();
+        teacherInput.setPromptText("Enter name, id or email");
+        teacherInput.setPrefWidth(300);
+        teacherInput.setPrefHeight(50);
+        teacherInput.setStyle("-fx-font-size: 14px; -fx-background-radius: 10px; -fx-border-radius: 10px;");
+
+        Button addButton = new Button("Change");
+        addButton.setStyle("-fx-background-color: orange; -fx-text-fill: white; -fx-font-weight: bold; " +
+                "-fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+        addButton.setPrefHeight(50);
+
+        // Hover
+        Animation.addHoverScaleEffectMore(addButton);
+
+        // Action
+        addButton.setOnAction(e -> {
+            String newTeacher = teacherInput.getText().trim();
+            // BACKEND HERE
+        });
+
+        HBox.setHgrow(teacherInput, Priority.ALWAYS);
+        inputBox.getChildren().addAll(teacherInput, addButton);
+
+        addTeacherBox.getChildren().addAll(header, inputBox);
+        return addTeacherBox;
+    }
+
+    // ____________________________________________________
+
+    private Node displayChangeColorsAdmin() {
+
+        VBox addTeacherBox = new VBox(15);
+        addTeacherBox.setPadding(new Insets(10));
+        addTeacherBox.setPrefWidth(Double.MAX_VALUE);
+        addTeacherBox.setAlignment(Pos.TOP_LEFT);
+        addTeacherBox.setStyle("-fx-background-color: #e1e1e1; -fx-background-radius: 0 20px 20px 0; -fx-border-radius: 0 20px 20px 0; " +
+                "-fx-border-color: #ccc; -fx-border-width: 1px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 4);");
+
+        Label header = new Label("Change colors for user");
+        header.setStyle("-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #4d4d4d; " +
+                "-fx-border-width: 0 0 2px 0; -fx-border-color: orange;");
+
+        HBox inputBox = new HBox(20);
+        inputBox.setPrefWidth(400);
+        inputBox.setAlignment(Pos.CENTER_LEFT);
+
+        TextField teacherInput = new TextField();
+        teacherInput.setPromptText("Enter name, id or email");
+        teacherInput.setPrefWidth(300);
+        teacherInput.setPrefHeight(50);
+        teacherInput.setStyle("-fx-font-size: 14px; -fx-background-radius: 10px; -fx-border-radius: 10px;");
+
+        Button addButton = new Button("Change");
+        addButton.setStyle("-fx-background-color: orange; -fx-text-fill: white; -fx-font-weight: bold; " +
+                "-fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+        addButton.setPrefHeight(50);
+
+        // Hover
+        Animation.addHoverScaleEffectMore(addButton);
+
+        // Action
+        addButton.setOnAction(e -> {
+            String newTeacher = teacherInput.getText().trim();
+            // BACKEND HERE
+        });
+
+        HBox.setHgrow(teacherInput, Priority.ALWAYS);
+        inputBox.getChildren().addAll(teacherInput, addButton);
+
+        addTeacherBox.getChildren().addAll(header, inputBox);
+        return addTeacherBox;
+    }
+
+    // ____________________________________________________
+
+    private Node displayExamReview() {
+
+        VBox contentBox = new VBox(15);
+        contentBox.setPadding(new Insets(15));
+        contentBox.setPrefWidth(Double.MAX_VALUE);
+        contentBox.setStyle(
+                "-fx-background-color: #f5f5f5;" +
+                "-fx-background-radius: 25;" +
+                "-fx-border-radius: 25;" +
+                "-fx-border-color: #ccc;" +
+                "-fx-border-width: 1px;" +
+                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 10, 0.3, 0, 4);"
+        );
+
+        Label header = new Label("Exam title");
+        header.setStyle("-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #333; -fx-border-width: 0 0 2px 0; -fx-border-color: orange;");
+        header.setPadding(new Insets(0, 0, 10, 0));
+
+        Label examTitle = new Label("Subtitle fuck mig altså..");
+        examTitle.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2a2a2a;");
+
+        Label examText = new Label("Det her er en placeholder tekst.. Jeg hader livet. Det her er en placeholder tekst.. Jeg hader livet. Det her er en placeholder tekst.. Jeg hader livet.");
+        examText.setWrapText(true);
+        examText.setStyle("-fx-font-size: 14px; -fx-text-fill: #444;");
+
+        Image examImage = new Image(getClass().getResource("/assets/exam/haircut1.jpg").toExternalForm());
+        ImageView imageView = new ImageView(examImage);
+        imageView.setFitWidth(300);
+        imageView.setFitHeight(300);
+        imageView.setPreserveRatio(true);
+        imageView.setSmooth(true);
+        imageView.setStyle("-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 4, 0.3, 0, 2);");
+
+        Label underImgText = new Label("Det her er en placeholder tekst.. Jeg hader livet. Det her er en placeholder tekst.. Jeg hader livet. Det her er en placeholder tekst.. Jeg hader livet.");
+        underImgText.setWrapText(true);
+        underImgText.setStyle("-fx-font-size: 14px; -fx-text-fill: #444;");
+
+        VBox imageWrapper = new VBox(imageView);
+        imageWrapper.setPadding(new Insets(0, 0, 0, 0));
+
+        // Grading controls
+        HBox gradingBar = new HBox(10);
+        gradingBar.setAlignment(Pos.CENTER_LEFT);
+        gradingBar.setPadding(new Insets(10, 0, 0, 0));
+
+        TextField gradeField = new TextField();
+        gradeField.setPromptText("Grade");
+        gradeField.setPrefWidth(70);
+        gradeField.setAlignment(Pos.CENTER);
+        gradeField.setStyle("-fx-prompt-text-fill: #2f2f2f; -fx-font-size: 16px; -fx-background-color: orange; -fx-text-fill: #171717; -fx-background-insets: 0; -fx-border-insets: 0; -fx-border-radius: 10px; -fx-background-radius: 10px;");
+
+        TextArea commentArea = new TextArea();
+        commentArea.setPromptText("Comment...");
+        commentArea.setPrefRowCount(2);
+        commentArea.setPrefWidth(330);
+        commentArea.setWrapText(true);
+
+        Button sendBtn = new Button("Send");
+        sendBtn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; " +
+        "-fx-padding: 4 10; -fx-font-size: 12px; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+
+        // Hover
+        Animation.addHoverScaleEffectMore(sendBtn);
+
+        // Action
+        sendBtn.setOnAction(e -> {
+            String grade = gradeField.getText();
+            String comment = commentArea.getText();
+        });
+
+        gradingBar.getChildren().addAll(gradeField, commentArea, sendBtn);
+
+        contentBox.getChildren().addAll(header, examTitle, examText, imageWrapper, underImgText, gradingBar);
+
+        ScrollPane scrollPane = new ScrollPane(contentBox);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+        scrollPane.setPrefHeight(500);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
+
+        return scrollPane;
+    }
+
+    // ____________________________________________________
+
+    private Node displayAcceptStudentRequests() {
+        VBox requestsBox = new VBox(15);
+        requestsBox.setPadding(new Insets(10));
+        requestsBox.setPrefHeight(480);
+        requestsBox.setPrefWidth(Double.MAX_VALUE);
+        requestsBox.setStyle("-fx-background-color: #e1e1e1; -fx-background-radius: 0 20px 20px 0; -fx-border-radius: 0 20px 20px 0; -fx-border-color: #ccc; -fx-border-width: 1px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 4);");
+
+        Label header = new Label("Accept Student");
+        header.setStyle("-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #4d4d4d; -fx-border-width: 0 0 2px 0; -fx-border-color: orange;");
+
+        VBox requestList = new VBox(10);
+
+        String[] requests = {
+                "Jonas requests to be your student",
+                "Andreas requests to be your student",
+                "Carl Emil requests to be your student"
+        };
+
+        for (String request : requests) {
+            VBox singleRequestBox = new VBox();
+            singleRequestBox.setPadding(new Insets(10));
+            singleRequestBox.setStyle("-fx-background-color: #d0d0d0; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0.3, 0, 3); -fx-background-radius: 15; -fx-border-color: #dddddd; -fx-border-radius: 15;");
+
+            HBox requestLine = new HBox(10);
+            requestLine.setAlignment(Pos.CENTER_LEFT);
+
+            Label requestLabel = new Label(request);
+            requestLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #444;");
+            HBox.setHgrow(requestLabel, Priority.ALWAYS);
+            requestLabel.setMaxWidth(Double.MAX_VALUE);
+
+            Button acceptBtn = new Button("Accept");
+            acceptBtn.setStyle("-fx-background-color: #41bd25; -fx-text-fill: white; -fx-font-weight: bold; " +
+            "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+
+            Button denyBtn = new Button("Deny");
+            denyBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; " +
+            "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+
+            // Hover
+            Animation.addHoverScaleEffectMore(acceptBtn);
+            Animation.addHoverScaleEffectMore(denyBtn);
+
+            acceptBtn.setOnAction(e -> {
+                // Accept
+            });
+
+            denyBtn.setOnAction(e -> {
+                // Deny
+            });
+
+
+            requestLine.getChildren().addAll(requestLabel, acceptBtn, denyBtn);
+            singleRequestBox.getChildren().add(requestLine);
+
+            requestList.getChildren().add(singleRequestBox);
+        }
+
+        VBox.setVgrow(requestList, Priority.ALWAYS);
+
+        requestsBox.getChildren().addAll(header, requestList);
+        return requestsBox;
+
     }
 
     // ____________________________________________________
@@ -2151,11 +3245,11 @@ public class Menu extends Pane {
 
         // Actions
         contactBox.setOnMouseClicked(e -> {
+            aboutMeBox.getStyleClass().remove("nav-box-selected-first");
+            contactBox.getStyleClass().add("nav-box-selected");
+            reviewsBox.getStyleClass().remove("nav-box-selected");
+            galleryBox.getStyleClass().remove("nav-box-selected");
             getChildren().clear();
-            getChildren().add(displayAvailableBookings());
-            getChildren().add(displayBookingCard());
-            getChildren().add(displayExamMenu());
-            getChildren().add(displayExamCard());
         });
 
         aboutMeBox.setOnMouseClicked(e -> {
@@ -2164,7 +3258,6 @@ public class Menu extends Pane {
             galleryBox.getStyleClass().remove("nav-box-selected");
             aboutMeBox.getStyleClass().add("nav-box-selected-first");
             bottomContentBox.getChildren().clear();
-            bottomContentBox.getChildren().add(displayAboutMe());
         });
 
         reviewsBox.setOnMouseClicked(e -> {
@@ -2173,7 +3266,6 @@ public class Menu extends Pane {
             galleryBox.getStyleClass().remove("nav-box-selected");
             reviewsBox.getStyleClass().add("nav-box-selected");
             bottomContentBox.getChildren().clear();
-            bottomContentBox.getChildren().add(displayReview());
         });
 
         galleryBox.setOnMouseClicked(e -> {
@@ -2182,7 +3274,6 @@ public class Menu extends Pane {
             reviewsBox.getStyleClass().remove("nav-box-selected");
             galleryBox.getStyleClass().add("nav-box-selected");
             bottomContentBox.getChildren().clear();
-            bottomContentBox.getChildren().add(displayPictures());
         });
 
         // CSS
@@ -2200,7 +3291,7 @@ public class Menu extends Pane {
         profileVBox.getChildren().addAll(profilePictureHBox, bottomContentBox);
 
         // Load about me by default
-        bottomContentBox.getChildren().add(displayAboutMe());
+        // bottomContentBox.getChildren().add(displayAboutMe()); ENABLE WHEN CORRECT
 
         return profileVBox;
     }
@@ -2281,12 +3372,12 @@ public class Menu extends Pane {
         navRow.setAlignment(Pos.CENTER);
         navRow.setSpacing(0);
 
-        HBox aboutMeBox = createNavBox("F&Q");
+        HBox faqBox = createNavBox("F&Q");
         HBox contactBox = createNavBox("Contact");
-        HBox reviewsBox = createNavBox("Students");
-        HBox galleryBox = createNavBox("Reviews of us");
+        HBox studentsBox = createNavBox("Students");
+        HBox reviewsOfUsBox = createNavBox("Reviews of us");
 
-        navRow.getChildren().addAll(aboutMeBox, reviewsBox, contactBox, galleryBox);
+        navRow.getChildren().addAll(faqBox, studentsBox, contactBox, reviewsOfUsBox);
 
         VBox rightPaneContent = new VBox(10);
         rightPaneContent.setPrefWidth(550);
@@ -2294,38 +3385,35 @@ public class Menu extends Pane {
 
         // Actions
         contactBox.setOnMouseClicked(e -> {
-            getChildren().clear();
-            getChildren().add(displayAvailableBookings());
-            getChildren().add(displayBookingCard());
-            getChildren().add(displayExamMenu());
-            getChildren().add(displayExamCard());
+            contactBox.getStyleClass().add("nav-box-selected");
+            studentsBox.getStyleClass().remove("nav-box-selected");
+            reviewsOfUsBox.getStyleClass().remove("nav-box-selected");
+            faqBox.getStyleClass().remove("nav-box-selected-first");
+            bottomContentBox.getChildren().clear();
         });
 
-        aboutMeBox.setOnMouseClicked(e -> {
+        faqBox.setOnMouseClicked(e -> {
             contactBox.getStyleClass().remove("nav-box-selected");
-            reviewsBox.getStyleClass().remove("nav-box-selected");
-            galleryBox.getStyleClass().remove("nav-box-selected");
-            aboutMeBox.getStyleClass().add("nav-box-selected");
+            studentsBox.getStyleClass().remove("nav-box-selected");
+            reviewsOfUsBox.getStyleClass().remove("nav-box-selected");
+            faqBox.getStyleClass().add("nav-box-selected-first");
             bottomContentBox.getChildren().clear();
-            bottomContentBox.getChildren().add(displayAboutMe());
         });
 
-        reviewsBox.setOnMouseClicked(e -> {
-            aboutMeBox.getStyleClass().remove("nav-box-selected");
+        studentsBox.setOnMouseClicked(e -> {
+            faqBox.getStyleClass().remove("nav-box-selected-first");
             contactBox.getStyleClass().remove("nav-box-selected");
-            galleryBox.getStyleClass().remove("nav-box-selected");
-            reviewsBox.getStyleClass().add("nav-box-selected");
+            reviewsOfUsBox.getStyleClass().remove("nav-box-selected");
+            studentsBox.getStyleClass().add("nav-box-selected");
             bottomContentBox.getChildren().clear();
-            bottomContentBox.getChildren().add(displayReview());
         });
 
-        galleryBox.setOnMouseClicked(e -> {
-            aboutMeBox.getStyleClass().remove("nav-box-selected");
+        reviewsOfUsBox.setOnMouseClicked(e -> {
+            faqBox.getStyleClass().remove("nav-box-selected-first");
             contactBox.getStyleClass().remove("nav-box-selected");
-            reviewsBox.getStyleClass().remove("nav-box-selected");
-            galleryBox.getStyleClass().add("nav-box-selected");
+            studentsBox.getStyleClass().remove("nav-box-selected");
+            reviewsOfUsBox.getStyleClass().add("nav-box-selected");
             bottomContentBox.getChildren().clear();
-            bottomContentBox.getChildren().add(displayPictures());
         });
 
         // CSS
@@ -2335,7 +3423,7 @@ public class Menu extends Pane {
         rightPane.getStyleClass().add("right-pane");
 
         // Default Selected Box
-        aboutMeBox.getStyleClass().add("nav-box-selected");
+        faqBox.getStyleClass().add("nav-box-selected-first");
 
         // Add
         rightPane.getChildren().addAll(rightPaneBanner, navRow, rightPaneContent);
@@ -2343,7 +3431,7 @@ public class Menu extends Pane {
         profileVBox.getChildren().addAll(profilePictureHBox, bottomContentBox);
 
         // Load about me by default
-        bottomContentBox.getChildren().add(displayAboutMe());
+        //bottomContentBox.getChildren().add(displayAboutMe()); ADD CORRECT FAQ WHEN ITS DONE
 
         return profileVBox;
     }
@@ -2437,38 +3525,35 @@ public class Menu extends Pane {
 
         // Actions
         contactBox.setOnMouseClicked(e -> {
-            getChildren().clear();
-            getChildren().add(displayAvailableBookings());
-            getChildren().add(displayBookingCard());
-            getChildren().add(displayExamMenu());
-            getChildren().add(displayExamCard());
+            contactBox.getStyleClass().add("nav-box-selected");
+            reviewsBox.getStyleClass().remove("nav-box-selected");
+            galleryBox.getStyleClass().remove("nav-box-selected");
+            aboutMeBox.getStyleClass().remove("nav-box-selected-first");
+            bottomContentBox.getChildren().clear();
         });
 
         aboutMeBox.setOnMouseClicked(e -> {
             contactBox.getStyleClass().remove("nav-box-selected");
             reviewsBox.getStyleClass().remove("nav-box-selected");
             galleryBox.getStyleClass().remove("nav-box-selected");
-            aboutMeBox.getStyleClass().add("nav-box-selected");
+            aboutMeBox.getStyleClass().add("nav-box-selected-first");
             bottomContentBox.getChildren().clear();
-            bottomContentBox.getChildren().add(displayAboutMe());
         });
 
         reviewsBox.setOnMouseClicked(e -> {
-            aboutMeBox.getStyleClass().remove("nav-box-selected");
+            aboutMeBox.getStyleClass().remove("nav-box-selected-first");
             contactBox.getStyleClass().remove("nav-box-selected");
             galleryBox.getStyleClass().remove("nav-box-selected");
             reviewsBox.getStyleClass().add("nav-box-selected");
             bottomContentBox.getChildren().clear();
-            bottomContentBox.getChildren().add(displayReview());
         });
 
         galleryBox.setOnMouseClicked(e -> {
-            aboutMeBox.getStyleClass().remove("nav-box-selected");
+            aboutMeBox.getStyleClass().remove("nav-box-selected-first");
             contactBox.getStyleClass().remove("nav-box-selected");
             reviewsBox.getStyleClass().remove("nav-box-selected");
             galleryBox.getStyleClass().add("nav-box-selected");
             bottomContentBox.getChildren().clear();
-            bottomContentBox.getChildren().add(displayPictures());
         });
 
         // CSS
@@ -2478,7 +3563,7 @@ public class Menu extends Pane {
         rightPane.getStyleClass().add("right-pane");
 
         // Default Selected Box
-        aboutMeBox.getStyleClass().add("nav-box-selected");
+        aboutMeBox.getStyleClass().add("nav-box-selected-first");
 
         // Add
         rightPane.getChildren().addAll(rightPaneBanner, navRow, rightPaneContent);
@@ -2486,7 +3571,7 @@ public class Menu extends Pane {
         profileVBox.getChildren().addAll(profilePictureHBox, bottomContentBox);
 
         // Load about me by default
-        bottomContentBox.getChildren().add(displayAboutMe());
+        // bottomContentBox.getChildren().add(displayAboutMe()); // DISPLAY CORRECT WHEN DONE
 
         return profileVBox;
     }
@@ -3072,47 +4157,57 @@ public class Menu extends Pane {
         // Actions
         admin1.setOnAction(e -> {
             messageArea.getChildren().clear();
-            messageArea.getChildren().add(Setting.displayBanUser());
+            messageArea.getChildren().add(displayBanStudent());
         });
 
         admin2.setOnAction(e -> {
             messageArea.getChildren().clear();
+            messageArea.getChildren().add(displayUnban());
         });
 
         admin3.setOnAction(e -> {
             messageArea.getChildren().clear();
+            messageArea.getChildren().add(displayAddSchool());
         });
 
         admin4.setOnAction(e -> {
             messageArea.getChildren().clear();
+            messageArea.getChildren().add(displayChangeRole());
         });
 
         admin5.setOnAction(e -> {
             messageArea.getChildren().clear();
+            messageArea.getChildren().add(displayResetProfilePicture());
         });
 
         admin6.setOnAction(e -> {
             messageArea.getChildren().clear();
+            messageArea.getChildren().add(displayChangeColorsAdmin());
         });
 
         admin7.setOnAction(e -> {
             messageArea.getChildren().clear();
+            messageArea.getChildren().add(displayUsernameChange());
         });
 
         admin8.setOnAction(e -> {
             messageArea.getChildren().clear();
+            messageArea.getChildren().add(displayRemoveSchool());
         });
 
         admin9.setOnAction(e -> {
             messageArea.getChildren().clear();
+            messageArea.getChildren().add(displayMuteUser());
         });
 
         admin10.setOnAction(e -> {
             messageArea.getChildren().clear();
+            messageArea.getChildren().add(displayChangeNumberAdmin());
         });
 
         admin11.setOnAction(e -> {
             messageArea.getChildren().clear();
+            messageArea.getChildren().add(displayChangeEmailAdmin());
         });
 
         return adminMenuVBox;
@@ -3186,7 +4281,6 @@ public class Menu extends Pane {
         //billede til knap
         Image plusIcon = new Image(getClass().getResource("/assets/icons/icon20.png").toExternalForm());
 
-
         ImageView plusView = new ImageView(plusIcon);
         plusView.setFitWidth(20);
         plusView.setFitHeight(20);
@@ -3212,10 +4306,11 @@ public class Menu extends Pane {
         VBox availableSection = new VBox();
         availableSection.setPrefWidth(200);
         availableSection.setPadding(new Insets(0, 0, 0, 0));
-        availableSection.setAlignment(Pos.TOP_LEFT);
+        availableSection.setAlignment(Pos.CENTER_LEFT);
         availableSection.getChildren().add(bookingLabel);
 
         Button addBooking = new Button();
+        addBooking.setStyle("-fx-border-radius: 25px; -fx-background-radius: 25px; -fx-background-insets: 0; -fx-border-insets: 0; -fx-background-color: orange");
         addBooking.setGraphic(plusView);
 
         // 50px Top Menu Header
@@ -3225,10 +4320,9 @@ public class Menu extends Pane {
             bookingPopup();
         });
 
-
         // First load
         // Check om personen har aktive bookings. Hvis ja så skal de jo også loades ved load af menuen.
-        //Og tilføj nye bookings
+        // Og tilføj nye bookings
         mainContainer.getChildren().addAll(topMenuHBox); // VBox
 
         return mainContainer;
@@ -3395,4 +4489,98 @@ public class Menu extends Pane {
         alert.showAndWait();
     }
 
-}
+    // ____________________________________________________
+
+    private Node displayMuteUser() {
+
+        VBox addTeacherBox = new VBox(15);
+        addTeacherBox.setPadding(new Insets(10));
+        addTeacherBox.setPrefWidth(Double.MAX_VALUE);
+        addTeacherBox.setAlignment(Pos.TOP_LEFT);
+        addTeacherBox.setStyle("-fx-background-color: #e1e1e1; -fx-background-radius: 0 20px 20px 0; -fx-border-radius: 0 20px 20px 0; " +
+                "-fx-border-color: #ccc; -fx-border-width: 1px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 4);");
+
+        Label header = new Label("Mute user");
+        header.setStyle("-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #4d4d4d; " +
+                "-fx-border-width: 0 0 2px 0; -fx-border-color: orange;");
+
+        HBox inputBox = new HBox(20);
+        inputBox.setPrefWidth(400);
+        inputBox.setAlignment(Pos.CENTER_LEFT);
+
+        TextField teacherInput = new TextField();
+        teacherInput.setPromptText("Enter user name, id or email...");
+        teacherInput.setPrefWidth(300);
+        teacherInput.setPrefHeight(50);
+        teacherInput.setStyle("-fx-font-size: 14px; -fx-background-radius: 10px; -fx-border-radius: 10px;");
+
+        Button addButton = new Button("Mute");
+        addButton.setStyle("-fx-background-color: #ff0000; -fx-text-fill: white; -fx-font-weight: bold; " +
+                "-fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+        addButton.setPrefHeight(50);
+
+        // Hover
+        Animation.addHoverScaleEffectMore(addButton);
+
+        // Action
+        addButton.setOnAction(e -> {
+            String newTeacher = teacherInput.getText().trim();
+            // BACKEND HERE
+        });
+
+        HBox.setHgrow(teacherInput, Priority.ALWAYS);
+        inputBox.getChildren().addAll(teacherInput, addButton);
+
+        addTeacherBox.getChildren().addAll(header, inputBox);
+        return addTeacherBox;
+
+    }
+
+    // ____________________________________________________
+
+    private Node displayRemoveSchool() {
+
+        VBox addTeacherBox = new VBox(15);
+        addTeacherBox.setPadding(new Insets(10));
+        addTeacherBox.setPrefWidth(Double.MAX_VALUE);
+        addTeacherBox.setAlignment(Pos.TOP_LEFT);
+        addTeacherBox.setStyle("-fx-background-color: #e1e1e1; -fx-background-radius: 0 20px 20px 0; -fx-border-radius: 0 20px 20px 0; " +
+                "-fx-border-color: #ccc; -fx-border-width: 1px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 4);");
+
+        Label header = new Label("Remove School");
+        header.setStyle("-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #4d4d4d; " +
+                "-fx-border-width: 0 0 2px 0; -fx-border-color: orange;");
+
+        HBox inputBox = new HBox(20);
+        inputBox.setPrefWidth(400);
+        inputBox.setAlignment(Pos.CENTER_LEFT);
+
+        TextField teacherInput = new TextField();
+        teacherInput.setPromptText("Enter name, id or prefix");
+        teacherInput.setPrefWidth(300);
+        teacherInput.setPrefHeight(50);
+        teacherInput.setStyle("-fx-font-size: 14px; -fx-background-radius: 10px; -fx-border-radius: 10px;");
+
+        Button addButton = new Button("Remove");
+        addButton.setStyle("-fx-background-color: #ff0000; -fx-text-fill: white; -fx-font-weight: bold; " +
+                "-fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+        addButton.setPrefHeight(50);
+
+        // Hover
+        Animation.addHoverScaleEffectMore(addButton);
+
+        // Action
+        addButton.setOnAction(e -> {
+            String newTeacher = teacherInput.getText().trim();
+            // BACKEND HERE
+        });
+
+        HBox.setHgrow(teacherInput, Priority.ALWAYS);
+        inputBox.getChildren().addAll(teacherInput, addButton);
+
+        addTeacherBox.getChildren().addAll(header, inputBox);
+        return addTeacherBox;
+
+    }
+
+} // Class end

@@ -202,10 +202,16 @@ public class SideMenu extends Pane {
 
         btn2.setOnAction(e -> {
             menu.getChildren().clear();
+            menu.getChildren().add(menu.displayAvailableBookings());
+            menu.getChildren().add(menu.displayBookingCard());
+            menu.getChildren().add(menu.displayExamMenu());
+            menu.getChildren().add(menu.displayExamCard());
         });
 
         btn3.setOnAction(e -> {
+            menu.setHeaderTitle("Messages");
             menu.getChildren().clear();
+            menu.getChildren().add(menu.displayHeader());
             menu.getChildren().add(menu.displayMyMessages());
         });
 
@@ -214,7 +220,9 @@ public class SideMenu extends Pane {
         });
 
         btn5.setOnAction(e -> {
+            menu.setHeaderTitle("For me");
             menu.getChildren().clear();
+            menu.getChildren().add(menu.displayHeader());
             menu.getChildren().add(menu.displayStudentBookings());
         });
 
@@ -300,6 +308,7 @@ public class SideMenu extends Pane {
             menu.setHeaderTitle("Messages");
             menu.getChildren().clear();
             menu.getChildren().add(menu.displayHeader());
+            menu.getChildren().add(menu.displayMyMessages());
         });
 
         settingsBtn.setOnAction(e -> {
@@ -347,7 +356,7 @@ public class SideMenu extends Pane {
         // Top Buttons Creating
         Button profileBtn = imageButton("/assets/profile/person1.png", 50, 50, 60);
         Button btn1 = imageButton("/assets/icons/icon7.png", 30, 30, 50); // ADMIN AF ELEVER
-        Button btn2 = imageButton("/assets/icons/icon5.png", 30, 30, 50); // RATING AF EKSAMENS BOOKING
+        Button btn2 = imageButton("/assets/icons/icon9.png", 30, 30, 50); // RATING AF EKSAMENS BOOKING
         Button btn3 = imageButton("/assets/icons/icon1.png", 30, 30, 50); // OPRET TIDER FOR ELEVER (?)
         Button btn4 = imageButton("/assets/icons/icon2.png", 30, 30, 50); // BESKEDER
 
@@ -365,8 +374,9 @@ public class SideMenu extends Pane {
 
         // Actions
         btn1.setOnAction(e -> {
-            menu.setHeaderTitle("Admin");
+            menu.setHeaderTitle("Teacher Menu");
             menu.getChildren().clear();
+            menu.getChildren().add(menu.displayHeader());
             menu.getChildren().add(menu.displayTeacherAdmin());
         });
 
@@ -374,17 +384,21 @@ public class SideMenu extends Pane {
             menu.setHeaderTitle("Rating");
             menu.getChildren().clear();
             menu.getChildren().add(menu.displayHeader());
+            menu.getChildren().add(menu.displayRating());
         });
 
         btn3.setOnAction(e -> {
-            menu.setHeaderTitle("Booking");
             menu.getChildren().clear();
-            menu.getChildren().add(menu.displayHeader());
+            menu.getChildren().add(menu.displayAvailableBookings());
+            menu.getChildren().add(menu.displayBookingCard());
+            menu.getChildren().add(menu.displayExamMenu());
+            menu.getChildren().add(menu.displayExamCard());
         });
 
         btn4.setOnAction(e -> {
             menu.setHeaderTitle("Messages");
             menu.getChildren().clear();
+            menu.getChildren().add(menu.displayHeader());
             menu.getChildren().add(menu.displayMyMessages());
         });
 
@@ -450,14 +464,16 @@ public class SideMenu extends Pane {
 
         // Actions
         btn1.setOnAction(e -> {
-            menu.setHeaderTitle("Admin");
+            menu.setHeaderTitle("School Admin");
             menu.getChildren().clear();
+            menu.getChildren().add(menu.displayHeader());
             menu.getChildren().add(menu.displaySchoolAdmin());
         });
 
         btn2.setOnAction(e -> {
             menu.setHeaderTitle("Messages");
             menu.getChildren().clear();
+            menu.getChildren().add(menu.displayHeader());
             menu.getChildren().add(menu.displayMyMessages());
         });
 

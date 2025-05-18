@@ -410,7 +410,7 @@ public class Setting extends Pane {
         // gem icon
         Image saveIcon = new Image(getClass().getResource("/assets/icons/icon22.png").toExternalForm());
         ImageView saveIconView = new ImageView(saveIcon);
-        applyDropShadowEffect(saveIconView, 75, 75, 0.7);
+        applyDropShadowEffect(saveIconView, 100, 100, 0.7);
         colorRegion.getChildren().add(saveIconView);
 
         // hover
@@ -424,11 +424,7 @@ public class Setting extends Pane {
         colorRegion.setOnMouseEntered(e -> scaleUp.playFromStart());
         colorRegion.setOnMouseExited(e -> scaleDown.playFromStart());
 
-        // mouse events
-        greyRegion.setOnMouseClicked(e -> {
-            showColorPickerDialog();
-        });
-
+        // Actions
         colorRegion.setOnMouseClicked(e -> {
             showColorPickerDialog();
         });
@@ -461,23 +457,20 @@ public class Setting extends Pane {
         grid.setVgap(10);
         grid.setPadding(new Insets(0, 0, 20, 0));
 
-        // profile color picker
         Label profileColorLabel = new Label("Profile Background:");
         ColorPicker profileColorPickerDialog = new ColorPicker(profileColorPicker.getValue());
         grid.add(profileColorLabel, 0, 0);
         grid.add(profileColorPickerDialog, 1, 0);
 
-        // banner color picker
         Label bannerColorLabel = new Label("Banner Background:");
         ColorPicker bannerColorPickerDialog = new ColorPicker(bannerColorPicker.getValue());
-        grid.add(bannerColorLabel, 0, 1);
-        grid.add(bannerColorPickerDialog, 1, 1);
+        grid.add(bannerColorLabel, 2, 0);
+        grid.add(bannerColorPickerDialog, 3, 0);
 
-        // Role color picker
         Label roleColorLabel = new Label("Role Label:");
         ColorPicker roleColorPickerDialog = new ColorPicker(roleColorPicker.getValue());
-        grid.add(roleColorLabel, 0, 2);
-        grid.add(roleColorPickerDialog, 1, 2);
+        grid.add(roleColorLabel, 0, 1);
+        grid.add(roleColorPickerDialog, 1, 1);
 
         // add the grid to the content
         content.getChildren().add(grid);
@@ -489,7 +482,7 @@ public class Setting extends Pane {
 
         // create the profile preview card
         HBox previewCard = new HBox();
-        previewCard.setPrefHeight(150);
+        previewCard.setPrefHeight(225);
         previewCard.setMaxWidth(500);
         previewCard.setStyle("-fx-border-radius: 8px; -fx-background-radius: 8px; -fx-border-color: #ccc; -fx-border-width: 1px; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 2);");
 
@@ -506,7 +499,6 @@ public class Setting extends Pane {
         profileImageView.setFitHeight(80);
         profileImageView.setPreserveRatio(true);
         profileImageView.setStyle("-fx-padding: 10px;");
-        profileImageView.setTranslateY(10);
         profileArea.getChildren().add(profileImageView);
 
         // banner color-area
@@ -514,8 +506,6 @@ public class Setting extends Pane {
         bannerArea.setAlignment(Pos.CENTER_LEFT);
         bannerArea.setPrefWidth(400);
         bannerArea.setStyle("-fx-background-color: " + toHexString(bannerColorPickerDialog.getValue()) + "; -fx-background-radius: 0 8px 0 0; -fx-padding: 10px;");
-
-
 
         // bottom navigation bar
         HBox navBar = new HBox();
@@ -529,21 +519,21 @@ public class Setting extends Pane {
         roleNavLabel.setAlignment(Pos.CENTER);
         roleNavLabel.setStyle("-fx-background-color: " + toHexString(roleColorPickerDialog.getValue()) + "; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 0 0 0 8px;");
 
-        // jonas nav items
-        String navItemStyle = "-fx-background-color: #f0f0f0; -fx-padding: 10px; -fx-alignment: center;";
-        Label aboutLabel = new Label("About me");
+        // Padding fixed
+        String navItemStyle = "-fx-background-color: #c2c2c2; -fx-padding: 12px 0 11px 0; -fx-alignment: center;";
+        Label aboutLabel = new Label("Text");
         aboutLabel.setPrefWidth(100);
         aboutLabel.setStyle(navItemStyle);
 
-        Label bookingsLabel = new Label("Available Bookings");
+        Label bookingsLabel = new Label("Text");
         bookingsLabel.setPrefWidth(100);
         bookingsLabel.setStyle(navItemStyle);
 
-        Label reviewsLabel = new Label("Reviews");
+        Label reviewsLabel = new Label("Text");
         reviewsLabel.setPrefWidth(100);
         reviewsLabel.setStyle(navItemStyle);
 
-        Label galleryLabel = new Label("Gallery");
+        Label galleryLabel = new Label("Text");
         galleryLabel.setPrefWidth(100);
         galleryLabel.setStyle(navItemStyle + "-fx-background-radius: 0 0 8px 0;");
 
