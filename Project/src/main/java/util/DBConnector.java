@@ -560,6 +560,8 @@ public class DBConnector {
         return executeUpdate(query);
     }
 
+    // ____________________________________________________
+
     public Map<String, Integer> getSchools() {
         Map<String, Integer> schoolMap = new HashMap<>();
         try {
@@ -573,6 +575,8 @@ public class DBConnector {
         }
         return schoolMap;
     }
+
+    // ____________________________________________________
 
     public int getOrCreateHairType(String texture, String color, String length, String gender) {
         try {
@@ -604,6 +608,8 @@ public class DBConnector {
         return 0; //If 0 - type not specified
     }
 
+    // ____________________________________________________
+
     //getter to the hairtype from db
     public String getHairTypeSummary(int id) {
         String sql = "SELECT texture, color, length, gender FROM hair_type_id WHERE id = ?";
@@ -622,6 +628,7 @@ public class DBConnector {
         return "Unknown";
     }
 
+    // ____________________________________________________
 
     // Run this once from main-initialize to insert customer hairtype/gender in database.
     public void hairTypeInserter() {
@@ -657,8 +664,11 @@ public class DBConnector {
         }
     }
 
-    public void createBooking(LocalDate date, String time, String address, int hairtype_id, boolean exam, int student_id) {
-        String sql = "INSERT INTO bookings (date, time, address, hairtypeId, exam, student_id) VALUES (?, ?, ?, ?, ?, ?)";
+    // ____________________________________________________
+
+    public void createBooking(LocalDate date, String time, String address, int hairtype_id, boolean exam, int student_id, String paid, String accepted) {
+        String sql = "INSERT INTO bookings (date, time, address, hairtypeId, exam, student_id, paid, accepted) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, date.toString());
             ps.setString(2, time);
@@ -666,6 +676,8 @@ public class DBConnector {
             ps.setInt(4, hairtype_id);
             ps.setInt(5, exam ? 1 : 0);
             ps.setInt(6, student_id);
+            ps.setString(7, paid);
+            ps.setString(8, accepted);
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
