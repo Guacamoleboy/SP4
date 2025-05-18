@@ -56,7 +56,12 @@ public class DBConnector {
                     "banned TEXT DEFAULT 'No'," +
                     "profilehex TEXT DEFAULT '#ADD8E6FF'," +
                     "bannerhex TEXT DEFAULT '#D3D3D3FF'," +
-                    "rolehex TEXT DEFAULT '#d0e6f7'" +
+                    "rolehex TEXT DEFAULT '#d0e6f7'," +
+                    "hair_type_id TEXT DEFAULT '0'," +
+                    "school_id TEXT DEFAULT '0'," +
+                    "student_year TEXT DEFAULT 'N/A'," +
+                    "profile_picture TEXT DEFAULT 'person1.png'," +
+                    "language TEXT DEFAULT 'English'" +
                     ")";
 
             String createMessagesTable = "CREATE TABLE IF NOT EXISTS bookings (" +
@@ -77,6 +82,7 @@ public class DBConnector {
                     "open TEXT NOT NULL CHECK(open IN ('yes', 'no'))," +
                     "notes TEXT DEFAULT 'Ingen noter..'" +
                     ")";
+
             stmt.execute(createBookingsTable);
             stmt.execute(createUsersTable);
             stmt.execute(createMessagesTable);
@@ -84,6 +90,7 @@ public class DBConnector {
         } catch (SQLException e) {
             System.out.println("Error initializing database: " + e.getMessage());
         }
+
     }
 
     // ____________________________________________________
@@ -144,25 +151,45 @@ public class DBConnector {
 
     // ____________________________________________________
 
-    public boolean createUser(String username, String password, String email, String role) { //måske slettes
-        String query = "INSERT INTO users (username, password, email, status, role) VALUES ('" +
-                username + "', '" + password + "', '" + email + "', 'Offline', '" + role + "' )";
-        return executeUpdate(query);
+    // Intet ID fordi den er autoincrement !! Vigtigt
+
+    public boolean createUser(String username, String password, String email, String status, String banned, String role,
+                              String profileHex, String bannerHex, String roleHex,
+                              int hairTypeId, int schoolId, int studentYear,
+                              String profilePicture, String language, String accepted, String darkmode) {
+
+        String query = "INSERT INTO users (username, password, email, status, banned, role, profilehex, bannerhex, rolehex, " +
+                "hair_type_id, school_id, student_year, profile_picture, language, accepted, darkmode) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement createUserQuery = con.prepareStatement(query)) {
+            createUserQuery.setString(1, username);
+            createUserQuery.setString(2, password);
+            createUserQuery.setString(3, email);
+            createUserQuery.setString(4, status);
+            createUserQuery.setString(5, banned);
+            createUserQuery.setString(6, role);
+            createUserQuery.setString(7, profileHex);
+            createUserQuery.setString(8, bannerHex);
+            createUserQuery.setString(9, roleHex);
+            createUserQuery.setInt(10, hairTypeId);
+            createUserQuery.setInt(11, schoolId);
+            createUserQuery.setInt(12, studentYear);
+            createUserQuery.setString(13, profilePicture);
+            createUserQuery.setString(14, language);
+            createUserQuery.setString(15, accepted);
+            createUserQuery.setString(16, darkmode);
+
+            int rows = createUserQuery.executeUpdate();
+            return rows > 0;
+
+        } catch (SQLException e) {
+            System.out.println("CreateUser failed. Check DBConnector ##DEBUG");
+            e.printStackTrace();
+            return false;
+        }
     }
 
-    //For costumer
-    public boolean createUser(String username, String password, String email, String role, int hairtype) {
-        String query = "INSERT INTO users (username, password, email, status, role, hair_type_id) VALUES ('" +
-                username + "', '" + password + "', '" + email + "', 'Offline', '" + role + "', '" + hairtype + "')";
-        return executeUpdate(query);
-    }
-
-    //For student
-    public boolean createUser(String username, String password, String email, String role, int schoolId, String student_year) {
-        String query = "INSERT INTO users (username, password, email, status, role, school_id, student_year) VALUES ('" +
-                username + "', '" + password + "', '" + email + "', 'Offline', '" + role + "', '" + schoolId + "', '" + student_year + "')";
-        return executeUpdate(query);
-    }
     // ____________________________________________________
 
     public boolean saveMessage(String sender, String receiver, String content) {
@@ -261,7 +288,9 @@ public class DBConnector {
     }
 
     public ArrayList<String> getUserData(String username) {
+
         ArrayList<String> userData = new ArrayList<String>();
+
         String query = "SELECT * FROM users WHERE username = '" + username + "'";
 
         try {
@@ -279,11 +308,13 @@ public class DBConnector {
             userData.add(rs.getString("profilehex"));
             userData.add(rs.getString("bannerhex"));
             userData.add(rs.getString("rolehex"));
-
-            /*
-            userData.add(rs.getString("profilePicture"));
-            userData.add(rs.getString("profileBanner"));
-            */
+            userData.add(rs.getString("hair_type_id"));
+            userData.add(rs.getString("school_id"));
+            userData.add(rs.getString("student_year"));
+            userData.add(rs.getString("profile_picture"));
+            userData.add(rs.getString("language"));
+            userData.add(rs.getString("accepted"));
+            userData.add(rs.getString("darkmode"));
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -295,40 +326,230 @@ public class DBConnector {
 
     // ____________________________________________________
 
-    public boolean changePassword(String username, String password) {
-        // TILFØJ HER
+    public boolean changePassword(String email, String password) {
 
-        return false;
+        String query = "UPDATE users SET password = ? WHERE email = ?";
+
+        try (PreparedStatement passwordChange = con.prepareStatement(query)) {
+
+            passwordChange.setString(1, password);
+            passwordChange.setString(2, email);
+
+            int rowsAffected = passwordChange.executeUpdate();
+
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+
+            System.out.println("changePassword failed ##DEBUG");
+            return false;
+
+        }
+
     }
 
     // ____________________________________________________
 
-    public boolean changeBannerColor(String color) {
-        // TILFØJ HER
+    public boolean changeDarkmode(String username, String mode) {
 
-        return false;
+        String query = "UPDATE users SET darkmode = ? WHERE username = ?";
+
+        try (PreparedStatement darkmodeChange = con.prepareStatement(query)) {
+
+            darkmodeChange.setString(1, mode);
+            darkmodeChange.setString(2, username);
+
+            int rowsAffected = darkmodeChange.executeUpdate();
+
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+
+            System.out.println("changeDarkmode failed ##DEBUG");
+            return false;
+
+        }
+
+    }
+
+    // ____________________________________________________
+
+    public boolean changeBannerColor(String username, String color) {
+
+        String query = "UPDATE users SET bannerhex = ? WHERE username = ?";
+
+        try (PreparedStatement changeBanner = con.prepareStatement(query)) {
+
+            changeBanner.setString(1, color);
+            changeBanner.setString(2, username);
+            int rowsAffected = changeBanner.executeUpdate();
+
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+
+            System.out.println("changeBannerColor failed ##DEBUG");
+            return false;
+
+        }
+
+    }
+
+    // ____________________________________________________
+
+    public boolean changeAccepted(String username, String accepted) {
+
+        String query = "UPDATE users SET accepted = ? WHERE username = ?";
+
+        try (PreparedStatement changeAccepted = con.prepareStatement(query)) {
+
+            changeAccepted.setString(1, accepted);
+            changeAccepted.setString(2, username);
+            int rowsAffected = changeAccepted.executeUpdate();
+
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+
+            System.out.println("changeAccepted failed ##DEBUG");
+            return false;
+
+        }
+
+    }
+
+    // ____________________________________________________
+
+    public boolean changeUsername(String email, String newUsername) {
+
+        String query = "UPDATE users SET username = ? WHERE email = ?";
+
+        try (PreparedStatement changeAccepted = con.prepareStatement(query)) {
+
+            changeAccepted.setString(1, newUsername);
+            changeAccepted.setString(2, email);
+            int rowsAffected = changeAccepted.executeUpdate();
+
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+
+            System.out.println("changeAccepted failed ##DEBUG");
+            return false;
+
+        }
+
+    }
+
+    // ____________________________________________________
+
+    public boolean changeProfilePicture(String username, String path) {
+
+        String query = "UPDATE users SET profile_picture = ? WHERE username = ?";
+
+        try (PreparedStatement changeProfilePicture = con.prepareStatement(query)) {
+
+            changeProfilePicture.setString(1, path);
+            changeProfilePicture.setString(2, username);
+            int rowsAffected = changeProfilePicture.executeUpdate();
+
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+
+            System.out.println("changeProfilePicture failed ##DEBUG");
+            return false;
+
+        }
+
+    }
+
+    // ____________________________________________________
+
+    public boolean changeRoleColor(String username, String color) {
+
+        String query = "UPDATE users SET rolehex = ? WHERE username = ?";
+
+        try (PreparedStatement changeRoleHex = con.prepareStatement(query)) {
+
+            changeRoleHex.setString(1, color);
+            changeRoleHex.setString(2, username);
+
+            int rowsAffected = changeRoleHex.executeUpdate();
+
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+
+            System.out.println("changeRoleColor failed ##DEBUG");
+            return false;
+
+        }
+
+    }
+
+    // ____________________________________________________
+
+    public boolean changeProfileColor(String username, String color) {
+
+        String query = "UPDATE users SET profilehex = ? WHERE username = ?";
+
+        try (PreparedStatement changeProfileHex = con.prepareStatement(query)) {
+
+            changeProfileHex.setString(1, color);
+            changeProfileHex.setString(2, username);
+
+            int rowsAffected = changeProfileHex.executeUpdate();
+
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+
+            System.out.println("changeProfileColor failed ##DEBUG");
+            return false;
+
+        }
+
     }
 
     // ____________________________________________________
 
     public boolean changeRole(String username, String role) {
-        // TILFØJ HER
 
-        if (role.equalsIgnoreCase("School")) {
-            // FUNKTION HER
-        } else if (role.equalsIgnoreCase("Support")) {
-            // FUNKTION HER
+        String query = "UPDATE users SET role = ? WHERE username = ?";
+
+        try (PreparedStatement changeRole = con.prepareStatement(query)) {
+            changeRole.setString(1, role);
+            changeRole.setString(2, username);
+            int rowsAffected = changeRole.executeUpdate();
+
+            return rowsAffected > 0; // true
+
+        } catch (SQLException e) {
+            System.out.println("ChangeRole DBConnector failed ##DEBUG");
+            return false;
         }
 
-        return false;
     }
 
     // ____________________________________________________
 
-    public boolean changeLanguage(String language) {
-        // TILFØJ HER
+    public boolean changeLanguage(String username, String language) {
 
-        return false;
+        String query = "UPDATE users SET language = ? WHERE username = ?";
+
+        try (PreparedStatement changeLanguage = con.prepareStatement(query)) {
+            changeLanguage.setString(1, language);
+            changeLanguage.setString(2, username);
+            int rowsAffected = changeLanguage.executeUpdate();
+
+            return rowsAffected > 0; // true
+
+        } catch (SQLException e) {
+            System.out.println("ChangeLanguage failed ##DEBUG");
+            return false;
+        }
+
     }
 
     // ____________________________________________________
@@ -471,6 +692,7 @@ public class DBConnector {
                 BookingCard booking = new BookingCard(date, time, address, hairtypeId, isExam, studentId);
                 bookings.add(booking);
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -505,5 +727,54 @@ public class DBConnector {
 
         return bookings;
     }
+
+    // ____________________________________________________
+
+    public String getEmail(String username) {
+
+        String email = null;
+        String query = "SELECT email FROM users WHERE username = ?";
+
+        try (PreparedStatement emailGetter = con.prepareStatement(query)) {
+            emailGetter.setString(1, username);
+
+            ResultSet rs = emailGetter.executeQuery();
+
+            if (rs.next()) {
+                email = rs.getString("email");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Email Getter failed ##DEBUG");
+        }
+
+        return email;
+
+    }
+
+    // ____________________________________________________
+
+    public String getDarkmode(String username) {
+
+        String darkmode = null;
+        String query = "SELECT darkmode FROM users WHERE username = ?";
+
+        try (PreparedStatement darkmodeGetter = con.prepareStatement(query)) {
+            darkmodeGetter.setString(1, username);
+
+            ResultSet rs = darkmodeGetter.executeQuery();
+
+            if (rs.next()) {
+                darkmode = rs.getString("darkmode");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Darkmode Getter failed ##DEBUG");
+        }
+
+        return darkmode;
+
+    }
+
 
 } // DBConnector end

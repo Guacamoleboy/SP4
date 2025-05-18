@@ -405,7 +405,33 @@ public class Menu extends Pane {
         });
 
         setting3.setOnAction(e -> {
-            darkmodeToggle(isDarkMode);
+
+            messageArea.getChildren().clear();
+
+            String currentMode = Main.db.getDarkmode(username);
+            String newMode = null;
+
+            switch (currentMode){
+                case "Yes":
+                    Main.db.changeDarkmode(username, "No");
+                    newMode = "No";
+                    break;
+                case "No":
+                    Main.db.changeDarkmode(username, "Yes");
+                    newMode = "Yes";
+                    break;
+                default:
+                    System.out.println("Contact dev lol");
+            }
+
+            messageArea.getChildren().clear();
+
+            if (newMode.equalsIgnoreCase("Yes")) {
+                messageArea.getChildren().add(setting.displayDarkmodeJonas());
+            } else if (newMode.equalsIgnoreCase("No")) {
+                messageArea.getChildren().add(setting.displayLightmodeJonas());
+            }
+
         });
 
         setting4.setOnAction(e -> {
@@ -2690,9 +2716,9 @@ public class Menu extends Pane {
 
     // ____________________________________________________
 
-    protected void darkmodeToggle(boolean darkmode) {
+    protected void darkmodeToggle(String darkmode) {
 
-        if (darkmode) {
+        if (darkmode.equalsIgnoreCase("Yes")) {
             messageArea.getChildren().clear();
             messageArea.getChildren().add(setting.displayDarkmodeJonas());
         } else {

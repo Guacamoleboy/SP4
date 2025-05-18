@@ -173,10 +173,13 @@ public class Forgot extends Pane {
         });
 
         resetButton.setOnAction(e -> {
+
             String email = usernameField.getText();
+
             if (email == null || email.isEmpty()) {
                 return;
             }
+
             ResetConfirmation.sendUsername(email);
 
             forgotBox.getChildren().clear();
@@ -225,7 +228,7 @@ public class Forgot extends Pane {
             if (HashMapStorage.validateCode(email, inputCode)) {
                 System.out.println("Code valid! Proceed to username reset.");
                 forgotBox.getChildren().clear();
-                forgotBox.getChildren().add(displayNewUsername());
+                forgotBox.getChildren().add(displayNewUsername(email));
             } else {
                 System.out.println("Invalid or expired code.");
             }
@@ -241,7 +244,7 @@ public class Forgot extends Pane {
 
     // ____________________________________________________
 
-    public VBox displayNewUsername() {
+    public VBox displayNewUsername(String email) {
         VBox box = new VBox(15);
         box.setAlignment(Pos.CENTER);
         box.setPrefWidth(450);
@@ -276,9 +279,12 @@ public class Forgot extends Pane {
             String newUsername = newUsernameField.getText();
 
             if (newUsername != null && !newUsername.isEmpty()) {
-                System.out.println("works");
+                Main.db.changeUsername(email, newUsername);
+                alertForgot("Username has been reset. You can now login.");
+                Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+                Main.loginPage(stage);
             } else {
-                System.out.println("Username cannot be empty.");
+                alertForgot("Username can't be empty!");
             }
         });
 
@@ -334,10 +340,10 @@ public class Forgot extends Pane {
             String email = usernameField.getText();
             if (email == null || email.isEmpty()) return;
 
-            ResetConfirmation.sendPassword("jonas68@live.dk"); // Or use `email`
+            ResetConfirmation.sendPassword(usernameField.getText()); // Or use `email`
 
             forgotBox.getChildren().clear();
-            forgotBox.getChildren().add(displayPasswordReset(email));
+            forgotBox.getChildren().add(displayPasswordReset(usernameField.getText()));
         });
 
         goBackButton.setOnAction(e -> {
@@ -351,7 +357,7 @@ public class Forgot extends Pane {
 
     // ____________________________________________________
 
-    public VBox displayNewPassword() {
+    public VBox displayNewPassword(String email) {
 
         VBox box = new VBox(15);
         box.setAlignment(Pos.CENTER);
@@ -394,9 +400,14 @@ public class Forgot extends Pane {
             String pass2 = confirmPasswordField.getText();
 
             if (pass1 != null && !pass1.isEmpty() && pass1.equals(pass2)) {
-                System.out.println("nigga");
+
+                Main.db.changePassword(email, newPasswordField.getText());
+
+                alertForgot("Password reset. You can now login!");
+                Stage stage = (Stage)((Node) e.getSource()).getScene().getWindow();
+                Main.loginPage(stage);
             } else {
-                System.out.println("Passwords don't match");
+                alertForgot("Passwords don't match");
             }
         });
 
@@ -446,10 +457,9 @@ public class Forgot extends Pane {
 
             if (HashMapStorage.validateCode(email, inputCode)) {
                 forgotBox.getChildren().clear();
-                forgotBox.getChildren().add(displayNewPassword());
+                forgotBox.getChildren().add(displayNewPassword(email));
             } else {
-                System.out.println("Invalid or expired code.");
-                // Optionally show an alert here
+                alertForgot("Code is invalid or expired. Try again.");
             }
         });
 
@@ -460,7 +470,6 @@ public class Forgot extends Pane {
 
         return confirmBox;
     }
-
 
     // ____________________________________________________
 
@@ -507,16 +516,17 @@ public class Forgot extends Pane {
         registerBox.getChildren().addAll(forgotLabel, usernameField, passwordField, buttons, emailResultLabel);
 
         resetButton.setOnAction(e -> {
+
             String username = usernameField.getText();
             String password = passwordField.getText();
 
             if (username == null || username.isEmpty() || password == null || password.isEmpty()) {
-                emailResultLabel.setText("Please enter both username and password.");
+                alertForgot("Please enter both username and password!");
                 return;
             }
 
-            if (username.equals("user1") && password.equals("pass1")) {
-                emailResultLabel.setText("Your email is\n" + "jonas68@live.dk");
+            if (username.equalsIgnoreCase(username) && password.equals(password)) {
+                alertForgot("Your email is: " + Main.db.getEmail(username));
             }
 
         });
@@ -527,6 +537,16 @@ public class Forgot extends Pane {
         });
 
         return registerBox;
+    }
+
+    // ____________________________________________________
+
+    public void alertForgot(String msg){
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Validation Error!");
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
+        alert.showAndWait();
     }
 
 } // Login Class End
