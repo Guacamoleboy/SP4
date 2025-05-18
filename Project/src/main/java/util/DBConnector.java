@@ -789,4 +789,24 @@ public class DBConnector {
     }
 
 
+    public boolean updateProfileColors(String username, String profileHex, String bannerHex, String roleHex, String bannerUrl) {
+        String query = "UPDATE users SET profilehex = ?, bannerhex = ?, rolehex = ? WHERE username = ?";
+
+        try (PreparedStatement updateColors = con.prepareStatement(query)) {
+            updateColors.setString(1, profileHex);
+            updateColors.setString(2, bannerHex);
+            updateColors.setString(3, roleHex);
+            updateColors.setString(4, username);
+
+            int rowsAffected = updateColors.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.out.println("updateProfileColors failed ##DEBUG");
+            e.printStackTrace();
+            return false;
+        }
+
+
+
+    }
 } // DBConnector end
