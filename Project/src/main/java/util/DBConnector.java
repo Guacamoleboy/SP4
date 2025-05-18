@@ -64,7 +64,7 @@ public class DBConnector {
                     "language TEXT DEFAULT 'English'" +
                     ")";
 
-            String createMessagesTable = "CREATE TABLE IF NOT EXISTS bookings (" +
+            String createMessagesTable = "CREATE TABLE IF NOT EXISTS messages (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "sender TEXT NOT NULL," +
                     "receiver TEXT NOT NULL," +
@@ -83,9 +83,9 @@ public class DBConnector {
                     "notes TEXT DEFAULT 'Ingen noter..'" +
                     ")";
 
-            stmt.execute(createBookingsTable);
-            stmt.execute(createUsersTable);
-            stmt.execute(createMessagesTable);
+            stmt.executeUpdate(createUsersTable);
+            stmt.executeUpdate(createMessagesTable);
+            stmt.executeUpdate(createBookingsTable);
 
         } catch (SQLException e) {
             System.out.println("Error initializing database: " + e.getMessage());

@@ -280,32 +280,32 @@ public class Menu extends Pane {
         user1.setOnAction(e -> {
             messageArea.getChildren().clear();
             messageArea.getChildren().addAll(
-            createMessageBubble("Shit du lugtede forleden bro.. Det helt galt. Kom aldrig igen. Forstår du?", false, "Ebou", "10:15"),
-            createMessageBubble("My bad nigga. Jeg havde lort i numsen. Skal nok gå i bad næste gang.", true,"Jonas", "10:16"),
-            createMessageBubble("Nigga what? Yous 20 and don't know how to wipe? Det low key crazy. Men fair nok. Wipe lige næste gang. Ses!", false,"Ebou", "10:17")
+                    createMessageBubble("Shit du lugtede forleden bro.. Det helt galt. Kom aldrig igen. Forstår du?", false, "Ebou", "10:15"),
+                    createMessageBubble("My bad nigga. Jeg havde lort i numsen. Skal nok gå i bad næste gang.", true,"Jonas", "10:16"),
+                    createMessageBubble("Nigga what? Yous 20 and don't know how to wipe? Det low key crazy. Men fair nok. Wipe lige næste gang. Ses!", false,"Ebou", "10:17")
             );
         });
         user2.setOnAction(e -> {
             messageArea.getChildren().clear();
             messageArea.getChildren().addAll(
-            createMessageBubble("Det her er en tekst. Forstår du? Det tror jeg ikke du gør..", false, "Jonas", "10:15"),
-            createMessageBubble("Det ren GG..", true,"Andreas", "10:16"),
-            createMessageBubble("Nigga what?", false,"Jonas", "10:17")
+                    createMessageBubble("Det her er en tekst. Forstår du? Det tror jeg ikke du gør..", false, "Jonas", "10:15"),
+                    createMessageBubble("Det ren GG..", true,"Andreas", "10:16"),
+                    createMessageBubble("Nigga what?", false,"Jonas", "10:17")
             );
         });
         user3.setOnAction(e -> {
             messageArea.getChildren().clear();
             messageArea.getChildren().addAll(
-            createMessageBubble("Shit jeg er bare ikke ham jo..", false, "Jonas", "10:15"),
-            createMessageBubble("Fax lil bro. Straight up fax. Ong no cap.", true,"Ebou", "10:16")
+                    createMessageBubble("Shit jeg er bare ikke ham jo..", false, "Jonas", "10:15"),
+                    createMessageBubble("Fax lil bro. Straight up fax. Ong no cap.", true,"Ebou", "10:16")
             );
         });
         user4.setOnAction(e -> {
             messageArea.getChildren().clear();
             messageArea.getChildren().addAll(
-            createMessageBubble("Hvad er dit navn", false, "Jonas", "10:15"),
-            createMessageBubble("Carl Emil uden bindesteg din idiot.. Forstår du? Det var dog utroligt. Jeg er lige her jo!", true,"Carl Emil", "10:16"),
-            createMessageBubble("lol. Muted.", false,"Jonas", "10:17")
+                    createMessageBubble("Hvad er dit navn", false, "Jonas", "10:15"),
+                    createMessageBubble("Carl Emil uden bindesteg din idiot.. Forstår du? Det var dog utroligt. Jeg er lige her jo!", true,"Carl Emil", "10:16"),
+                    createMessageBubble("lol. Muted.", false,"Jonas", "10:17")
             );
         });
 
@@ -411,15 +411,15 @@ public class Menu extends Pane {
 
         // Visuals of each msg
         messageLabel.setStyle(
-            "-fx-background-color: " + (rightAlign ? "#d1f0ff" : "#ffcf80") + ";" +
-            "-fx-padding: 12 18 12 18;" +
-            "-fx-background-radius: 18;" +
-            "-fx-border-radius: 18;" +
-            "-fx-border-width: 1;" +
-            "-fx-border-color: rgba(0, 0, 0, 0.1);" +
-            "-fx-text-fill: #505050;" +
-            "-fx-font-size: 15px;" +
-            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0.3, 0, 2);"
+                "-fx-background-color: " + (rightAlign ? "#d1f0ff" : "#ffcf80") + ";" +
+                        "-fx-padding: 12 18 12 18;" +
+                        "-fx-background-radius: 18;" +
+                        "-fx-border-radius: 18;" +
+                        "-fx-border-width: 1;" +
+                        "-fx-border-color: rgba(0, 0, 0, 0.1);" +
+                        "-fx-text-fill: #505050;" +
+                        "-fx-font-size: 15px;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0.3, 0, 2);"
         );
 
         // Message container
@@ -873,26 +873,76 @@ public class Menu extends Pane {
 
             Button acceptBtn = new Button("Accept");
             acceptBtn.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; " +
-            "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+                    "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
 
             Button denyBtn = new Button("Deny");
             denyBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; " +
-            "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+                    "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
 
             // Hover
             Animation.addHoverScaleEffectMore(acceptBtn);
             Animation.addHoverScaleEffectMore(denyBtn);
 
             acceptBtn.setOnAction(e -> {
-                // Alert and backend here
+                String bookingInfo = bookingLabel.getText();
+
+                // Extract booking details
+                String[] parts = bookingInfo.split(" - ");
+                String studentName = parts[0].split(" with ")[1];
+                String date = parts[1];
+                String time = parts[2];
+
+                // Update booking status in database
+                boolean success = Main.db.executeUpdate("UPDATE bookings SET accepted = 'Yes' WHERE student_id = (SELECT id FROM users WHERE username = '" +
+                        studentName + "') AND date = '" + date + "' AND time = '" + time + "'");
+
+                if (success) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Success");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Booking has been accepted");
+                    alert.showAndWait();
+
+                    // Refresh the booking list
+                    messageArea.getChildren().clear();
+                    messageArea.getChildren().add(createBookingRequestsContent());
+                } else {
+                    alertForgot("Failed to accept booking");
+                }
             });
 
             denyBtn.setOnAction(e -> {
-                // Alert and backend here
+                String bookingInfo = bookingLabel.getText();
+
+                // Extract booking details
+                String[] parts = bookingInfo.split(" - ");
+                String studentName = parts[0].split(" with ")[1];
+                String date = parts[1];
+                String time = parts[2];
+
+                // Update booking status in database
+                boolean success = Main.db.executeUpdate("UPDATE bookings SET accepted = 'No' WHERE student_id = (SELECT id FROM users WHERE username = '" +
+                        studentName + "') AND date = '" + date + "' AND time = '" + time + "'");
+
+                if (success) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Success");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Booking has been denied");
+                    alert.showAndWait();
+
+                    // Refresh the booking list
+                    messageArea.getChildren().clear();
+                    messageArea.getChildren().add(createBookingRequestsContent());
+                } else {
+                    alertForgot("Failed to deny booking");
+                }
             });
 
-            bookingLine.getChildren().addAll(bookingLabel, acceptBtn, denyBtn);
-            singleBookingBox.getChildren().add(bookingLine);
+            HBox requestLine = new HBox(10);
+            requestLine.setAlignment(Pos.CENTER_LEFT);
+            requestLine.getChildren().addAll(bookingLabel, acceptBtn, denyBtn);
+            singleBookingBox.getChildren().add(requestLine);
 
             bookingList.getChildren().add(singleBookingBox);
         }
@@ -944,7 +994,41 @@ public class Menu extends Pane {
             Animation.addHoverScaleEffectMore(denyBtn);
 
             denyBtn.setOnAction(e -> {
-                // Alert and backend here
+                String bookingInfo = bookingLabel.getText();
+
+                // Extract booking details
+                String[] parts = bookingInfo.split(" - ");
+                String studentName = parts[0].split(" with ")[1];
+                String date = parts[1];
+                String time = parts[2];
+
+                // Confirm cancellation
+                Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+                confirm.setTitle("Confirm Cancellation");
+                confirm.setHeaderText(null);
+                confirm.setContentText("Are you sure you want to cancel this booking?");
+
+                Optional<ButtonType> result = confirm.showAndWait();
+
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    // Delete booking from database
+                    boolean success = Main.db.executeUpdate("DELETE FROM bookings WHERE student_id = (SELECT id FROM users WHERE username = '" +
+                            studentName + "') AND date = '" + date + "' AND time = '" + time + "'");
+
+                    if (success) {
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Success");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Booking has been cancelled");
+                        alert.showAndWait();
+
+                        // Refresh the booking list
+                        messageArea.getChildren().clear();
+                        messageArea.getChildren().add(displayActiveBookinsCancel());
+                    } else {
+                        alertForgot("Failed to cancel booking");
+                    }
+                }
             });
 
             bookingLine.getChildren().addAll(bookingLabel, denyBtn);
@@ -998,14 +1082,40 @@ public class Menu extends Pane {
 
             Button removeBtn = new Button("Remove");
             removeBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; " +
-            "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+                    "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
 
             // Hover
             Animation.addHoverScaleEffectMore(removeBtn);
 
             // Action
             removeBtn.setOnAction(e -> {
-                // Remove here
+                String studentToRemove = studentLabel.getText();
+
+                // Confirm removal
+                Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+                confirm.setTitle("Confirm Removal");
+                confirm.setHeaderText(null);
+                confirm.setContentText("Are you sure you want to remove " + studentToRemove + "?");
+
+                Optional<ButtonType> result = confirm.showAndWait();
+
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    boolean success = Main.db.deleteAccount(studentToRemove);
+
+                    if (success) {
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Success");
+                        alert.setHeaderText(null);
+                        alert.setContentText(studentToRemove + " has been removed");
+                        alert.showAndWait();
+
+                        // Refresh the student list
+                        messageArea.getChildren().clear();
+                        messageArea.getChildren().add(displayRemoveStudents());
+                    } else {
+                        alertForgot("Failed to remove student");
+                    }
+                }
             });
 
             studentLine.getChildren().addAll(studentLabel, removeBtn);
@@ -1064,7 +1174,33 @@ public class Menu extends Pane {
 
             // Action
             removeBtn.setOnAction(e -> {
-                // Remove here
+                String teacherToRemove = studentLabel.getText();
+
+                // Confirm removal
+                Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+                confirm.setTitle("Confirm Removal");
+                confirm.setHeaderText(null);
+                confirm.setContentText("Are you sure you want to remove " + teacherToRemove + "?");
+
+                Optional<ButtonType> result = confirm.showAndWait();
+
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    boolean success = Main.db.deleteAccount(teacherToRemove);
+
+                    if (success) {
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Success");
+                        alert.setHeaderText(null);
+                        alert.setContentText(teacherToRemove + " has been removed");
+                        alert.showAndWait();
+
+                        // Refresh the teacher list
+                        messageArea.getChildren().clear();
+                        messageArea.getChildren().add(displayRemoveTeacher());
+                    } else {
+                        alertForgot("Failed to remove teacher");
+                    }
+                }
             });
 
             studentLine.getChildren().addAll(studentLabel, removeBtn);
@@ -1088,11 +1224,11 @@ public class Menu extends Pane {
         addTeacherBox.setPrefWidth(Double.MAX_VALUE);
         addTeacherBox.setAlignment(Pos.TOP_LEFT);
         addTeacherBox.setStyle("-fx-background-color: #e1e1e1; -fx-background-radius: 0 20px 20px 0; -fx-border-radius: 0 20px 20px 0; " +
-        "-fx-border-color: #ccc; -fx-border-width: 1px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 4);");
+                "-fx-border-color: #ccc; -fx-border-width: 1px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 4);");
 
         Label header = new Label("Add Teacher");
         header.setStyle("-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #4d4d4d; " +
-        "-fx-border-width: 0 0 2px 0; -fx-border-color: orange;");
+                "-fx-border-width: 0 0 2px 0; -fx-border-color: orange;");
 
         HBox inputBox = new HBox(20);
         inputBox.setPrefWidth(400);
@@ -1106,7 +1242,7 @@ public class Menu extends Pane {
 
         Button addButton = new Button("Add");
         addButton.setStyle("-fx-background-color: orange; -fx-text-fill: white; -fx-font-weight: bold; " +
-        "-fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+                "-fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 20px; -fx-border-radius: 20px;");
         addButton.setPrefHeight(50);
 
         // Hover
@@ -1115,7 +1251,32 @@ public class Menu extends Pane {
         // Action
         addButton.setOnAction(e -> {
             String newTeacher = teacherInput.getText().trim();
-            // BACKEND HERE
+
+            if (newTeacher.isEmpty()) {
+                alertForgot("Please enter a teacher name");
+                return;
+            }
+
+            // Check if user exists
+            if (Main.db.userExists(newTeacher)) {
+                // Change role to Teacher
+                boolean success = Main.db.changeRole(newTeacher, "Teacher");
+
+                if (success) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Success");
+                    alert.setHeaderText(null);
+                    alert.setContentText(newTeacher + " has been added as a teacher");
+                    alert.showAndWait();
+
+                    // Clear field
+                    teacherInput.clear();
+                } else {
+                    alertForgot("Failed to add teacher");
+                }
+            } else {
+                alertForgot("User not found");
+            }
         });
 
         HBox.setHgrow(teacherInput, Priority.ALWAYS);
@@ -1160,8 +1321,33 @@ public class Menu extends Pane {
 
         // Action
         addButton.setOnAction(e -> {
-            String newTeacher = teacherInput.getText().trim();
-            // BACKEND HERE
+            String newStudent = teacherInput.getText().trim();
+
+            if (newStudent.isEmpty()) {
+                alertForgot("Please enter a student name");
+                return;
+            }
+
+            // Check if user exists
+            if (Main.db.userExists(newStudent)) {
+                // Change role to Student
+                boolean success = Main.db.changeRole(newStudent, "Student");
+
+                if (success) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Success");
+                    alert.setHeaderText(null);
+                    alert.setContentText(newStudent + " has been added as a student");
+                    alert.showAndWait();
+
+                    // Clear field
+                    teacherInput.clear();
+                } else {
+                    alertForgot("Failed to add student");
+                }
+            } else {
+                alertForgot("User not found");
+            }
         });
 
         HBox.setHgrow(teacherInput, Priority.ALWAYS);
@@ -1206,8 +1392,13 @@ public class Menu extends Pane {
 
         // Action
         addButton.setOnAction(e -> {
-            String newTeacher = teacherInput.getText().trim();
-            // BACKEND HERE
+            String userToBan = teacherInput.getText().trim();
+            if (!userToBan.isEmpty()) {
+                AdminMenu adminMenu = new AdminMenu(Main.db, this.username);
+                adminMenu.banUser(userToBan);
+            } else {
+                alertForgot("Please enter a username to ban");
+            }
         });
 
         HBox.setHgrow(teacherInput, Priority.ALWAYS);
@@ -1252,8 +1443,13 @@ public class Menu extends Pane {
 
         // Action
         addButton.setOnAction(e -> {
-            String newTeacher = teacherInput.getText().trim();
-            // BACKEND HERE
+            String userToUnban = teacherInput.getText().trim();
+            if (!userToUnban.isEmpty()) {
+                AdminMenu adminMenu = new AdminMenu(Main.db, this.username);
+                adminMenu.unbanUser(userToUnban);
+            } else {
+                alertForgot("Please enter a username to unban");
+            }
         });
 
         HBox.setHgrow(teacherInput, Priority.ALWAYS);
@@ -1283,7 +1479,7 @@ public class Menu extends Pane {
         firstRow.setAlignment(Pos.CENTER_LEFT);
 
         TextField schoolInput = new TextField();
-        schoolInput.setPromptText("Enter school name, id or email...");
+        schoolInput.setPromptText("Enter school name");
         schoolInput.setPrefWidth(300);
         schoolInput.setPrefHeight(50);
         schoolInput.setStyle("-fx-font-size: 14px; -fx-background-radius: 10px; -fx-border-radius: 10px;");
@@ -1294,14 +1490,6 @@ public class Menu extends Pane {
         addButton.setPrefHeight(50);
 
         Animation.addHoverScaleEffectMore(addButton);
-
-        addButton.setOnAction(e -> {
-            String input = schoolInput.getText().trim();
-            // BACKEND HERE
-        });
-
-        HBox.setHgrow(schoolInput, Priority.ALWAYS);
-        firstRow.getChildren().addAll(schoolInput, addButton);
 
         HBox secondRow = new HBox(20);
         secondRow.setAlignment(Pos.CENTER_LEFT);
@@ -1318,10 +1506,44 @@ public class Menu extends Pane {
         cityInput.setPrefHeight(50);
         cityInput.setStyle("-fx-font-size: 14px; -fx-background-radius: 10px; -fx-border-radius: 10px;");
 
+        addButton.setOnAction(e -> {
+            String schoolName = schoolInput.getText().trim();
+            String address = addressInput.getText().trim();
+            String city = cityInput.getText().trim();
+
+            if (schoolName.isEmpty() || address.isEmpty() || city.isEmpty()) {
+                alertForgot("Please fill in all fields");
+                return;
+            }
+
+            // Create school in database
+            String query = "INSERT INTO schools (name, address, city) VALUES ('" +
+                    schoolName + "', '" + address + "', '" + city + "')";
+            boolean success = Main.db.executeUpdate(query);
+
+            if (success) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Success");
+                alert.setHeaderText(null);
+                alert.setContentText("School added successfully");
+                alert.showAndWait();
+
+                // Clear fields
+                schoolInput.clear();
+                addressInput.clear();
+                cityInput.clear();
+            } else {
+                alertForgot("Failed to add school");
+            }
+        });
+
+        HBox.setHgrow(schoolInput, Priority.ALWAYS);
+        firstRow.getChildren().addAll(schoolInput, addButton);
+    
         HBox.setHgrow(addressInput, Priority.ALWAYS);
         HBox.setHgrow(cityInput, Priority.ALWAYS);
         secondRow.getChildren().addAll(addressInput, cityInput);
-
+    
         addTeacherBox.getChildren().addAll(header, firstRow, secondRow);
         return addTeacherBox;
     }
@@ -1362,8 +1584,48 @@ public class Menu extends Pane {
         Animation.addHoverScaleEffectMore(addButton);
 
         addButton.setOnAction(e -> {
-            String newTeacher = teacherInput.getText().trim();
-            // BACKEND HERE
+            String currentUsername = teacherInput.getText().trim();
+            String newUsername = roleInput.getText().trim();
+
+            if (currentUsername.isEmpty() || newUsername.isEmpty()) {
+                alertForgot("Please fill in all fields");
+                return;
+            }
+
+            // Check if user exists
+            if (!Main.db.userExists(currentUsername)) {
+                alertForgot("User not found");
+                return;
+            }
+
+            // Check if new username is already taken
+            if (Main.db.userExists(newUsername)) {
+                alertForgot("Username already taken");
+                return;
+            }
+
+            // Get user's email to update username
+            String email = Main.db.getEmail(currentUsername);
+            if (email == null) {
+                alertForgot("Failed to retrieve user email");
+                return;
+            }
+
+            boolean success = Main.db.changeUsername(email, newUsername);
+
+            if (success) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Success");
+                alert.setHeaderText(null);
+                alert.setContentText("Username changed successfully");
+                alert.showAndWait();
+
+                // Clear fields
+                teacherInput.clear();
+                roleInput.clear();
+            } else {
+                alertForgot("Failed to change username");
+            }
         });
 
         HBox.setHgrow(teacherInput, Priority.ALWAYS);
@@ -1410,8 +1672,36 @@ public class Menu extends Pane {
         Animation.addHoverScaleEffectMore(addButton);
 
         addButton.setOnAction(e -> {
-            String newTeacher = teacherInput.getText().trim();
-            // BACKEND HERE
+            String username = teacherInput.getText().trim();
+            String newNumber = roleInput.getText().trim();
+
+            if (username.isEmpty() || newNumber.isEmpty()) {
+                alertForgot("Please fill in all fields");
+                return;
+            }
+
+            // Check if user exists
+            if (!Main.db.userExists(username)) {
+                alertForgot("User not found");
+                return;
+            }
+
+            // Update phone number in database
+            boolean success = Main.db.executeUpdate("UPDATE users SET phone_number = '" + newNumber + "' WHERE username = '" + username + "'");
+
+            if (success) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Success");
+                alert.setHeaderText(null);
+                alert.setContentText("Phone number updated successfully");
+                alert.showAndWait();
+
+                // Clear fields
+                teacherInput.clear();
+                roleInput.clear();
+            } else {
+                alertForgot("Failed to update phone number");
+            }
         });
 
         HBox.setHgrow(teacherInput, Priority.ALWAYS);
@@ -1458,8 +1748,36 @@ public class Menu extends Pane {
         Animation.addHoverScaleEffectMore(addButton);
 
         addButton.setOnAction(e -> {
-            String newTeacher = teacherInput.getText().trim();
-            // BACKEND HERE
+            String username = teacherInput.getText().trim();
+            String newEmail = roleInput.getText().trim();
+
+            if (username.isEmpty() || newEmail.isEmpty()) {
+                alertForgot("Please fill in all fields");
+                return;
+            }
+
+            // Check if user exists
+            if (!Main.db.userExists(username)) {
+                alertForgot("User not found");
+                return;
+            }
+
+            // Update email in database
+            boolean success = Main.db.executeUpdate("UPDATE users SET email = '" + newEmail + "' WHERE username = '" + username + "'");
+
+            if (success) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Success");
+                alert.setHeaderText(null);
+                alert.setContentText("Email updated successfully");
+                alert.showAndWait();
+
+                // Clear fields
+                teacherInput.clear();
+                roleInput.clear();
+            } else {
+                alertForgot("Failed to update email");
+            }
         });
 
         HBox.setHgrow(teacherInput, Priority.ALWAYS);
@@ -1506,8 +1824,16 @@ public class Menu extends Pane {
         Animation.addHoverScaleEffectMore(addButton);
 
         addButton.setOnAction(e -> {
-            String newTeacher = teacherInput.getText().trim();
-            // BACKEND HERE
+            String username = teacherInput.getText().trim();
+            String role = roleInput.getText().trim();
+
+            if (username.isEmpty() || role.isEmpty()) {
+                alertForgot("Please fill in all fields");
+                return;
+            }
+
+            AdminMenu adminMenu = new AdminMenu(Main.db, this.username);
+            adminMenu.changeUserRole(username, role);
         });
 
         HBox.setHgrow(teacherInput, Priority.ALWAYS);
@@ -1553,8 +1879,15 @@ public class Menu extends Pane {
 
         // Action
         addButton.setOnAction(e -> {
-            String newTeacher = teacherInput.getText().trim();
-            // BACKEND HERE
+            String username = teacherInput.getText().trim();
+
+            if (username.isEmpty()) {
+                alertForgot("Please enter a username");
+                return;
+            }
+
+            AdminMenu adminMenu = new AdminMenu(Main.db, this.username);
+            adminMenu.resetProfilePicture(username);
         });
 
         HBox.setHgrow(teacherInput, Priority.ALWAYS);
@@ -1599,8 +1932,59 @@ public class Menu extends Pane {
 
         // Action
         addButton.setOnAction(e -> {
-            String newTeacher = teacherInput.getText().trim();
-            // BACKEND HERE
+            String username = teacherInput.getText().trim();
+
+            if (username.isEmpty()) {
+                alertForgot("Please enter a username");
+                return;
+            }
+
+            // Open color picker dialog
+            Dialog<ButtonType> dialog = new Dialog<>();
+            dialog.setTitle("Change Profile Colors");
+            dialog.setHeaderText("Select new colors for " + username);
+
+            ButtonType saveButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+            dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
+
+            VBox content = new VBox(15);
+            content.setPadding(new Insets(20));
+
+            ColorPicker profileColorPicker = new ColorPicker(Color.web("#ADD8E6"));
+            ColorPicker bannerColorPicker = new ColorPicker(Color.web("#D3D3D3"));
+            ColorPicker roleColorPicker = new ColorPicker(Color.web("#d0e6f7"));
+
+            Label profileLabel = new Label("Profile Background Color:");
+            Label bannerLabel = new Label("Banner Color:");
+            Label roleLabel = new Label("Role Background Color:");
+
+            content.getChildren().addAll(
+                    profileLabel, profileColorPicker,
+                    bannerLabel, bannerColorPicker,
+                    roleLabel, roleColorPicker
+            );
+
+            dialog.getDialogPane().setContent(content);
+
+            Optional<ButtonType> result = dialog.showAndWait();
+
+            if (result.isPresent() && result.get() == saveButtonType) {
+                String profileHex = toHexString(profileColorPicker.getValue());
+                String bannerHex = toHexString(bannerColorPicker.getValue());
+                String roleHex = toHexString(roleColorPicker.getValue());
+
+                boolean success = Main.db.updateProfileColors(username, profileHex, bannerHex, roleHex, null);
+
+                if (success) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Success");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Profile colors updated successfully");
+                    alert.showAndWait();
+                } else {
+                    alertForgot("Failed to update profile colors");
+                }
+            }
         });
 
         HBox.setHgrow(teacherInput, Priority.ALWAYS);
@@ -1608,6 +1992,14 @@ public class Menu extends Pane {
 
         addTeacherBox.getChildren().addAll(header, inputBox);
         return addTeacherBox;
+    }
+
+    private String toHexString(Color color) {
+        return String.format("#%02X%02X%02X%02X",
+                (int)(color.getRed() * 255),
+                (int)(color.getGreen() * 255),
+                (int)(color.getBlue() * 255),
+                (int)(color.getOpacity() * 255));
     }
 
     // ____________________________________________________
@@ -1619,11 +2011,11 @@ public class Menu extends Pane {
         contentBox.setPrefWidth(Double.MAX_VALUE);
         contentBox.setStyle(
                 "-fx-background-color: #f5f5f5;" +
-                "-fx-background-radius: 25;" +
-                "-fx-border-radius: 25;" +
-                "-fx-border-color: #ccc;" +
-                "-fx-border-width: 1px;" +
-                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 10, 0.3, 0, 4);"
+                        "-fx-background-radius: 25;" +
+                        "-fx-border-radius: 25;" +
+                        "-fx-border-color: #ccc;" +
+                        "-fx-border-width: 1px;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 10, 0.3, 0, 4);"
         );
 
         Label header = new Label("Exam title");
@@ -1671,7 +2063,7 @@ public class Menu extends Pane {
 
         Button sendBtn = new Button("Send");
         sendBtn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; " +
-        "-fx-padding: 4 10; -fx-font-size: 12px; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+                "-fx-padding: 4 10; -fx-font-size: 12px; -fx-background-radius: 20px; -fx-border-radius: 20px;");
 
         // Hover
         Animation.addHoverScaleEffectMore(sendBtn);
@@ -1732,22 +2124,56 @@ public class Menu extends Pane {
 
             Button acceptBtn = new Button("Accept");
             acceptBtn.setStyle("-fx-background-color: #41bd25; -fx-text-fill: white; -fx-font-weight: bold; " +
-            "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+                    "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
 
             Button denyBtn = new Button("Deny");
             denyBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; " +
-            "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+                    "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
 
             // Hover
             Animation.addHoverScaleEffectMore(acceptBtn);
             Animation.addHoverScaleEffectMore(denyBtn);
 
             acceptBtn.setOnAction(e -> {
-                // Accept
+                String studentName = requestLabel.getText().split(" requests")[0];
+
+                // Update student's accepted status
+                boolean success = Main.db.changeAccepted(studentName, "Yes");
+
+                if (success) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Success");
+                    alert.setHeaderText(null);
+                    alert.setContentText(studentName + " has been accepted");
+                    alert.showAndWait();
+
+                    // Refresh the request list
+                    messageArea.getChildren().clear();
+                    messageArea.getChildren().add(displayAcceptStudentRequests());
+                } else {
+                    alertForgot("Failed to accept student");
+                }
             });
 
             denyBtn.setOnAction(e -> {
-                // Deny
+                String studentName = requestLabel.getText().split(" requests")[0];
+
+                // Update student's accepted status
+                boolean success = Main.db.changeAccepted(studentName, "No");
+
+                if (success) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Success");
+                    alert.setHeaderText(null);
+                    alert.setContentText(studentName + " has been denied");
+                    alert.showAndWait();
+
+                    // Refresh the request list
+                    messageArea.getChildren().clear();
+                    messageArea.getChildren().add(displayAcceptStudentRequests());
+                } else {
+                    alertForgot("Failed to deny student");
+                }
             });
 
 
@@ -2325,10 +2751,10 @@ public class Menu extends Pane {
             SVGPath wave = new SVGPath();
             wave.setContent(
                     "M0 30 " +
-                    "C26 10, 26 50, 52 30 " +
-                    "C78 10, 78 50, 104 30 " +
-                    "C130 10, 130 50, 158 30 " +
-                    "V50 H0 Z"
+                            "C26 10, 26 50, 52 30 " +
+                            "C78 10, 78 50, 104 30 " +
+                            "C130 10, 130 50, 158 30 " +
+                            "V50 H0 Z"
             );
 
             DropShadow dropShadow = new DropShadow();
@@ -2622,10 +3048,10 @@ public class Menu extends Pane {
             SVGPath wave = new SVGPath();
             wave.setContent(
                     "M0 30 " +
-                    "C26 10, 26 50, 52 30 " +
-                    "C78 10, 78 50, 104 30 " +
-                    "C130 10, 130 50, 158 30 " +
-                    "V50 H0 Z"
+                            "C26 10, 26 50, 52 30 " +
+                            "C78 10, 78 50, 104 30 " +
+                            "C130 10, 130 50, 158 30 " +
+                            "V50 H0 Z"
             );
 
             DropShadow dropShadow = new DropShadow();
@@ -2765,12 +3191,12 @@ public class Menu extends Pane {
 
         Label header = new Label("Welcome, " + this.username + "!");
         header.setStyle(
-        "-fx-background-color: #4a4a4a;" +
-        "-fx-text-fill: white;" +
-        "-fx-font-size: 18px;" +
-        "-fx-font-weight: bold;" +
-        "-fx-padding: 10 20 10 20;" +
-        "-fx-background-radius: 15;"
+                "-fx-background-color: #4a4a4a;" +
+                        "-fx-text-fill: white;" +
+                        "-fx-font-size: 18px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-padding: 10 20 10 20;" +
+                        "-fx-background-radius: 15;"
         );
         header.setAlignment(Pos.CENTER_LEFT);
         header.setMaxWidth(Region.USE_COMPUTED_SIZE);
@@ -2869,7 +3295,6 @@ public class Menu extends Pane {
 
         return title;
     }
-
     // ____________________________________________________
 
     public VBox displayProfile() {
@@ -3014,7 +3439,7 @@ public class Menu extends Pane {
         return profileVBox;
     }
 
-// ____________________________________________________
+    // ____________________________________________________
 
     public VBox displayProfileStudent() {
         this.userProfile = new Profile(this.username);
