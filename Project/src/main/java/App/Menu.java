@@ -427,8 +427,10 @@ public class Menu extends Pane {
             messageArea.getChildren().clear();
 
             if (newMode.equalsIgnoreCase("Yes")) {
+                Main.db.changeDarkmode(username,newMode);
                 messageArea.getChildren().add(setting.displayDarkmodeJonas());
             } else if (newMode.equalsIgnoreCase("No")) {
+                Main.db.changeDarkmode(username,newMode);
                 messageArea.getChildren().add(setting.displayLightmodeJonas());
             }
 
@@ -3100,6 +3102,16 @@ public class Menu extends Pane {
         timePicker.setStyle("-fx-font-size: 14px;");
 
         return timePicker;
+    }
+
+    // ____________________________________________________
+
+    public void alertForgot(String msg){
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Validation Error!");
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
+        alert.showAndWait();
     }
 
 }
