@@ -249,6 +249,7 @@ public class NextOption extends Pane {
     // ____________________________________________________
 
     public void registerButtonActionCostumer() {
+
         String username = register.getUsername();
         String password = register.getPassword();
         String role = register.getSelectedUserType();
@@ -261,73 +262,98 @@ public class NextOption extends Pane {
 
         int hairTypeId = Main.db.getOrCreateHairType(hairType, hairColor, hairLength, gender);
 
-        //i
-
-        System.out.println("Username entered: " + username);
-        System.out.println("Password entered: " + password);
-        System.out.println("Role selected: " + role);
-        System.out.println("Email entered: " + email);
-
+        // Default
+        String status = "Offline";
+        String banned = "No";
+        String profileHex = "#ADD8E6FF";
+        String bannerHex = "#D3D3D3FF";
+        String roleHex = "#d0e6f7";
+        String accepted = "null";
+        int schoolId = -1;
+        int studentYear = -1;
+        String profilePicture = "person1.png";
+        String language = "English";
+        String darkmode = "Yes";
 
         boolean connected = Main.db.isConnected();
         System.out.println("Database connected: " + connected);
 
-        // KALD METODE FRA DB TIL AT CREATE
-        boolean userCreated = Main.db.createUser(username, password, email, role, hairTypeId);
-
-        System.out.println("User creation attempt result: " + userCreated);
+        // Create user with extended method
+        boolean userCreated = Main.db.createUser(username, password, email, status, banned, role,
+                profileHex, bannerHex, roleHex,
+                hairTypeId, schoolId, studentYear,
+                profilePicture, language, accepted, darkmode);
 
         if (connected && userCreated) {
-            System.out.println("Registration successful.");
             register.alert("Registration successful! You can now log in.");
             Stage stage = (Stage) getScene().getWindow();
             Main.loginPage(stage);
         } else {
-            System.out.println("Registration failed.");
             register.alert("Registration failed. Please try again.");
         }
-
-        System.out.println("User registration process ended.");
-
     }
 
+    // ____________________________________________________
+
     public void registerButtonActionStudent() {
+
         String username = register.getUsername();
         String password = register.getPassword();
         String role = register.getSelectedUserType();
         String email = register.getEmail();
+        String schoolName = schoolDropdown.getValue();
+        int schoolId = schoolMap.getOrDefault(schoolName, 0);
+        String studentYearStr = yearDropdown.getValue();
 
-        String school_name = schoolDropdown.getValue();
-        int schoolId = schoolMap.getOrDefault(school_name, 0);
-        String student_year = yearDropdown.getValue();
+        int studentYear = 0; // default before being set
 
-        //i
+        // Try-catch for int input
+        try {
+            studentYear = Integer.parseInt(studentYearStr);
+        } catch (NumberFormatException e) {
+            register.alert("Invalid student year!");
+        }
 
-        System.out.println("Username entered: " + username);
-        System.out.println("Password entered: " + password);
-        System.out.println("Role selected: " + role);
-        System.out.println("Email entered: " + email);
+        // Default (STUDENT)
+        String status = "Offline";
+        String banned = "No";
+        String profileHex = "#ADD8E6FF";
+        String bannerHex = "#D3D3D3FF";
+        String roleHex = "#d0e6f7";
+        String profilePicture = "person1.png";
+        String language = "English";
+        String accepted = "No";
+        String darkmode = "Yes";
 
         boolean connected = Main.db.isConnected();
-
         System.out.println("Database connected: " + connected);
 
-        // KALD METODE FRA DB TIL AT CREATE
-        boolean userCreated = Main.db.createUser(username, password, email, role, schoolId, student_year);
-
-        System.out.println("User creation attempt result: " + userCreated);
+        boolean userCreated = Main.db.createUser(
+                username,
+                password,
+                email,
+                status,
+                banned,
+                role,
+                profileHex,
+                bannerHex,
+                roleHex,
+                0,
+                schoolId,
+                studentYear,
+                profilePicture,
+                language,
+                accepted,
+                darkmode
+        );
 
         if (connected && userCreated) {
-            System.out.println("Registration successful.");
             register.alert("Registration successful! You can now log in.");
             Stage stage = (Stage) getScene().getWindow();
             Main.loginPage(stage);
         } else {
-            System.out.println("Registration failed.");
             register.alert("Registration failed. Please try again.");
         }
-
-        System.out.println("User registration process ended.");
 
     }
 
