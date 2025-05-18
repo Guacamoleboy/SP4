@@ -177,9 +177,10 @@ public class SideMenu extends Pane {
         Button btn2 = imageButton("/assets/icons/icon1.png", 30, 30, 50); // Available Bookings
         Button btn3 = imageButton("/assets/icons/icon2.png", 30, 30, 50); // Messages
         Button btn4 = imageButton("/assets/icons/icon9.png", 30, 30, 50); // Exam
+        Button btn5 = imageButton("/assets/icons/icon16.png", 30, 30, 50); // Menu
 
         // Top VBox addALl
-        topBox.getChildren().addAll(profileBtn, btn1, btn2, btn3, btn4);
+        topBox.getChildren().addAll(profileBtn, btn1, btn2, btn3, btn4, btn5);
 
         // New VBox for Settings to be at the bottom
         VBox bottomBox = new VBox();
@@ -199,6 +200,24 @@ public class SideMenu extends Pane {
             menu.getChildren().add(menu.displayExamCardStudent());
         });
 
+        btn2.setOnAction(e -> {
+            menu.getChildren().clear();
+        });
+
+        btn3.setOnAction(e -> {
+            menu.getChildren().clear();
+            menu.getChildren().add(menu.displayMyMessages());
+        });
+
+        btn4.setOnAction(e -> {
+            menu.getChildren().clear();
+        });
+
+        btn5.setOnAction(e -> {
+            menu.getChildren().clear();
+            menu.getChildren().add(menu.displayStudentBookings());
+        });
+
         settingsBtn.setOnAction(e -> {
             menu.setHeaderTitle("Settings");
             menu.getChildren().clear();
@@ -214,6 +233,10 @@ public class SideMenu extends Pane {
 
         // Hover
         Animation.addHoverScaleEffectMore(btn1);
+        Animation.addHoverScaleEffectMore(btn2);
+        Animation.addHoverScaleEffectMore(btn3);
+        Animation.addHoverScaleEffectMore(btn4);
+        Animation.addHoverScaleEffectMore(btn5);
         Animation.addHoverScaleEffectMore(profileBtn);
         Animation.addHoverScaleEffectMore(settingsBtn);
 
@@ -344,7 +367,7 @@ public class SideMenu extends Pane {
         btn1.setOnAction(e -> {
             menu.setHeaderTitle("Admin");
             menu.getChildren().clear();
-            menu.getChildren().add(menu.displayHeader());
+            menu.getChildren().add(menu.displayTeacherAdmin());
         });
 
         btn2.setOnAction(e -> {
@@ -360,9 +383,9 @@ public class SideMenu extends Pane {
         });
 
         btn4.setOnAction(e -> {
-            menu.setHeaderTitle("Beskeder");
+            menu.setHeaderTitle("Messages");
             menu.getChildren().clear();
-            menu.getChildren().add(menu.displayHeader());
+            menu.getChildren().add(menu.displayMyMessages());
         });
 
         settingsBtn.setOnAction(e -> {
@@ -429,13 +452,13 @@ public class SideMenu extends Pane {
         btn1.setOnAction(e -> {
             menu.setHeaderTitle("Admin");
             menu.getChildren().clear();
-            menu.getChildren().add(menu.displayHeader());
+            menu.getChildren().add(menu.displaySchoolAdmin());
         });
 
         btn2.setOnAction(e -> {
             menu.setHeaderTitle("Messages");
             menu.getChildren().clear();
-            menu.getChildren().add(menu.displayHeader());
+            menu.getChildren().add(menu.displayMyMessages());
         });
 
         settingsBtn.setOnAction(e -> {

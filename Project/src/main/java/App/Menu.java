@@ -450,6 +450,212 @@ public class Menu extends Pane {
 
     // ____________________________________________________
 
+    public VBox displaySchoolAdmin() {
+
+        // VBox
+        VBox settingsVBox = new VBox();
+        settingsVBox.setLayoutX(20);
+        settingsVBox.setLayoutY(100);
+        settingsVBox.setPrefWidth(760);
+        settingsVBox.setPrefHeight(480);
+        settingsVBox.setStyle("-fx-border-color: #464646; -fx-border-width: 2px; -fx-border-radius: 20px; -fx-background-radius: 20px;");
+
+        // HBox
+        HBox messageHBox = new HBox();
+        messageHBox.getStyleClass().add("message-vbox");
+        messageHBox.setPrefWidth(760);
+        messageHBox.setPrefHeight(480);
+        messageHBox.setAlignment(Pos.TOP_LEFT);
+        messageHBox.setSpacing(0);
+
+        // Sidebar
+        VBox sidebar = new VBox(0);
+        sidebar.setPrefWidth(760 * 0.26);
+        sidebar.setAlignment(Pos.TOP_LEFT);
+        sidebar.setPadding(Insets.EMPTY);
+        sidebar.setStyle("-fx-background-color: #696969; -fx-border-radius: 20 0 0 20; -fx-background-radius: 20 0 0 20; -fx-border-width: 0 2px 0 0; -fx-border-color: #464646");
+
+        // Buttons
+        Button setting1 = new Button("Accept Student");
+        Button setting2 = new Button("Remove Student");
+        Button setting3 = new Button("Remove Teacher");
+        Button setting4 = new Button("Add Teacher");
+
+        sidebar.getChildren().addAll(setting1, setting2, setting3, setting4);
+        setting1.getStyleClass().addAll("user-button", "user-button1");
+        setting2.getStyleClass().add("user-button-delete");
+        setting3.getStyleClass().add("user-button-delete");
+        setting4.getStyleClass().add("user-button");
+
+        // Message area (4/5)
+        messageArea = new VBox(15);
+        messageArea.setPrefWidth(760 * 0.74);
+        messageArea.setPadding(new Insets(0));
+        messageArea.setAlignment(Pos.TOP_LEFT);
+        messageArea.setStyle("-fx-background-color: transparent;");
+
+        // Add to HBox (Left -> Right)
+        messageHBox.getChildren().addAll(sidebar, messageArea);
+        settingsVBox.getChildren().add(messageHBox);
+
+        // Actions
+        setting1.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+
+        setting2.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+
+        setting3.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+
+        setting4.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+
+        return settingsVBox;
+    }
+
+    // ____________________________________________________
+
+    public VBox displayTeacherAdmin() {
+
+        // VBox
+        VBox settingsVBox = new VBox();
+        settingsVBox.setLayoutX(20);
+        settingsVBox.setLayoutY(100);
+        settingsVBox.setPrefWidth(760);
+        settingsVBox.setPrefHeight(480);
+        settingsVBox.setStyle("-fx-border-color: #464646; -fx-border-width: 2px; -fx-border-radius: 20px; -fx-background-radius: 20px;");
+
+        // HBox
+        HBox messageHBox = new HBox();
+        messageHBox.getStyleClass().add("message-vbox");
+        messageHBox.setPrefWidth(760);
+        messageHBox.setPrefHeight(480);
+        messageHBox.setAlignment(Pos.TOP_LEFT);
+        messageHBox.setSpacing(0);
+
+        // Sidebar
+        VBox sidebar = new VBox(0);
+        sidebar.setPrefWidth(760 * 0.26);
+        sidebar.setAlignment(Pos.TOP_LEFT);
+        sidebar.setPadding(Insets.EMPTY);
+        sidebar.setStyle("-fx-background-color: #696969; -fx-border-radius: 20 0 0 20; -fx-background-radius: 20 0 0 20; -fx-border-width: 0 2px 0 0; -fx-border-color: #464646");
+
+        // Buttons
+        Button setting1 = new Button("Accept Student");
+        Button setting2 = new Button("Remove Student");
+        Button setting3 = new Button("Add Homework");
+        Button setting4 = new Button("Add Booking");
+        Button setting5 = new Button("Add Exam");
+
+        sidebar.getChildren().addAll(setting1, setting2, setting3, setting4, setting5);
+        setting1.getStyleClass().addAll("user-button", "user-button1");
+        setting2.getStyleClass().add("user-button-delete");
+        setting3.getStyleClass().add("user-button");
+        setting4.getStyleClass().add("user-button");
+        setting5.getStyleClass().add("user-button");
+
+        // Message area (4/5)
+        messageArea = new VBox(15);
+        messageArea.setPrefWidth(760 * 0.74);
+        messageArea.setPadding(new Insets(0));
+        messageArea.setAlignment(Pos.TOP_LEFT);
+        messageArea.setStyle("-fx-background-color: transparent;");
+
+        // Add to HBox (Left -> Right)
+        messageHBox.getChildren().addAll(sidebar, messageArea);
+        settingsVBox.getChildren().add(messageHBox);
+
+        // Actions
+        setting1.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+
+        setting2.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+
+        setting3.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+
+        setting4.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+
+        return settingsVBox;
+    }
+
+    // ____________________________________________________
+
+    public VBox displayStudentBookings() {
+
+        // VBox
+        VBox settingsVBox = new VBox();
+        settingsVBox.setLayoutX(20);
+        settingsVBox.setLayoutY(100);
+        settingsVBox.setPrefWidth(760);
+        settingsVBox.setPrefHeight(480);
+        settingsVBox.setStyle("-fx-border-color: #464646; -fx-border-width: 2px; -fx-border-radius: 20px; -fx-background-radius: 20px;");
+
+        // HBox
+        HBox messageHBox = new HBox();
+        messageHBox.getStyleClass().add("message-vbox");
+        messageHBox.setPrefWidth(760);
+        messageHBox.setPrefHeight(480);
+        messageHBox.setAlignment(Pos.TOP_LEFT);
+        messageHBox.setSpacing(0);
+
+        // Sidebar
+        VBox sidebar = new VBox(0);
+        sidebar.setPrefWidth(760 * 0.26);
+        sidebar.setAlignment(Pos.TOP_LEFT);
+        sidebar.setPadding(Insets.EMPTY);
+        sidebar.setStyle("-fx-background-color: #696969; -fx-border-radius: 20 0 0 20; -fx-background-radius: 20 0 0 20; -fx-border-width: 0 2px 0 0; -fx-border-color: #464646");
+
+        // Buttons
+        Button setting1 = new Button("Booking Requests");
+        Button setting2 = new Button("Cancel Booking");
+        Button setting3 = new Button("Tips");
+
+        sidebar.getChildren().addAll(setting1, setting2, setting3);
+        setting1.getStyleClass().addAll("user-button", "user-button1");
+        setting2.getStyleClass().add("user-button-delete");
+        setting3.getStyleClass().add("user-button");
+
+        // Message area (4/5)
+        messageArea = new VBox(15);
+        messageArea.setPrefWidth(760 * 0.74);
+        messageArea.setPadding(new Insets(0));
+        messageArea.setAlignment(Pos.TOP_LEFT);
+        messageArea.setStyle("-fx-background-color: transparent;");
+
+        // Add to HBox (Left -> Right)
+        messageHBox.getChildren().addAll(sidebar, messageArea);
+        settingsVBox.getChildren().add(messageHBox);
+
+        // Actions
+        setting1.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+
+        setting2.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+
+        setting3.setOnAction(e -> {
+            messageArea.getChildren().clear();
+        });
+
+        return settingsVBox;
+    }
+
+    // ____________________________________________________
+
     public VBox displaySupportSettings() {
 
         // VBox

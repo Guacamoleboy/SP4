@@ -338,8 +338,13 @@ public class Setting extends Pane {
         // Action listener on imageView only *dab*
         redRegion.setOnMouseEntered(e -> scaleUp.playFromStart());
         redRegion.setOnMouseExited(e -> scaleDown.playFromStart());
+
         redRegion.setOnMouseClicked(e -> {
-            Main.setLang(DialogBox.chooseLanguage(language));
+            String newLang = DialogBox.chooseLanguage(Main.lang);
+
+            if (newLang != null && !newLang.equalsIgnoreCase(Main.lang)) {
+                Main.setLang(newLang);
+            }
         });
 
         // final HBox add
