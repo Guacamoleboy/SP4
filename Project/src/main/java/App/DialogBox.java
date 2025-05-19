@@ -9,6 +9,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
+import util.DBConnector;
 
 import java.util.Optional;
 
@@ -182,6 +183,44 @@ public class DialogBox extends Pane {
     public static void displayMoreInfo(){
 
     }
+
+    // ____________________________________________________
+
+    public static void displayMessageDialog(String sender, String receiver, DBConnector db) {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Sending message to " + receiver);
+
+        Label msgLabel = new Label("Enter message:");
+        TextArea msgArea = new TextArea();
+        msgArea.setPromptText("Message");
+        msgArea.setWrapText(true);
+        msgArea.setPrefRowCount(4);
+
+        VBox contentBox = new VBox(10, msgLabel, msgArea);
+        contentBox.setPadding(new Insets(10));
+        contentBox.setAlignment(Pos.CENTER_LEFT);
+        contentBox.setStyle("-fx-background-color: transparent;");
+
+        dialog.getDialogPane().setContent(contentBox);
+
+        ButtonType sendButton = new ButtonType("Send", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(sendButton, ButtonType.CANCEL);
+
+        Optional<ButtonType> result = dialog.showAndWait();
+
+        if (result.isPresent() && result.get() == sendButton) {
+            String message = msgArea.getText().trim();
+
+            if (!message.isEmpty()) {
+                boolean success = db.saveMessage(sender, receiver, message);
+                if (!success) {
+                    System.err.println("Failed to save message to database.");
+                }
+            }
+        }
+    }
+
+    // ____________________________________________________
 
     public static String chooseLanguage(String currentLanguage) {
         Dialog<ButtonType> tip = new Dialog<>();

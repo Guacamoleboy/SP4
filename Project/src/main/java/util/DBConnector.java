@@ -252,6 +252,7 @@ public class DBConnector {
                 sender + "', '" + receiver + "', '" + content + "')";
         return executeUpdate(query);
     }
+
     // ____________________________________________________
 
     public ArrayList<String> loadYourMessages(String user) {
@@ -796,7 +797,8 @@ public class DBConnector {
     // ____________________________________________________
 
     public List<BookingCard> getBookings(boolean isExam) {
-        List<BookingCard> bookings = new ArrayList<>();
+
+        List <BookingCard> bookings = new ArrayList<>();
         String sql = "SELECT * FROM bookings WHERE exam = ?";
 
         try (PreparedStatement ps = con.prepareStatement(sql)) {
