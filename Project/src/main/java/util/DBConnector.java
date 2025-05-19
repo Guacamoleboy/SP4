@@ -1,6 +1,8 @@
 package util;
 
 import App.BookingCard;
+import App.Tip;
+import App.Request;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -73,7 +75,8 @@ public class DBConnector {
                     "rating DOUBLE DEFAULT '0.0'," +
                     "social TEXT," +
                     "contactheader TEXT DEFAULT 'I am glad you are here...'," +
-                    "contactdesc TEXT DEFAULT 'Welcome my friend. You can get in contact with me here! Hope to hear from ya!'" +
+                    "contactdesc TEXT DEFAULT 'Welcome my friend. You can get in contact with me here! Hope to hear from ya!'," +
+                    "student_id INTEGER" +
                     ")";
 
             String createMessagesTable = "CREATE TABLE IF NOT EXISTS messages (" +
@@ -109,6 +112,7 @@ public class DBConnector {
                     "student_id INTEGER," +
                     "paid TEXT," +
                     "accepted TEXT," +
+                    "customer TEXT," +
                     "FOREIGN KEY (hairtypeId) REFERENCES hair_type_id(id)," +
                     "FOREIGN KEY (student_id) REFERENCES users(id)" +
                     ")";
@@ -430,6 +434,25 @@ public class DBConnector {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 id = rs.getInt("id"); // parse the column to int
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return id;
+    }
+
+    // ____________________________________________________
+
+    public int getStudentID(String username) {
+        int id = -1; // default value if not found
+        String query = "SELECT student_id FROM users WHERE username = ?";
+
+        try (PreparedStatement stmt = con.prepareStatement(query)) {
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                id = rs.getInt("student_id"); // parse the column to int
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -816,10 +839,10 @@ public class DBConnector {
     public void hairTypeInserter() {
 
         //edit here
-        String[] textures = {"Straight", "Wavy", "Curly", "Coily"};
-        String[] colors = {"Blonde", "Black", "Brown", "Red", "Grey"};
-        String[] lengths = {"Bald", "Buzz", "Short", "Medium", "Long", "Very Long", "Tied"};
-        String[] genders = {"Male", "Female"};
+        String[] textures = {"Straight", "Wavy", "Curly", "Coily", "All"};
+        String[] colors = {"Blonde", "Black", "Brown", "Red", "Grey", "All"};
+        String[] lengths = {"Bald", "Buzz", "Short", "Medium", "Long", "Very Long", "Tied", "All"};
+        String[] genders = {"Male", "Female", "All"};
 
         try {
             PreparedStatement ps = con.prepareStatement(
@@ -848,11 +871,11 @@ public class DBConnector {
 
     // ____________________________________________________
 
-    public void createBooking(LocalDate date, String time, String address, int hairtype_id, boolean exam, int student_id, String paid, String accepted) {
-        String sql = "INSERT INTO bookings (date, time, address, hairtypeId, exam, student_id, paid, accepted) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    public void createBooking(String date, String time, String address, int hairtype_id, boolean exam, int student_id, String paid, String accepted, String customer) {
+        String sql = "INSERT INTO bookings (date, time, address, hairtypeId, exam, student_id, paid, accepted, customer) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, date.toString());
+            ps.setString(1, date);
             ps.setString(2, time);
             ps.setString(3, address);
             ps.setInt(4, hairtype_id);
@@ -860,6 +883,7 @@ public class DBConnector {
             ps.setInt(6, student_id);
             ps.setString(7, paid);
             ps.setString(8, accepted);
+            ps.setString(9, customer);
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -878,15 +902,16 @@ public class DBConnector {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                LocalDate date = LocalDate.parse(rs.getString("date"));
+                String date = rs.getString("date");
                 String time = rs.getString("time");
                 String address = rs.getString("address");
                 int hairtypeId = rs.getInt("hairtypeId");
                 int studentId = rs.getInt("student_id");
                 String paid = rs.getString("paid");
                 String accepted = rs.getString("accepted");
+                String customer = rs.getString("customer");
 
-                BookingCard booking = new BookingCard(date, time, address, hairtypeId, isExam, studentId, paid, accepted);
+                BookingCard booking = new BookingCard(date, time, address, hairtypeId, isExam, studentId, paid, accepted, customer);
                 bookings.add(booking);
             }
 
@@ -909,14 +934,15 @@ public class DBConnector {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                LocalDate date = LocalDate.parse(rs.getString("date"));
+                String date = rs.getString("date");
                 String time = rs.getString("time");
                 String address = rs.getString("address");
                 int hairtypeId = rs.getInt("hairtypeId");
                 String paid = rs.getString("paid");
                 String accepted = rs.getString("accepted");
+                String customer = rs.getString("customer");
 
-                BookingCard booking = new BookingCard(date, time, address, hairtypeId, isExam, studentId, paid, accepted);
+                BookingCard booking = new BookingCard(date, time, address, hairtypeId, isExam, studentId, paid, accepted, customer);
                 bookings.add(booking);
             }
 
@@ -949,6 +975,7 @@ public class DBConnector {
     // ____________________________________________________
 
     public List<Tip> getTipsForUser(String username) {
+
         List<Tip> tips = new ArrayList<>();
         String query = "SELECT sender, receiver, amount, comment FROM tip WHERE receiver = ? ORDER BY id DESC"; // recent first
 
@@ -970,23 +997,122 @@ public class DBConnector {
         }
 
         return tips;
+
     }
 
     // ____________________________________________________
 
-    public boolean saveRequest(String sender, String receiver, String comment) {
+    public boolean updateBookingAcceptedStatus(int requestId, String acceptedStatus) {
+        String sql = "UPDATE bookings SET accepted = ? WHERE id = ?";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, acceptedStatus);
+            ps.setInt(2, requestId);
+            int rows = ps.executeUpdate();
+            return rows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // ____________________________________________________
+
+    public List<BookingCard> getBookingCardsForUserWithAcceptedStatus(int studentId, String acceptedStatus) {
+        List<BookingCard> bookings = new ArrayList<>();
+        String sql = "SELECT * FROM bookings WHERE student_id = ? AND accepted = ?";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, studentId);
+            ps.setString(2, acceptedStatus);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+
+                String date = rs.getString("date");
+                String time = rs.getString("time");
+                String address = rs.getString("address");
+                int hairtype_id = rs.getInt("hairtypeId");
+                boolean exam = rs.getBoolean("exam");
+                String paid = rs.getString("paid");
+                String accepted = rs.getString("accepted");
+                String customer = rs.getString("customer");
+
+                BookingCard booking = new BookingCard(date, time, address, hairtype_id, exam, studentId, paid, accepted, customer);
+                bookings.add(booking);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return bookings;
+    }
+
+    // ____________________________________________________
+
+    public boolean isBookingDenied(int bookingId) {
+        String sql = "SELECT accepted FROM bookings WHERE id = ?";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, bookingId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                String acceptedStatus = rs.getString("accepted");
+                return "Denied".equalsIgnoreCase(acceptedStatus);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // ____________________________________________________
+
+    public List<Request> getRequestsForUser(int receiverId) {
+        List<Request> requests = new ArrayList<>();
+        String sql = "SELECT id, sender, receiver, comment FROM request WHERE receiver = ?";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, receiverId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Request req = new Request();
+                req.setId(rs.getInt("id"));
+                req.setSender(rs.getString("sender"));
+                req.setReceiver(rs.getInt("receiver"));
+                req.setComment(rs.getString("comment"));
+                requests.add(req);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return requests;
+    }
+
+    // ____________________________________________________
+
+    public boolean hasRequests(int userId) {
+        String sql = "SELECT COUNT(*) AS requestCount FROM request WHERE receiver = " + userId;
+        try (Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) {
+                int count = rs.getInt("requestCount");
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // ____________________________________________________
+
+    public void saveRequest(String sender, int receiver, String comment) {
         String query = "INSERT INTO request (sender, receiver, comment) VALUES (?, ?, ?)";
 
         try (PreparedStatement stmt = con.prepareStatement(query)) {
             stmt.setString(1, sender);
-            stmt.setString(2, receiver);
+            stmt.setInt(2, receiver);
             stmt.setString(3, comment);
-
-            int affectedRows = stmt.executeUpdate();
-            return affectedRows > 0; // true if insert succeeded
+            stmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Error saving request: " + e.getMessage());
-            return false;
         }
     }
 

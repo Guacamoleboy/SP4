@@ -25,7 +25,7 @@ public class DialogBox extends Pane {
 
     // ____________________________________________________
 
-    public static void displayTip(String date, String time){
+    public static void displayTip(String date, String time, String username, String student){
 
         Dialog<ButtonType> tip = new Dialog<>();
         tip.setTitle("Tip your student!");
@@ -78,20 +78,29 @@ public class DialogBox extends Pane {
         // Show and get result
         Optional<ButtonType> result = tip.showAndWait();
 
-        // Tip result handle
         if (result.isPresent() && result.get() == saveButtonType) {
             String tipAmount = tipInput.getText().trim();
+            String comment = commentInput.getText().trim();
 
             if (!tipAmount.isEmpty()) {
+                try {
+                    double amount = Double.parseDouble(tipAmount);
 
-                System.out.println("User tipped: " + tipAmount);
+                    String sender = username;
+                    String receiver = student;
 
+                    Main.db.saveTip(sender, receiver, amount, comment);
+
+                    System.out.println("Tip saved successfully!");
+
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid tip amount entered.");
+                }
             } else {
-
                 System.out.println("No tip entered.");
-
             }
         }
+
 
     }
 
@@ -120,13 +129,13 @@ public class DialogBox extends Pane {
 
     // ____________________________________________________
 
-    public static void displayBook(String date,String place, String time, String rating){
+    public static void displayBook(String date, String place, String time, String rating, String sender, int receiver) {
         Dialog<ButtonType> tip = new Dialog<>();
         tip.setTitle("Request booking");
 
         // Header
-        Label headerLabel = new Label("You are trying to apply a request for your new fresh fade\n\nDate:" + date + "\nTime: " + time +
-                "\nPlace: " + place + "\n" + rating);
+        Label headerLabel = new Label("You are trying to apply a request for your new fresh fade\n\nDate: " + date +
+                "\nTime: " + time + "\nPlace: " + place + "\n" + rating);
         headerLabel.setTextAlignment(TextAlignment.CENTER);
         headerLabel.setAlignment(Pos.CENTER);
         headerLabel.setWrapText(true);
@@ -142,15 +151,15 @@ public class DialogBox extends Pane {
         commentInput.setWrapText(true);
         commentInput.setMaxWidth(200);
         commentInput.setStyle(
-                "-fx-text-fill: #3a3a3a;"+
-                        "-fx-font-size: 14px;" +
-                        "-fx-font-weight: bold;"
+                "-fx-text-fill: #3a3a3a;" +
+                "-fx-font-size: 14px;" +
+                "-fx-font-weight: bold;"
         );
 
         VBox contentBox = new VBox(10, commentInput);
         contentBox.setAlignment(Pos.CENTER);
         contentBox.setPadding(new Insets(10));
-        contentBox.setStyle("-fx-background-color: transparent;-fx-border-width: 0; -fx-background-radius: 25px; -fx-border-radius: 25px; -fx-border-insets: 0; -fx-background-insets: 0");
+        contentBox.setStyle("-fx-background-color: transparent;");
 
         tip.getDialogPane().setContent(contentBox);
 
@@ -161,18 +170,16 @@ public class DialogBox extends Pane {
         // Show and get result
         Optional<ButtonType> result = tip.showAndWait();
 
-        // Tip result handle
+        // Save result to database
         if (result.isPresent() && result.get() == saveButtonType) {
-            String RequestText = commentInput.getText().trim();
+            String comment = commentInput.getText().trim();
 
-            if (!RequestText.isEmpty()) {
-
-                System.out.println("User request for:\n " + RequestText);
-
+            if (!comment.isEmpty()) {
+                // Call DB method to insert into request table
+                Main.db.saveRequest(sender, receiver, comment);
+                System.out.println("Request saved successfully!");
             } else {
-
-                System.out.println("No tip entered.");
-
+                System.out.println("No comment entered.");
             }
         }
     }

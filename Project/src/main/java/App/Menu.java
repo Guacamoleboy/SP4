@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -87,6 +88,8 @@ public class Menu extends Pane {
         this.password = password;
         this.user = new Profile(username);
         this.userProfile = new Profile(this.username);
+
+
 
         // Scene Setup
         this.sceneWidth = sceneWidth;
@@ -765,7 +768,7 @@ public class Menu extends Pane {
 
         setting2.setOnAction(e -> {
             messageArea.getChildren().clear();
-            messageArea.getChildren().add(displayActiveBookinsCancel());
+            messageArea.getChildren().add(displayActiveBookingsCancel());
         });
 
         setting3.setOnAction(e -> {
@@ -861,6 +864,7 @@ public class Menu extends Pane {
     // ____________________________________________________
 
     private Node createBookingRequestsContent() {
+
         VBox bookingsBox = new VBox(15);
         bookingsBox.setPadding(new Insets(10));
         bookingsBox.setPrefHeight(480);
@@ -872,193 +876,171 @@ public class Menu extends Pane {
 
         VBox bookingList = new VBox(10);
 
-        String[] bookings = {
-                "Haircut with Jonas - 26.03 - 14:00",
-                "Fade with Andreas - 27.03 - 11:30",
-                "Beard trim with Carl Emil - 28.03 - 16:00"
-        };
+        int currentUserId = Main.db.getStudentID(username);
+        System.out.println("Current student_id for username " + username + ": " + currentUserId);
 
-        for (String booking : bookings) {
-            VBox singleBookingBox = new VBox();
-            singleBookingBox.setPadding(new Insets(10));
-            singleBookingBox.setStyle("-fx-background-color: #d0d0d0; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0.3, 0, 3); -fx-background-radius: 15; -fx-border-color: #dddddd; -fx-border-radius: 15;");
+        List<Request> requests = Main.db.getRequestsForUser(currentUserId);
 
-            HBox bookingLine = new HBox(10);
-            bookingLine.setAlignment(Pos.CENTER_LEFT);
+        if (requests.isEmpty()) {
+            Label noRequestsLabel = new Label("No booking requests.");
+            noRequestsLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: #666;");
+            bookingList.getChildren().add(noRequestsLabel);
+        } else {
+            for (Request req : requests) {
 
-            Label bookingLabel = new Label(booking);
-            bookingLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #444;");
-            HBox.setHgrow(bookingLabel, Priority.ALWAYS);
-            bookingLabel.setMaxWidth(Double.MAX_VALUE);
-
-            Button acceptBtn = new Button("Accept");
-            acceptBtn.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; " +
-                    "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
-
-            Button denyBtn = new Button("Deny");
-            denyBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; " +
-                    "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
-
-            // Hover
-            Animation.addHoverScaleEffectMore(acceptBtn);
-            Animation.addHoverScaleEffectMore(denyBtn);
-
-            acceptBtn.setOnAction(e -> {
-                String bookingInfo = bookingLabel.getText();
-
-                // Extract booking details
-                String[] parts = bookingInfo.split(" - ");
-                String studentName = parts[0].split(" with ")[1];
-                String date = parts[1];
-                String time = parts[2];
-
-                // Update booking status in database
-                boolean success = Main.db.executeUpdate("UPDATE bookings SET accepted = 'Yes' WHERE student_id = (SELECT id FROM users WHERE username = '" +
-                        studentName + "') AND date = '" + date + "' AND time = '" + time + "'");
-
-                if (success) {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Success");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Booking has been accepted");
-                    alert.showAndWait();
-
-                    // Refresh the booking list
-                    messageArea.getChildren().clear();
-                    messageArea.getChildren().add(createBookingRequestsContent());
-                } else {
-                    alertForgot("Failed to accept booking");
+                // Checks if booking is denied.
+                if (Main.db.isBookingDenied(req.getId())) {
+                    continue;
                 }
-            });
 
-            denyBtn.setOnAction(e -> {
-                String bookingInfo = bookingLabel.getText();
+                HBox singleRequestBox = new HBox(10);
+                singleRequestBox.setPadding(new Insets(10));
+                singleRequestBox.setStyle("-fx-background-color: #d0d0d0; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0.3, 0, 3); -fx-background-radius: 15; -fx-border-color: #dddddd; -fx-border-radius: 15;");
+                singleRequestBox.setAlignment(Pos.CENTER_LEFT);
 
-                // Extract booking details
-                String[] parts = bookingInfo.split(" - ");
-                String studentName = parts[0].split(" with ")[1];
-                String date = parts[1];
-                String time = parts[2];
+                Label requestLabel = new Label("Request from " + req.getSenderName() + ": " + req.getComment());
+                requestLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #444;");
+                HBox.setHgrow(requestLabel, Priority.ALWAYS);
+                requestLabel.setMaxWidth(Double.MAX_VALUE);
 
-                // Update booking status in database
-                boolean success = Main.db.executeUpdate("UPDATE bookings SET accepted = 'No' WHERE student_id = (SELECT id FROM users WHERE username = '" +
-                        studentName + "') AND date = '" + date + "' AND time = '" + time + "'");
+                Button acceptBtn = new Button("Accept");
+                acceptBtn.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; " +
+                        "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
 
-                if (success) {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Success");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Booking has been denied");
-                    alert.showAndWait();
+                Button denyBtn = new Button("Deny");
+                denyBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; " +
+                        "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
 
-                    // Refresh the booking list
-                    messageArea.getChildren().clear();
-                    messageArea.getChildren().add(createBookingRequestsContent());
-                } else {
-                    alertForgot("Failed to deny booking");
-                }
-            });
+                Animation.addHoverScaleEffectMore(acceptBtn);
+                Animation.addHoverScaleEffectMore(denyBtn);
 
-            HBox requestLine = new HBox(10);
-            requestLine.setAlignment(Pos.CENTER_LEFT);
-            requestLine.getChildren().addAll(bookingLabel, acceptBtn, denyBtn);
-            singleBookingBox.getChildren().add(requestLine);
+                acceptBtn.setOnAction(e -> {
+                    boolean success = Main.db.updateBookingAcceptedStatus(req.getId(), "Yes");
+                    if (success) {
 
-            bookingList.getChildren().add(singleBookingBox);
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Success");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Booking has been accepted");
+                        alert.showAndWait();
+
+                        messageArea.getChildren().clear();
+                        messageArea.getChildren().add(createBookingRequestsContent());
+                    } else {
+                        alertForgot("Failed to accept booking");
+                    }
+                });
+
+                denyBtn.setOnAction(e -> {
+                    boolean success = Main.db.updateBookingAcceptedStatus(req.getId(), "Denied");
+                    if (success) {
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Success");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Booking has been denied");
+                        alert.showAndWait();
+
+                        messageArea.getChildren().clear();
+                        messageArea.getChildren().add(createBookingRequestsContent());
+                    } else {
+                        alertForgot("Failed to deny booking");
+                    }
+                });
+
+                HBox actionBox = new HBox(10, acceptBtn, denyBtn);
+                actionBox.setAlignment(Pos.CENTER_RIGHT);
+
+                singleRequestBox.getChildren().addAll(requestLabel, actionBox);
+                bookingList.getChildren().add(singleRequestBox);
+            }
         }
 
         VBox.setVgrow(bookingList, Priority.ALWAYS);
-
         bookingsBox.getChildren().addAll(header, bookingList);
+
         return bookingsBox;
     }
 
     // ____________________________________________________
 
-    private Node displayActiveBookinsCancel() {
+    private Node displayActiveBookingsCancel() {
         VBox bookingsBox = new VBox(15);
         bookingsBox.setPadding(new Insets(10));
         bookingsBox.setPrefHeight(480);
         bookingsBox.setPrefWidth(Double.MAX_VALUE);
-        bookingsBox.setStyle("-fx-background-color: #e1e1e1; -fx-background-radius: 0 20px 20px 0; -fx-border-radius: 0 20px 20px 0; -fx-border-color: #ccc; -fx-border-width: 1px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 4);");
+        bookingsBox.setStyle("-fx-background-color: #e1e1e1; -fx-background-radius: 0 20px 20px 0; " +
+                "-fx-border-radius: 0 20px 20px 0; -fx-border-color: #ccc; -fx-border-width: 1px; " +
+                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 4);");
 
-        Label header = new Label("Cancel booking");
-        header.setStyle("-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #4d4d4d; -fx-border-width: 0 0 2px 0; -fx-border-color: orange;");
+        Label header = new Label("Cancel Booking");
+        header.setStyle("-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #4d4d4d; " +
+                "-fx-border-width: 0 0 2px 0; -fx-border-color: orange;");
 
         VBox bookingList = new VBox(10);
 
-        String[] bookings = {
-                "Haircut with Jonas - 26.03 - 14:00",
-                "Fade with Andreas - 27.03 - 11:30",
-                "Beard trim with Carl Emil - 28.03 - 16:00"
-        };
+        int currentUserId = Main.db.getStudentID(username);
+        System.out.println("Current student_id for username " + username + ": " + currentUserId);
 
-        for (String booking : bookings) {
-            VBox singleBookingBox = new VBox();
-            singleBookingBox.setPadding(new Insets(10));
-            singleBookingBox.setStyle("-fx-background-color: #d0d0d0; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0.3, 0, 3); -fx-background-radius: 15; -fx-border-color: #dddddd; -fx-border-radius: 15;");
+        List<BookingCard> bookings = Main.db.getBookingCardsForUserWithAcceptedStatus(currentUserId, "Yes");
 
-            HBox bookingLine = new HBox(10);
-            bookingLine.setAlignment(Pos.CENTER_LEFT);
+        if (bookings.isEmpty()) {
+            Label noBookingsLabel = new Label("No active bookings.");
+            noBookingsLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: #666;");
+            bookingList.getChildren().add(noBookingsLabel);
+        } else {
+            for (BookingCard booking : bookings) {
+                HBox singleBookingBox = new HBox(10);
+                singleBookingBox.setPadding(new Insets(10));
+                singleBookingBox.setStyle("-fx-background-color: #d0d0d0; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0.3, 0, 3); " +
+                        "-fx-background-radius: 15; -fx-border-color: #dddddd; -fx-border-radius: 15;");
+                singleBookingBox.setAlignment(Pos.CENTER_LEFT);
 
-            Label bookingLabel = new Label(booking);
-            bookingLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #444;");
-            HBox.setHgrow(bookingLabel, Priority.ALWAYS);
-            bookingLabel.setMaxWidth(Double.MAX_VALUE);
+                // Format display text for booking
+                String bookingText = "Date: " + booking.getDate() + " time: " + booking.getTime();
+                Label bookingLabel = new Label(bookingText);
+                bookingLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #444;");
+                HBox.setHgrow(bookingLabel, Priority.ALWAYS);
+                bookingLabel.setMaxWidth(Double.MAX_VALUE);
 
-            Button denyBtn = new Button("Cancel");
-            denyBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; " +
-                    "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+                Button cancelBtn = new Button("Cancel");
+                cancelBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; " +
+                        "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
 
-            // Hover
-            Animation.addHoverScaleEffectMore(denyBtn);
+                Animation.addHoverScaleEffectMore(cancelBtn);
 
-            denyBtn.setOnAction(e -> {
-                String bookingInfo = bookingLabel.getText();
+                cancelBtn.setOnAction(e -> {
+                    Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+                    confirm.setTitle("Confirm Cancellation");
+                    confirm.setHeaderText(null);
+                    confirm.setContentText("Are you sure you want to cancel this booking?");
 
-                // Extract booking details
-                String[] parts = bookingInfo.split(" - ");
-                String studentName = parts[0].split(" with ")[1];
-                String date = parts[1];
-                String time = parts[2];
+                    Optional<ButtonType> result = confirm.showAndWait();
 
-                // Confirm cancellation
-                Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-                confirm.setTitle("Confirm Cancellation");
-                confirm.setHeaderText(null);
-                confirm.setContentText("Are you sure you want to cancel this booking?");
+                    if (result.isPresent() && result.get() == ButtonType.OK) {
+                        // FIX DET HER HVA FUCK
+                        boolean success = Main.db.updateBookingAcceptedStatus(Request.getId(), "Denied");
 
-                Optional<ButtonType> result = confirm.showAndWait();
+                        if (success) {
+                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                            alert.setTitle("Success");
+                            alert.setHeaderText(null);
+                            alert.setContentText("Booking has been cancelled");
+                            alert.showAndWait();
 
-                if (result.isPresent() && result.get() == ButtonType.OK) {
-                    // Delete booking from database
-                    boolean success = Main.db.executeUpdate("DELETE FROM bookings WHERE student_id = (SELECT id FROM users WHERE username = '" +
-                            studentName + "') AND date = '" + date + "' AND time = '" + time + "'");
-
-                    if (success) {
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle("Success");
-                        alert.setHeaderText(null);
-                        alert.setContentText("Booking has been cancelled");
-                        alert.showAndWait();
-
-                        // Refresh the booking list
-                        messageArea.getChildren().clear();
-                        messageArea.getChildren().add(displayActiveBookinsCancel());
-                    } else {
-                        alertForgot("Failed to cancel booking");
+                            messageArea.getChildren().clear();
+                            messageArea.getChildren().add(displayActiveBookingsCancel());
+                        } else {
+                            alertForgot("Failed to cancel booking");
+                        }
                     }
-                }
-            });
+                });
 
-            bookingLine.getChildren().addAll(bookingLabel, denyBtn);
-            singleBookingBox.getChildren().add(bookingLine);
-
-            bookingList.getChildren().add(singleBookingBox);
+                singleBookingBox.getChildren().addAll(bookingLabel, cancelBtn);
+                bookingList.getChildren().add(singleBookingBox);
+            }
         }
 
         VBox.setVgrow(bookingList, Priority.ALWAYS);
-
         bookingsBox.getChildren().addAll(header, bookingList);
         return bookingsBox;
     }
@@ -2619,7 +2601,7 @@ public class Menu extends Pane {
             String p = "500kr";
 
             card.setOnMouseClicked(event -> {
-                DialogBox.displayBook(dateStr,p, timeStr, convertToStars(4));
+                DialogBox.displayBook(dateStr,p, timeStr, convertToStars(4), username, BookingCard.getStudentID());
             });
 
             Animation.addHoverScaleEffectVBox(card);
@@ -2944,7 +2926,7 @@ public class Menu extends Pane {
             String p = "500kr";
 
             card.setOnMouseClicked(event -> {
-                DialogBox.displayBook(dateStr,p, timeStr, convertToStars(4));
+                DialogBox.displayBook(dateStr,p, timeStr, convertToStars(4), username, BookingCard.getStudentID());
             });
 
             Animation.addHoverScaleEffectVBox(card);
@@ -3061,6 +3043,7 @@ public class Menu extends Pane {
 
             String d = "26.03";
             String t = "15:00";
+            String student = "student";
 
             // Labels
             Label date = new Label(d);
@@ -3076,10 +3059,10 @@ public class Menu extends Pane {
             SVGPath wave = new SVGPath();
             wave.setContent(
                     "M0 30 " +
-                            "C26 10, 26 50, 52 30 " +
-                            "C78 10, 78 50, 104 30 " +
-                            "C130 10, 130 50, 158 30 " +
-                            "V50 H0 Z"
+                    "C26 10, 26 50, 52 30 " +
+                    "C78 10, 78 50, 104 30 " +
+                    "C130 10, 130 50, 158 30 " +
+                    "V50 H0 Z"
             );
 
             DropShadow dropShadow = new DropShadow();
@@ -3111,7 +3094,7 @@ public class Menu extends Pane {
             tipButton.setPadding(new Insets(5, 10, 5, 10));
             VBox.setMargin(tipButton, new Insets(0, 0, 20, 0));
 
-            tipButton.setOnAction(e -> DialogBox.displayTip(d, t));
+            tipButton.setOnAction(e -> DialogBox.displayTip(d, t, username, student));
 
             // TipButton :hover
             Animation.addHoverScaleEffect(tipButton);
@@ -5307,7 +5290,10 @@ public class Menu extends Pane {
 
         if (result.isPresent() && result.get().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
 
+            // Fix for Active Bookings.. Hvem fuck sætter LocalDate til TEXT i databasen altså...
             LocalDate selectedDate = datePicker.getValue();
+            String dateString = selectedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
             String selectedTime = timePicker.getValue();
             String selectedAddress = addressField.getText();
 
@@ -5328,13 +5314,14 @@ public class Menu extends Pane {
                 return;
             }
 
-            int currentStudent_id = Main.db.getUserID(username);
+            int currentStudent_id = Main.db.getStudentID(username);
             int hairtypeId = Main.db.getOrCreateHairType(hairType, hairColor, hairLength, gender);
 
             String paid = "No";
             String accepted = "No";
+            String customer = "Null";
 
-            BookingCard card = new BookingCard(selectedDate, selectedTime, selectedAddress, hairtypeId, isExam, currentStudent_id, paid, accepted);
+            BookingCard card = new BookingCard(dateString, selectedTime, selectedAddress, hairtypeId, isExam, currentStudent_id, paid, accepted, customer);
             card.createBooking();
 
         }
