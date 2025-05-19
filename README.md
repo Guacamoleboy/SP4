@@ -34,33 +34,33 @@ ____________________
 • Skal accepteres af skolen før de kan oprette bookings\
 • Slette booking\
 • Overview over bookings, drikkepenge mm.\
-• Settings menu med ændring af farver mm.\
+• Settings menu med ændring af farver mm.
 
 ## Customer
-• Skal kunne booke et klip.
-• Egen profil
-• Rate et klip
-• Give drikkepenge (tips)
-• Betale på forhånd
-• Afmelde booking
+• Skal kunne booke et klip.\
+• Egen profil\
+• Rate et klip\
+• Give drikkepenge (tips)\
+• Betale på forhånd\
+• Afmelde booking\
 • Settings menu med ændring af farver mm.
 
 ## School
-• Skal kunne oprette lærer
-• Skal kunne oprette elever
-• Skal kunne skrive med folk (messages)
-• Skal kunne ændre i deres egen profil
+• Skal kunne oprette lærer\
+• Skal kunne oprette elever\
+• Skal kunne skrive med folk (messages)\
+• Skal kunne ændre i deres egen profil\
 • Overblik over lærer samt sletning af disse
 
 ## Teacher
-• Skal kunne vurdere et klip (Eksamen) med karakter, kommentar osv.
-• Skal kunne oprette og slette elever
-• Skal kunne ændre i deres egen profil
+• Skal kunne vurdere et klip (Eksamen) med karakter, kommentar osv.\
+• Skal kunne oprette og slette elever\
+• Skal kunne ændre i deres egen profil\
 • Skal kunne lave forfaldende arbejde der tilhører en lærer
 
 ## Support
-• Skal have fuld kontrol over hhv customer, student, school og teacher.
-• Skal kunne svare på tickets (anmeldelser)
+• Skal have fuld kontrol over hhv customer, student, school og teacher.\
+• Skal kunne svare på tickets (anmeldelser)\
 • Skal have en admin menu med diverse relevante funktioner
 
 Hvorfor Java?
