@@ -22,6 +22,7 @@ public class SideMenu extends Pane {
     private int sceneWidth;
     private int sceneHeight;
     private String role;
+    private String username;
 
     // OBJECT //
     private Menu menu;
@@ -30,12 +31,13 @@ public class SideMenu extends Pane {
 
     // ____________________________________________________
 
-    public SideMenu(int sceneWidth, int sceneHeight, Menu menu, String role) {
+    public SideMenu(int sceneWidth, int sceneHeight, Menu menu, String role, String username) {
 
         this.sceneWidth = sceneWidth;
         this.sceneHeight = sceneHeight;
         this.menu = menu;
         this.role = role;
+        this.username = username;
 
         // Display setup
         this.setPrefWidth(sceneWidth);
@@ -175,9 +177,10 @@ public class SideMenu extends Pane {
         Button btn2 = imageButton("/assets/icons/icon1.png", 30, 30, 50); // Available Bookings
         Button btn3 = imageButton("/assets/icons/icon2.png", 30, 30, 50); // Messages
         Button btn4 = imageButton("/assets/icons/icon9.png", 30, 30, 50); // Exam
+        Button btn5 = imageButton("/assets/icons/icon16.png", 30, 30, 50); // Menu
 
         // Top VBox addALl
-        topBox.getChildren().addAll(profileBtn, btn1, btn2, btn3, btn4);
+        topBox.getChildren().addAll(profileBtn, btn1, btn2, btn3, btn4, btn5);
 
         // New VBox for Settings to be at the bottom
         VBox bottomBox = new VBox();
@@ -190,13 +193,37 @@ public class SideMenu extends Pane {
 
         // Actions
         btn1.setOnAction(e -> {
-            menu.setHeaderTitle("Book");
+            menu.getChildren().clear();
+            menu.getChildren().add(menu.displayBookingsStudent());
+            menu.getChildren().add(menu.displayBookingCardStudent(Main.db.getUserID(username)));
+            menu.getChildren().add(menu.displayExamMenu());
+            menu.getChildren().add(menu.displayExamCardStudent());
+        });
+
+        btn2.setOnAction(e -> {
+            menu.getChildren().clear();
+            menu.getChildren().add(menu.displayAvailableBookings());
+            menu.getChildren().add(menu.displayBookingCard());
+            menu.getChildren().add(menu.displayExamMenu());
+            menu.getChildren().add(menu.displayExamCard());
+        });
+
+        btn3.setOnAction(e -> {
+            menu.setHeaderTitle("Messages");
             menu.getChildren().clear();
             menu.getChildren().add(menu.displayHeader());
-            menu.getChildren().add(menu.displayExamHeader("Exam"));
-            menu.getChildren().add(menu.displayComboBox());
-            menu.getChildren().add(menu.displayAvailableBookings());
-            menu.getChildren().add(menu.displayExamBookings());
+            menu.getChildren().add(menu.displayMyMessages());
+        });
+
+        btn4.setOnAction(e -> {
+            menu.getChildren().clear();
+        });
+
+        btn5.setOnAction(e -> {
+            menu.setHeaderTitle("For me");
+            menu.getChildren().clear();
+            menu.getChildren().add(menu.displayHeader());
+            menu.getChildren().add(menu.displayStudentBookings());
         });
 
         settingsBtn.setOnAction(e -> {
@@ -214,6 +241,10 @@ public class SideMenu extends Pane {
 
         // Hover
         Animation.addHoverScaleEffectMore(btn1);
+        Animation.addHoverScaleEffectMore(btn2);
+        Animation.addHoverScaleEffectMore(btn3);
+        Animation.addHoverScaleEffectMore(btn4);
+        Animation.addHoverScaleEffectMore(btn5);
         Animation.addHoverScaleEffectMore(profileBtn);
         Animation.addHoverScaleEffectMore(settingsBtn);
 
@@ -277,6 +308,7 @@ public class SideMenu extends Pane {
             menu.setHeaderTitle("Messages");
             menu.getChildren().clear();
             menu.getChildren().add(menu.displayHeader());
+            menu.getChildren().add(menu.displayMyMessages());
         });
 
         settingsBtn.setOnAction(e -> {
@@ -324,7 +356,7 @@ public class SideMenu extends Pane {
         // Top Buttons Creating
         Button profileBtn = imageButton("/assets/profile/person1.png", 50, 50, 60);
         Button btn1 = imageButton("/assets/icons/icon7.png", 30, 30, 50); // ADMIN AF ELEVER
-        Button btn2 = imageButton("/assets/icons/icon5.png", 30, 30, 50); // RATING AF EKSAMENS BOOKING
+        Button btn2 = imageButton("/assets/icons/icon9.png", 30, 30, 50); // RATING AF EKSAMENS BOOKING
         Button btn3 = imageButton("/assets/icons/icon1.png", 30, 30, 50); // OPRET TIDER FOR ELEVER (?)
         Button btn4 = imageButton("/assets/icons/icon2.png", 30, 30, 50); // BESKEDER
 
@@ -342,27 +374,32 @@ public class SideMenu extends Pane {
 
         // Actions
         btn1.setOnAction(e -> {
-            menu.setHeaderTitle("Admin");
+            menu.setHeaderTitle("Teacher Menu");
             menu.getChildren().clear();
             menu.getChildren().add(menu.displayHeader());
+            menu.getChildren().add(menu.displayTeacherAdmin());
         });
 
         btn2.setOnAction(e -> {
             menu.setHeaderTitle("Rating");
             menu.getChildren().clear();
             menu.getChildren().add(menu.displayHeader());
+            menu.getChildren().add(menu.displayRating());
         });
 
         btn3.setOnAction(e -> {
-            menu.setHeaderTitle("Booking");
             menu.getChildren().clear();
-            menu.getChildren().add(menu.displayHeader());
+            menu.getChildren().add(menu.displayAvailableBookings());
+            menu.getChildren().add(menu.displayBookingCard());
+            menu.getChildren().add(menu.displayExamMenu());
+            menu.getChildren().add(menu.displayExamCard());
         });
 
         btn4.setOnAction(e -> {
-            menu.setHeaderTitle("Beskeder");
+            menu.setHeaderTitle("Messages");
             menu.getChildren().clear();
             menu.getChildren().add(menu.displayHeader());
+            menu.getChildren().add(menu.displayMyMessages());
         });
 
         settingsBtn.setOnAction(e -> {
@@ -427,15 +464,17 @@ public class SideMenu extends Pane {
 
         // Actions
         btn1.setOnAction(e -> {
-            menu.setHeaderTitle("Admin");
+            menu.setHeaderTitle("School Admin");
             menu.getChildren().clear();
             menu.getChildren().add(menu.displayHeader());
+            menu.getChildren().add(menu.displaySchoolAdmin());
         });
 
         btn2.setOnAction(e -> {
             menu.setHeaderTitle("Messages");
             menu.getChildren().clear();
             menu.getChildren().add(menu.displayHeader());
+            menu.getChildren().add(menu.displayMyMessages());
         });
 
         settingsBtn.setOnAction(e -> {

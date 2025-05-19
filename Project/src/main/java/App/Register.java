@@ -286,4 +286,5 @@ public class Register extends Pane {
         this.email = emailField.getText();
         return this.email;
     }
+
 }

@@ -19,6 +19,8 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 import static App.UpdateChecker.*;
@@ -192,7 +194,7 @@ public class Login extends Pane {
 
             Menu menu = new Menu(username, password, 800, 600);
             Support.setMenu(menu);
-            SideMenu sm = new SideMenu(100, 600, menu, Main.db.getRole(username));
+            SideMenu sm = new SideMenu(100, 600, menu, Main.db.getRole(username), username); // Fix carl-emil
 
             sm.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
             sm.getStyleClass().add("sideMenu-color");
@@ -273,6 +275,10 @@ public class Login extends Pane {
     // ____________________________________________________
 
     public void goToLoginPage(Stage stage){
+        LocalDateTime lastOnline = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        Main.db.updateLastOnline(username, formatter.format(lastOnline));
+        Main.db.updateStatus(username, "Offline");
         Login login = new Login(600, 600);
         StartInfo si = new StartInfo(300, 600);
 

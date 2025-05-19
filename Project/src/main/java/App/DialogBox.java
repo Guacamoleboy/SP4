@@ -183,13 +183,11 @@ public class DialogBox extends Pane {
 
     }
 
-    public static String chooseLanguage(String Language){
-
+    public static String chooseLanguage(String currentLanguage) {
         Dialog<ButtonType> tip = new Dialog<>();
         tip.setTitle("Choose language");
 
-        // Header
-        Label headerLabel = new Label("choose a different language.. Your current language is\n\n"+Language);
+        Label headerLabel = new Label("Choose a different language.. Your current language is\n\n" + currentLanguage);
         headerLabel.setTextAlignment(TextAlignment.CENTER);
         headerLabel.setAlignment(Pos.CENTER);
         headerLabel.setWrapText(true);
@@ -200,24 +198,31 @@ public class DialogBox extends Pane {
         tip.getDialogPane().setHeader(headerBox);
 
         ComboBox<String> languages = new ComboBox<>();
-        languages.setPromptText("Select you language");
+        languages.setPromptText("Select your language");
         languages.getItems().addAll("Español", "English", "Dansk");
 
         VBox contentBox = new VBox(10, languages);
         contentBox.setAlignment(Pos.CENTER);
         contentBox.setPadding(new Insets(10));
-        contentBox.setStyle("-fx-background-color: transparent;-fx-border-width: 0; -fx-background-radius: 25px; -fx-border-radius: 25px; -fx-border-insets: 0; -fx-background-insets: 0");
+        contentBox.setStyle("-fx-background-color: transparent;-fx-border-width: 0; -fx-background-radius: 25px; -fx-border-radius: 25px;");
 
         tip.getDialogPane().setContent(contentBox);
 
-        // Buttons
-        ButtonType payButtonType = new ButtonType("Change language", ButtonBar.ButtonData.OK_DONE);
-        tip.getDialogPane().getButtonTypes().addAll(payButtonType, ButtonType.CANCEL);
+        ButtonType changeButtonType = new ButtonType("Change language", ButtonBar.ButtonData.OK_DONE);
+        tip.getDialogPane().getButtonTypes().addAll(changeButtonType, ButtonType.CANCEL);
 
-        // Show and get result
         Optional<ButtonType> result = tip.showAndWait();
-        return languages.getValue().trim();
+
+        if (result.isPresent() && result.get() == changeButtonType) {
+            String selected = languages.getValue();
+            if (selected != null && !selected.trim().isEmpty()) {
+                return selected.trim();
+            }
+        }
+
+        return currentLanguage;
     }
+
 
     // ____________________________________________________
 

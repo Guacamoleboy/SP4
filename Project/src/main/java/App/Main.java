@@ -38,7 +38,7 @@ public class Main extends Application { // Client class
     private static Login login = new Login(600, 600);
     private StartInfo startinfo = new StartInfo(300, 600);
     public static DBConnector db;
-    public static String lang = "Spanish";
+    public static String lang = "Español";
 
     // ____________________________________________________
 
