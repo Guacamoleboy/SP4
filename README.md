@@ -23,7 +23,7 @@ Der er yderligere funktioner såsom profil, admin menuer, support, beskeder, dri
 
 Vi tilbyder altså en komplet løsning til et problem som har eksisteret i MANGE år.
 
-Funktioner pr bruger
+# Funktioner pr bruger
 ____________________
 
 ## Student
@@ -62,7 +62,7 @@ ____________________
 • Skal kunne svare på tickets (anmeldelser)\
 • Skal have en admin menu med diverse relevante funktioner
 
-Hvorfor Java?
+# Hvorfor Java?
 _____________
 
 Anno 2025 ville det give mere mening af lave det som en hjemmeside enten i ReactJS eller via helt normal MySQL, HTML, CSS, JS, PHP mm.
