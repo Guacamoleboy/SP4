@@ -9,7 +9,7 @@ public class BookingCard  {
     private LocalDate date;
     private String time;
     private String address;
-    private int review;
+    private double review;
     private int hairtype_id;
     private boolean exam;
     private int student_id;
@@ -23,10 +23,11 @@ public class BookingCard  {
         this.date = date;
         this.time = time;
         this.address = address;
-        this.review = review;
         this.hairtype_id = hairtype_id;
         this.exam = exam;
-
+        String username = Main.db.getUserName(student_id);
+        Profile user = new Profile(username);
+        this.review = user.getRating();
     }
 
     // ____________________________________________________
@@ -63,6 +64,9 @@ public class BookingCard  {
 
     // ____________________________________________________
 
-    public int getReview() { return review; }
+    public double getReview() {
+        return this.review;
+    }
+
 
 } // Class end

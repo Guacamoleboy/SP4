@@ -167,17 +167,15 @@ public class Menu extends Pane {
 
     // ____________________________________________________
 
-    private void sendMessage() {
-        String message = messageField.getText().trim();
+    private void sendMessage(String message) {
+        System.out.println("Sends: " + currentChatPartner);
         if (message.isEmpty() || currentChatPartner == null) {
+            System.out.println("Something went wrong");
             return;
         }
-
+        System.out.println("HELLO?");
         if (Main.db.isConnected()) {
-            if (Main.db.saveMessage(username, currentChatPartner, message)) {
-                messageField.clear();
-                loadChatHistory(currentChatPartner);
-            }
+            Main.db.saveMessage(username, currentChatPartner, message);
         }
 
     }
@@ -219,6 +217,24 @@ public class Menu extends Pane {
         sidebar.setAlignment(Pos.TOP_LEFT);
         sidebar.setPadding(Insets.EMPTY);
         sidebar.setStyle("-fx-background-color: #696969; -fx-border-radius: 20 0 0 20; -fx-background-radius: 20 0 0 20;");
+
+        /*
+        INDLÆS BESKEDER SKAL LAVES HER
+        KAN IKKE TESTE FØR JEG FÅR MIN DATABASE TIL AT VIRKE....
+
+        ArrayList<String> persons = Main.db.loadYourMessages(username);
+        for (String person : persons) {
+            Button personButton = new Button(person);
+            personButton.getStyleClass().addAll("user-button");
+            personButton.setOnAction(e -> {
+                currentChatPartner = personButton.getText();
+                messageArea.getChildren().clear();
+                loadChatHistory(person);
+                sidebar.getChildren().add(personButton);
+            });
+        }*/
+        System.out.println("Lav indlæsning af beskeder på linje 221-235 under Menu.java (Metode er lavet!)");
+
 
         Button user1 = new Button("Jonas");
         Button user2 = new Button("Andreas");
@@ -267,6 +283,7 @@ public class Menu extends Pane {
                 messageArea.getChildren().add(
                         createMessageBubble(text, true, this.username, "Now")
                 );
+                sendMessage(messageInput.getText());
                 messageInput.clear();
             }
         });
@@ -278,6 +295,7 @@ public class Menu extends Pane {
         messageVBox.getChildren().add(messageHBox);
 
         user1.setOnAction(e -> {
+            currentChatPartner = user1.getText();
             messageArea.getChildren().clear();
             messageArea.getChildren().addAll(
                     createMessageBubble("Shit du lugtede forleden bro.. Det helt galt. Kom aldrig igen. Forstår du?", false, "Ebou", "10:15"),
@@ -2276,9 +2294,16 @@ public class Menu extends Pane {
         topMenu.getStyleClass().add("topMenu-vbox");
 
         //DETTE SKAL LAVES!
-        //if (BOOKINGS != null) {
+        /*ArrayList<ArrayList<String>> bookings = getBookings();
+        for (ArrayList<String> booking : bookings) {
+            Label dateLabel = new Label(booking.get(0));
+            Label timeLabel = new Label(booking.get(1));
+            Label placeLabel = new Label(booking.get(2));
+            Label studentLabel = new Label(booking.get(3));
+            double rating = Double.parseDouble(booking.get(4))
+            Label ratingLabel = new Label(convertToStars(rating));
+        }*/
 
-        //String stars = convertToStars(getRating());//getRating();
         String date = getDate();
         String time = getTime();
 
@@ -2286,7 +2311,7 @@ public class Menu extends Pane {
         Label timeLabel = new Label(time);
         Label placeLabel = new Label(getAdress());
         Label studentLabel = new Label(getStudentName());
-        Label ratingLabel = new Label(convertToStars(getRating()));
+        Label ratingLabel = new Label(convertToStars(user.getRating()));
         dateLabel.getStyleClass().add("card-text-header");
         timeLabel.getStyleClass().add("card-text");
         placeLabel.getStyleClass().add("card-text");
@@ -2624,7 +2649,7 @@ public class Menu extends Pane {
             String dateStr = booking.getDate();
             String timeStr = booking.getTime();
             String addressStr = booking.getAddress();
-            int ratingInt = booking.getReview(); // 0 if you haven't set up yet
+            double ratingInt = booking.getReview(); // 0 if you haven't set up yet
             String hairTypeStr = Main.db.getHairTypeSummary(booking.getHairtypeId()); // e.g., "Curly, Brown, Medium, Female"
 
             Label date = new Label(dateStr);
@@ -3188,7 +3213,7 @@ public class Menu extends Pane {
     public VBox displayWelcome(){
         VBox container = new VBox(20);
         container.setPadding(new Insets(20));
-
+        Main.db.updateStatus(username, "Online");
         Label header = new Label("Welcome, " + this.username + "!");
         header.setStyle(
                 "-fx-background-color: #4a4a4a;" +

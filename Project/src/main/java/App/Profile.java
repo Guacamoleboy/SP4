@@ -4,6 +4,9 @@ package App;
 // Import
 import javafx.scene.layout.Pane;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -25,6 +28,24 @@ public class Profile extends Pane {
         banned 6
         profile picture 7
         profileBanner 8
+        rolehex 9
+        hair_type_id 10
+        school_id 11
+        student_year 12
+        profile_picture 13
+        language 14
+        accepted 15
+        darkmode 16
+        lastonline 17
+        city 18
+        abtmeheader 19
+        abtmedesc 20
+        abtmefunfacts 21
+        phone 22
+        rating 23
+        social 24
+        contactheader 25
+        contactdesc 26
 
      */
 
@@ -103,24 +124,19 @@ public class Profile extends Pane {
     // ______________________________________
 
     public double getRating() {
-        System.out.println("RATING SKAL TILFØJES TIL DATABASEN!!!!!");
-        return 5.5;//Double.parseDouble(userData.get(11));
+        return Double.parseDouble(userData.get(23));
     }
 
     // ______________________________________
 
     public String getProfileAboutmeHeader() {
-        System.out.println("About me header Skal sættes ind i database!!!!");
-        return "Welcome to my page!";
+        return userData.get(19);
     }
 
     // ______________________________________
 
     public String getProfileAboutDescription() {
-        System.out.println("About me description Skal sættes ind i database!!!!");
-        String message = "Hi, I'm " + getUsername() + ". I love cutting hair and making people happy. " +
-                "Would you like to get farted on? I bet you do you sicko. Book me today or regret it forever!!";
-        return message;
+        return userData.get(20);
     }
 
     // ______________________________________
@@ -133,30 +149,49 @@ public class Profile extends Pane {
     // ______________________________________
 
     public String getFunFacts() {
-        System.out.println("About me fun facts Skal sættes ind i database!!!!");
-        String message = "A random fun fact that isnt fun at all...";
-        return message;
+        return userData.get(21);
     }
 
     // ______________________________________
 
     public String getLastOnline() {
-        System.out.println("Last online skal sættes ind i database!!!!");
-        String lastOnline = "";
-        if (getStatus().equals("online")) {
-            return "ONLINE";
+        if (getStatus().equalsIgnoreCase("online")) {
+            return "ONLINE NOW";
         }
-        Random random = new Random();
-        int randomInt = random.nextInt(24)+1;
-        lastOnline = randomInt + " hours ago";
-        return lastOnline;
+
+        String lastOnlineStr = userData.get(17);
+        LocalDateTime lastOnlineTime = LocalDateTime.parse(lastOnlineStr);
+        LocalDateTime now = LocalDateTime.now();
+
+        Duration duration = Duration.between(lastOnlineTime, now);
+        Period period = Period.between(lastOnlineTime.toLocalDate(), now.toLocalDate());
+
+        long years = period.getYears();
+        long months = period.getMonths();
+        long days = period.getDays();
+        long hours = duration.toHours();
+        long minutes = duration.toMinutes();
+        long seconds = duration.getSeconds();
+
+        if (years >= 1) {
+            return "Last online: " + years + (years == 1 ? " year" : " years") + " ago";
+        } else if (months >= 1) {
+            return "Last online: " + months + (months == 1 ? " month" : " months") + " ago";
+        } else if (days >= 1) {
+            return "Last online: " + days + (days == 1 ? " day" : " days") + " ago";
+        } else if (hours >= 1) {
+            return "Last online: " + hours + (hours == 1 ? " hour" : " hours") + " ago";
+        } else if (minutes >= 1) {
+            return "Last online: " + minutes + (minutes == 1 ? " minute" : " minutes") + " ago";
+        } else {
+            return "Last online: " + seconds + (seconds == 1 ? " second" : " seconds") + " ago";
+        }
     }
 
     // ______________________________________
 
     public String getCity() {
-        System.out.println("Get city skal sættes ind i database!!!!!");
-        return "Hillerød";
+        return userData.get(18);
     }
 
     // ______________________________________
@@ -165,13 +200,13 @@ public class Profile extends Pane {
         String link = "";
         switch (social.toLowerCase()) {
             case "instagram":
-                link = "https://www.instagram.com/";
+                link = "https://www.instagram.com/"+userData.get(24);
                 break;
             case "facebook":
-                link = "https://www.facebook.com/";
+                link = "https://www.facebook.com/"+userData.get(24);
                 break;
             case "github":
-                link = "https://github.com/";
+                link = "https://github.com/"+userData.get(24);
                 break;
         }
 
@@ -181,19 +216,19 @@ public class Profile extends Pane {
     // ______________________________________
 
     public String getContactHeader() {
-        return "I'm glad you're here.";
+        return userData.get(25);
     }
 
     // ______________________________________
 
     public String getContactDescription() {
-        return "Hi, I'm " + getUsername() + ". I love cutting hair and making people happy.\nNeed a fresh cut or just wanna talk? Reach out!";
+        return userData.get(26);
     }
 
     // ______________________________________
 
     public String getPhoneNumber() {
-        return "12345678";
+        return userData.get(22);
     }
 
     // ______________________________________

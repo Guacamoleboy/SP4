@@ -4,6 +4,7 @@ module com.example.project {
     requires java.desktop;
     requires java.mail;
     requires java.sql;
+    requires java.net.http;
 
     opens App to javafx.fxml;
     exports App;
