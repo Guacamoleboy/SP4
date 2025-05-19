@@ -254,13 +254,13 @@ public class DBConnector {
     }
     // ____________________________________________________
 
-    public ArrayList<String> loadYourMessages(String user1) {
+    public ArrayList<String> loadYourMessages(String user) {
         ArrayList<String> persons = new ArrayList<>();
         String query = "SELECT DISTINCT receiver FROM messages WHERE sender = ?";
 
         try {
             PreparedStatement statement = con.prepareStatement(query);
-            statement.setString(1, user1);
+            statement.setString(1, user);
             ResultSet rs = statement.executeQuery();
 
             while (rs.next()) {
