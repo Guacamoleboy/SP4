@@ -18,13 +18,15 @@ public class BookingCard  {
 
     // ____________________________________________________
 
-    public BookingCard(LocalDate date, String time, String address, int hairtype_id, boolean exam, int student_id) {
+    public BookingCard(LocalDate date, String time, String address, int hairtype_id, boolean exam, int student_id, String paid, String accepted) {
         this.student_id = student_id;
         this.date = date;
         this.time = time;
         this.address = address;
         this.hairtype_id = hairtype_id;
         this.exam = exam;
+        this.paid = paid;
+        this.accepted = accepted;
 
         String username = Main.db.getUserName(student_id);
 

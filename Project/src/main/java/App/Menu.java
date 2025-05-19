@@ -27,6 +27,7 @@ import java.net.URISyntaxException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import javafx.scene.layout.Priority;
@@ -197,7 +198,7 @@ public class Menu extends Pane {
 
     // ____________________________________________________
 
-    public VBox displayMyMessages() {
+    public VBox displayMyMessages(String username) {
 
         VBox messageVBox = new VBox();
         messageVBox.setLayoutX(20);
@@ -219,17 +220,6 @@ public class Menu extends Pane {
         sidebar.setPadding(Insets.EMPTY);
         sidebar.setStyle("-fx-background-color: #696969; -fx-border-radius: 20 0 0 20; -fx-background-radius: 20 0 0 20;");
 
-        Button user1 = new Button("Jonas");
-        Button user2 = new Button("Andreas");
-        Button user3 = new Button("Ebou");
-        Button user4 = new Button("Carl-Emil");
-
-        sidebar.getChildren().addAll(user1, user2, user3, user4);
-        user1.getStyleClass().addAll("user-button", "user-button1");
-        user2.getStyleClass().add("user-button");
-        user3.getStyleClass().add("user-button");
-        user4.getStyleClass().add("user-button");
-
         VBox rightContent = new VBox(10);
         rightContent.setPrefWidth(760 * 0.74);
         rightContent.setAlignment(Pos.TOP_LEFT);
@@ -240,7 +230,6 @@ public class Menu extends Pane {
         messageArea.setPadding(new Insets(20));
         messageArea.setAlignment(Pos.TOP_LEFT);
         messageArea.setStyle("-fx-background-color: transparent;");
-
 
         ScrollPane scrollPane = new ScrollPane(messageArea);
         scrollPane.setFitToWidth(true);
@@ -276,19 +265,17 @@ public class Menu extends Pane {
         sendButton.setGraphic(sendIconView);
         sendButton.setStyle("-fx-background-color: orange; -fx-border-radius: 20px; -fx-background-radius: 20px; -fx-background-insets: 0; -fx-border-insets: 0; -fx-border-width: 1.5px; -fx-border-color: rgba(0,0,0,0.5); -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0.3, 0, 2);");
 
-        // Fixes update issues with scrollpane layout
-        messageArea.heightProperty().addListener((obs, oldVal, newVal) -> {
-            scrollPane.setVvalue(1.0);
-        });
+        messageArea.heightProperty().addListener((obs, oldVal, newVal) -> scrollPane.setVvalue(1.0));
 
-        // Creates new bubble
+        final String[] currentChatPartner = {null};
+
         sendButton.setOnAction(e -> {
             String text = messageInput.getText().trim();
-            if (!text.isEmpty()) {
+            if (!text.isEmpty() && currentChatPartner[0] != null) {
                 messageArea.getChildren().add(
-                        createMessageBubble(text, true, this.username, "Now")
+                        createMessageBubble(text, true, username, "Now")
                 );
-                sendMessage(messageInput.getText());
+                Main.db.saveMessage(username, currentChatPartner[0], text);
                 messageInput.clear();
                 scrollPane.layout();
                 scrollPane.setVvalue(1.0);
@@ -296,56 +283,51 @@ public class Menu extends Pane {
         });
 
         inputArea.getChildren().addAll(messageInput, sendButton);
-
         rightContent.getChildren().addAll(scrollPane, inputArea);
         VBox.setVgrow(scrollPane, Priority.ALWAYS);
-
         messageHBox.getChildren().addAll(sidebar, rightContent);
         messageVBox.getChildren().add(messageHBox);
 
-        user1.setOnAction(e -> {
-            currentChatPartner = user1.getText();
-            messageArea.getChildren().clear();
-            messageArea.getChildren().addAll(
-                    createMessageBubble("Shit du lugtede forleden bro.. Det helt galt. Kom aldrig igen. Forstår du?", false, "Ebou", "10:15"),
-                    createMessageBubble("My bad nigga. Jeg havde lort i numsen. Skal nok gå i bad næste gang.", true,"Jonas", "10:16"),
-                    createMessageBubble("Nigga what? Yous 20 and don't know how to wipe? Det low key crazy. Men fair nok. Wipe lige næste gang. Ses!", false,"Ebou", "10:17")
-            );
-            scrollPane.layout();
-            scrollPane.setVvalue(1.0);
-        });
+        // Load chat partners dynamically
+        ArrayList<String> chatPartners = Main.db.loadYourMessages(username);
 
-        user2.setOnAction(e -> {
-            messageArea.getChildren().clear();
-            messageArea.getChildren().addAll(
-                    createMessageBubble("Det her er en tekst. Forstår du? Det tror jeg ikke du gør..", false, "Jonas", "10:15"),
-                    createMessageBubble("Det ren GG..", true,"Andreas", "10:16"),
-                    createMessageBubble("Nigga what?", false,"Jonas", "10:17")
-            );
-            scrollPane.layout();
-            scrollPane.setVvalue(1.0);
-        });
+        for (int i = 0; i < chatPartners.size(); i++) {
+            String partner = chatPartners.get(i);
+            Button userButton = new Button(partner);
 
-        user3.setOnAction(e -> {
-            messageArea.getChildren().clear();
-            messageArea.getChildren().addAll(
-                    createMessageBubble("Shit jeg er bare ikke ham jo..", false, "Jonas", "10:15"),
-                    createMessageBubble("Fax lil bro. Straight up fax. Ong no cap.", true,"Ebou", "10:16")
-            );
-            scrollPane.layout();
-            scrollPane.setVvalue(1.0);
-        });
+            if (i == 0) {
+                userButton.getStyleClass().addAll("user-button", "user-button1");
+            } else {
+                userButton.getStyleClass().add("user-button");
+            }
 
-        user4.setOnAction(e -> {
-            messageArea.getChildren().clear();
-            messageArea.getChildren().addAll(
-                    createMessageBubble("Hvad er dit navn", false, "Jonas", "10:15"),
-                    createMessageBubble("Carl Emil uden bindesteg din idiot.. Forstår du? Det var dog utroligt. Jeg er lige her jo!", true,"Carl Emil", "10:16"),
-                    createMessageBubble("lol. Muted.", false,"Jonas", "10:17")
-            );
-            scrollPane.layout();
-            scrollPane.setVvalue(1.0);
-        });
+            sidebar.getChildren().add(userButton);
+
+            userButton.setOnAction(ev -> {
+                currentChatPartner[0] = partner;
+                messageArea.getChildren().clear();
+
+                ResultSet rs = Main.db.getMessages(username, partner);
+                try {
+                    while (rs != null && rs.next()) {
+                        String sender = rs.getString("sender");
+                        String content = rs.getString("content");
+                        String fullTimestamp = rs.getString("timestamp");
+                        String timeOnly = fullTimestamp.substring(11, 16); // Array index mellem 11 og 16 altså 19:06 (5 values)
+
+                        boolean isSender = sender.equals(username);
+                        messageArea.getChildren().add(
+                                createMessageBubble(content, isSender, sender, timeOnly)
+                        );
+                    }
+                } catch (SQLException ex) {
+                    System.out.println("Error loading messages: " + ex.getMessage());
+                }
+
+                scrollPane.layout();
+                scrollPane.setVvalue(1.0);
+            });
+        }
 
         return messageVBox;
     }
@@ -788,7 +770,7 @@ public class Menu extends Pane {
 
         setting3.setOnAction(e -> {
             messageArea.getChildren().clear();
-            messageArea.getChildren().add(createTipsContent());
+            messageArea.getChildren().add(createTipsContent(username));
         });
 
         return settingsVBox;
@@ -796,9 +778,10 @@ public class Menu extends Pane {
 
     // ____________________________________________________
 
-    private Node createTipsContent() {
+    private Node createTipsContent(String username) {
+
         VBox tipsBox = new VBox(15);
-        tipsBox.setPadding(new Insets(10, 10, 10, 10));
+        tipsBox.setPadding(new Insets(10));
         tipsBox.setPrefHeight(480);
         tipsBox.setPrefWidth(Double.MAX_VALUE);
         tipsBox.setStyle("-fx-background-color: #e1e1e1; -fx-background-radius: 0 20px 20px 0; -fx-border-radius: 0 20px 20px 0; -fx-border-color: #ccc; -fx-border-width: 1px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 4);");
@@ -806,18 +789,16 @@ public class Menu extends Pane {
         Label header = new Label("Recent tips");
         header.setStyle("-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #4d4d4d; -fx-border-width: 0 0 2px 0; -fx-border-color: orange;");
 
-        // Tip list container
         VBox tipList = new VBox(10);
 
-        String[] comments = {
-                "Tak for sidst!",
-                "Slap af en fade bro! :fire:",
-                "Du fuckede op, men respekt nok. Du får lige lidt."
-        };
-        String[] amounts = { "$50", "$30", "$75" };
+        // Get tips from DB
+        List<Tip> tips = Main.db.getTipsForUser(username);
 
-        for (int i = 0; i < comments.length; i++) {
+        double totalTips = 0;
+        double thisMonthTips = 0;
+        YearMonth currentMonth = YearMonth.now();
 
+        for (Tip tip : tips) {
             VBox singleTipBox = new VBox();
             singleTipBox.setPadding(new Insets(10));
             singleTipBox.setStyle("-fx-background-color: #d0d0d0; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0.3, 0, 3); -fx-background-radius: 15; -fx-border-color: #dddddd; -fx-border-radius: 15;");
@@ -825,10 +806,10 @@ public class Menu extends Pane {
             HBox tipLine = new HBox();
             tipLine.setAlignment(Pos.CENTER_LEFT);
 
-            Label commentLabel = new Label(comments[i]);
+            Label commentLabel = new Label(tip.comment != null ? tip.comment : "(no comment)");
             commentLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #444;");
 
-            Label amountLabel = new Label(amounts[i]);
+            Label amountLabel = new Label("$" + String.format("%.2f", tip.amount));
             amountLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #41bd25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0.3, 0, 1);");
 
             HBox.setHgrow(commentLabel, Priority.ALWAYS);
@@ -838,6 +819,8 @@ public class Menu extends Pane {
             singleTipBox.getChildren().add(tipLine);
 
             tipList.getChildren().add(singleTipBox);
+
+            totalTips += tip.amount;
         }
 
         VBox.setVgrow(tipList, Priority.ALWAYS);
@@ -852,7 +835,7 @@ public class Menu extends Pane {
         totalTipsBox.setStyle("-fx-background-color: #e0ffe0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0.3, 0, 3);");
         Label totalLabel = new Label("Total Tips");
         totalLabel.setStyle("-fx-font-weight: bold;");
-        Label totalAmount = new Label("$155");
+        Label totalAmount = new Label("$" + String.format("%.2f", totalTips));
         totalTipsBox.getChildren().addAll(totalLabel, totalAmount);
 
         VBox monthTipsBox = new VBox();
@@ -861,7 +844,7 @@ public class Menu extends Pane {
         monthTipsBox.setStyle("-fx-background-color: #e0f7ff; -fx-border-radius: 8; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0.3, 0, 3);");
         Label monthLabel = new Label("This Month");
         monthLabel.setStyle("-fx-font-weight: bold;");
-        Label monthAmount = new Label("$80");
+        Label monthAmount = new Label("$" + String.format("%.2f", thisMonthTips));
         monthTipsBox.getChildren().addAll(monthLabel, monthAmount);
 
         HBox.setHgrow(totalTipsBox, Priority.ALWAYS);
@@ -871,7 +854,6 @@ public class Menu extends Pane {
 
         summaryBox.getChildren().addAll(totalTipsBox, monthTipsBox);
 
-        // Add all to main VBox
         tipsBox.getChildren().addAll(header, tipList, summaryBox);
         return tipsBox;
     }
@@ -5179,8 +5161,8 @@ public class Menu extends Pane {
         Image plusIcon = new Image(getClass().getResource("/assets/icons/icon20.png").toExternalForm());
 
         ImageView plusView = new ImageView(plusIcon);
-        plusView.setFitWidth(20);
-        plusView.setFitHeight(20);
+        plusView.setFitWidth(25);
+        plusView.setFitHeight(25);
 
         // FRAME MOD HØJRE
         HBox mainContainer = new HBox(0);
@@ -5190,9 +5172,8 @@ public class Menu extends Pane {
         mainContainer.setLayoutY(0);
 
         HBox topMenuHBox = new HBox(10);
-        topMenuHBox.setPadding(new Insets(10, 10, 10, 10));
+        topMenuHBox.setPadding(new Insets(8, 10, 8, 10));
         topMenuHBox.setPrefWidth(800);
-        topMenuHBox.setPrefHeight(50);
         topMenuHBox.setStyle("-fx-border-width: 0 0 2px 0; -fx-border-color: rgb(0, 0, 0); -fx-background-color: #575757");
 
         // Label
@@ -5250,22 +5231,22 @@ public class Menu extends Pane {
         timePicker.setPrefHeight(30);
 
         hairTypeDropdown = new ComboBox<>();
-        hairTypeDropdown.getItems().addAll("Straight", "Wavy", "Curly", "Coily");
+        hairTypeDropdown.getItems().addAll("Straight", "Wavy", "Curly", "Coily", "All");
         hairTypeDropdown.setPromptText("Choose Hairtype");
         hairTypeDropdown.getStyleClass().add("combo-box");
 
         hairColorDropdown = new ComboBox<>();
-        hairColorDropdown.getItems().addAll("Blonde", "Black", "Brown", "Red", "Grey");
+        hairColorDropdown.getItems().addAll("Blonde", "Black", "Brown", "Red", "Grey", "All");
         hairColorDropdown.setPromptText("Hair Color");
         hairColorDropdown.getStyleClass().add("combo-box");
 
         lengthDropdown = new ComboBox<>();
-        lengthDropdown.getItems().addAll("Bald", "Buzz", "Short", "Medium", "Long", "Very Long", "Tied");
+        lengthDropdown.getItems().addAll("Bald", "Buzz", "Short", "Medium", "Long", "Very Long", "Tied", "All");
         lengthDropdown.setPromptText("Hair Length");
         lengthDropdown.getStyleClass().add("combo-box");
 
         genderDropdown = new ComboBox<>();
-        genderDropdown.getItems().addAll("Male", "Female");
+        genderDropdown.getItems().addAll("Male", "Female", "All");
         genderDropdown.setPromptText("Gender");
         genderDropdown.getStyleClass().add("combo-box");
 
@@ -5344,13 +5325,16 @@ public class Menu extends Pane {
                 alert.setHeaderText("Please fill in all fields before applying.");
                 alert.setContentText("Make sure to select date, time, address, hair type, color, length, and gender.");
                 alert.showAndWait();
-                return; // Exit early, do not save
+                return;
             }
 
             int currentStudent_id = Main.db.getUserID(username);
             int hairtypeId = Main.db.getOrCreateHairType(hairType, hairColor, hairLength, gender);
 
-            BookingCard card = new BookingCard(selectedDate, selectedTime, selectedAddress, hairtypeId, isExam, currentStudent_id);
+            String paid = "No";
+            String accepted = "No";
+
+            BookingCard card = new BookingCard(selectedDate, selectedTime, selectedAddress, hairtypeId, isExam, currentStudent_id, paid, accepted);
             card.createBooking();
 
         }

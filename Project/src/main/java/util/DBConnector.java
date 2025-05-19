@@ -84,6 +84,21 @@ public class DBConnector {
                     "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP" +
                     ")";
 
+            String createRequestTable = "CREATE TABLE IF NOT EXISTS request (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "sender TEXT NOT NULL," +
+                    "receiver TEXT NOT NULL," +
+                    "comment TEXT" +
+                    ")";
+
+            String createTipTable = "CREATE TABLE IF NOT EXISTS tip (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "sender TEXT NOT NULL," +
+                    "receiver TEXT NOT NULL," +
+                    "amount REAL NOT NULL," +
+                    "comment TEXT" +
+                    ")";
+
             String createBookingsTable = "CREATE TABLE IF NOT EXISTS bookings (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "date TEXT NOT NULL," +
@@ -92,9 +107,12 @@ public class DBConnector {
                     "hairtypeId INTEGER NOT NULL," +
                     "exam INTEGER," +
                     "student_id INTEGER," +
+                    "paid TEXT," +
+                    "accepted TEXT," +
                     "FOREIGN KEY (hairtypeId) REFERENCES hair_type_id(id)," +
                     "FOREIGN KEY (student_id) REFERENCES users(id)" +
                     ")";
+
 
             String createHairTypeTable = "CREATE TABLE IF NOT EXISTS hair_type_id (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -125,6 +143,8 @@ public class DBConnector {
 
             stmt.executeUpdate(createUsersTable);
             stmt.executeUpdate(createMessagesTable);
+            stmt.executeUpdate(createRequestTable);
+            stmt.executeUpdate(createTipTable);
             stmt.executeUpdate(createBookingsTable);
             stmt.executeUpdate(createHairTypeTable);
             stmt.executeUpdate(createSchoolTable);
@@ -162,6 +182,24 @@ public class DBConnector {
 
     // ____________________________________________________
 
+    public boolean isUserBanned(String username) {
+        String query = "SELECT banned FROM users WHERE username = ?";
+
+        try (PreparedStatement stmt = con.prepareStatement(query)) {
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            if (rs != null && rs.next()) {
+                String bannedValue = rs.getString("banned");
+                return bannedValue != null && bannedValue.equalsIgnoreCase("yes");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error checking banned status: " + e.getMessage());
+        }
+        return false;
+    }
+
+    // ____________________________________________________
+
     public boolean userExists(String username) {
         String query = "SELECT COUNT(*) as count FROM users WHERE username = '" + username + "'";
 
@@ -172,6 +210,23 @@ public class DBConnector {
             }
         } catch (SQLException e) {
             System.out.println("Error checking user: " + e.getMessage());
+        }
+        return false;
+    }
+
+    // ____________________________________________________
+
+    public boolean emailExists(String email) {
+        String query = "SELECT COUNT(*) as count FROM users WHERE email = ?";
+
+        try (PreparedStatement stmt = con.prepareStatement(query)) {
+            stmt.setString(1, email);
+            ResultSet rs = stmt.executeQuery();
+            if (rs != null && rs.next()) {
+                return rs.getInt("count") > 0;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error checking email: " + e.getMessage());
         }
         return false;
     }
@@ -257,15 +312,24 @@ public class DBConnector {
 
     public ArrayList<String> loadYourMessages(String user) {
         ArrayList<String> persons = new ArrayList<>();
-        String query = "SELECT DISTINCT receiver FROM messages WHERE sender = ?";
+        String query = "SELECT DISTINCT CASE " +
+                "WHEN sender = ? THEN receiver " +
+                "WHEN receiver = ? THEN sender " +
+                "END AS person " +
+                "FROM messages WHERE sender = ? OR receiver = ?";
 
-        try {
-            PreparedStatement statement = con.prepareStatement(query);
+        try (PreparedStatement statement = con.prepareStatement(query)) {
             statement.setString(1, user);
+            statement.setString(2, user);
+            statement.setString(3, user);
+            statement.setString(4, user);
             ResultSet rs = statement.executeQuery();
 
             while (rs.next()) {
-                persons.add(rs.getString("receiver"));
+                String person = rs.getString("person");
+                if (person != null && !person.equals(user)) {
+                    persons.add(person);
+                }
             }
 
         } catch (SQLException e) {
@@ -275,16 +339,24 @@ public class DBConnector {
         return persons;
     }
 
-
-
     // ____________________________________________________
 
     public ResultSet getMessages(String user1, String user2) {
         String query = "SELECT * FROM messages WHERE " +
-                "(sender = '" + user1 + "' AND receiver = '" + user2 + "') OR " +
-                "(sender = '" + user2 + "' AND receiver = '" + user1 + "') " +
+                "(sender = ? AND receiver = ?) OR " +
+                "(sender = ? AND receiver = ?) " +
                 "ORDER BY timestamp ASC";
-        return executeQuery(query);
+        try {
+            PreparedStatement statement = con.prepareStatement(query);
+            statement.setString(1, user1);
+            statement.setString(2, user2);
+            statement.setString(3, user2);
+            statement.setString(4, user1);
+            return statement.executeQuery();
+        } catch (SQLException e) {
+            System.out.println("Error fetching messages: " + e.getMessage());
+        }
+        return null;
     }
 
     // ____________________________________________________
@@ -811,8 +883,10 @@ public class DBConnector {
                 String address = rs.getString("address");
                 int hairtypeId = rs.getInt("hairtypeId");
                 int studentId = rs.getInt("student_id");
+                String paid = rs.getString("paid");
+                String accepted = rs.getString("accepted");
 
-                BookingCard booking = new BookingCard(date, time, address, hairtypeId, isExam, studentId);
+                BookingCard booking = new BookingCard(date, time, address, hairtypeId, isExam, studentId, paid, accepted);
                 bookings.add(booking);
             }
 
@@ -839,8 +913,10 @@ public class DBConnector {
                 String time = rs.getString("time");
                 String address = rs.getString("address");
                 int hairtypeId = rs.getInt("hairtypeId");
+                String paid = rs.getString("paid");
+                String accepted = rs.getString("accepted");
 
-                BookingCard booking = new BookingCard(date, time, address, hairtypeId, isExam, studentId);
+                BookingCard booking = new BookingCard(date, time, address, hairtypeId, isExam, studentId, paid, accepted);
                 bookings.add(booking);
             }
 
@@ -849,6 +925,69 @@ public class DBConnector {
         }
 
         return bookings;
+    }
+
+    // ____________________________________________________
+
+    public boolean saveTip(String sender, String receiver, double amount, String comment) {
+        String query = "INSERT INTO tip (sender, receiver, amount, comment) VALUES (?, ?, ?, ?)";
+
+        try (PreparedStatement stmt = con.prepareStatement(query)) {
+            stmt.setString(1, sender);
+            stmt.setString(2, receiver);
+            stmt.setDouble(3, amount);
+            stmt.setString(4, comment);
+
+            int affectedRows = stmt.executeUpdate();
+            return affectedRows > 0; // true if insert succeeded
+        } catch (SQLException e) {
+            System.out.println("Error saving tip: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // ____________________________________________________
+
+    public List<Tip> getTipsForUser(String username) {
+        List<Tip> tips = new ArrayList<>();
+        String query = "SELECT sender, receiver, amount, comment FROM tip WHERE receiver = ? ORDER BY id DESC"; // recent first
+
+        try (PreparedStatement stmt = con.prepareStatement(query)) {
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Tip tip = new Tip(
+                        rs.getString("sender"),
+                        rs.getString("receiver"),
+                        rs.getDouble("amount"),
+                        rs.getString("comment")
+                );
+                tips.add(tip);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error loading tips: " + e.getMessage());
+        }
+
+        return tips;
+    }
+
+    // ____________________________________________________
+
+    public boolean saveRequest(String sender, String receiver, String comment) {
+        String query = "INSERT INTO request (sender, receiver, comment) VALUES (?, ?, ?)";
+
+        try (PreparedStatement stmt = con.prepareStatement(query)) {
+            stmt.setString(1, sender);
+            stmt.setString(2, receiver);
+            stmt.setString(3, comment);
+
+            int affectedRows = stmt.executeUpdate();
+            return affectedRows > 0; // true if insert succeeded
+        } catch (SQLException e) {
+            System.out.println("Error saving request: " + e.getMessage());
+            return false;
+        }
     }
 
     // ____________________________________________________

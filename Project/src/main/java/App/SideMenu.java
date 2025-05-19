@@ -93,7 +93,7 @@ public class SideMenu extends Pane {
             menu.setHeaderTitle("Messages");
             menu.getChildren().clear();
             menu.getChildren().add(menu.displayHeader());
-            menu.getChildren().add(menu.displayMyMessages());
+            menu.getChildren().add(menu.displayMyMessages(username));
         });
 
         btn3.setOnAction(e -> {
@@ -212,7 +212,7 @@ public class SideMenu extends Pane {
             menu.setHeaderTitle("Messages");
             menu.getChildren().clear();
             menu.getChildren().add(menu.displayHeader());
-            menu.getChildren().add(menu.displayMyMessages());
+            menu.getChildren().add(menu.displayMyMessages(username));
         });
 
         btn4.setOnAction(e -> {
@@ -308,7 +308,7 @@ public class SideMenu extends Pane {
             menu.setHeaderTitle("Messages");
             menu.getChildren().clear();
             menu.getChildren().add(menu.displayHeader());
-            menu.getChildren().add(menu.displayMyMessages());
+            menu.getChildren().add(menu.displayMyMessages(username));
         });
 
         settingsBtn.setOnAction(e -> {
@@ -399,7 +399,7 @@ public class SideMenu extends Pane {
             menu.setHeaderTitle("Messages");
             menu.getChildren().clear();
             menu.getChildren().add(menu.displayHeader());
-            menu.getChildren().add(menu.displayMyMessages());
+            menu.getChildren().add(menu.displayMyMessages(username));
         });
 
         settingsBtn.setOnAction(e -> {
@@ -474,7 +474,7 @@ public class SideMenu extends Pane {
             menu.setHeaderTitle("Messages");
             menu.getChildren().clear();
             menu.getChildren().add(menu.displayHeader());
-            menu.getChildren().add(menu.displayMyMessages());
+            menu.getChildren().add(menu.displayMyMessages(username));
         });
 
         settingsBtn.setOnAction(e -> {

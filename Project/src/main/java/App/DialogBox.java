@@ -136,10 +136,9 @@ public class DialogBox extends Pane {
         headerBox.setAlignment(Pos.CENTER);
         tip.getDialogPane().setHeader(headerBox);
 
-
         // Request
         TextArea commentInput = new TextArea();
-        commentInput.setPromptText("Please type in your request for your new fresh fade here...");
+        commentInput.setPromptText("Add comment...");
         commentInput.setWrapText(true);
         commentInput.setMaxWidth(200);
         commentInput.setStyle(
