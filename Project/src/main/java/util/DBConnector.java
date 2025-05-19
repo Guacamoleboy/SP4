@@ -62,9 +62,19 @@ public class DBConnector {
                     "student_year TEXT DEFAULT 'N/A'," +
                     "profile_picture TEXT DEFAULT 'person1.png'," +
                     "language TEXT DEFAULT 'English'" +
+                    "lastonline TEXT DEFAULT 'NOT SEEN'" +
+                    "city TEXT" +
+                    "abtmeheader TEXT DEFAULT 'Hello...'" +
+                    "abtmedesc TEXT DEFAULT 'Welcome to my profile...'" +
+                    "abtmefunfacts TEXT DEFAULT 'No numbers before 1000 contains the letter A.'" +
+                    "phone INTEGER DEFAULT '00000000'" +
+                    "rating double DEFAULT '0.0'"+
+                    "social TEXT" +
+                    "contactheader TEXT DEFAULT 'I am glad you are here...'" +
+                    "contactdesc TEXT DEFAULT 'Welcome my friend. You can get in contact with me here! Hope to hear from ya!'" +
                     ")";
 
-            String createMessagesTable = "CREATE TABLE IF NOT EXISTS bookings (" +
+            String createMessagesTable = "CREATE TABLE IF NOT EXISTS messages (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "sender TEXT NOT NULL," +
                     "receiver TEXT NOT NULL," +
@@ -83,9 +93,9 @@ public class DBConnector {
                     "notes TEXT DEFAULT 'Ingen noter..'" +
                     ")";
 
-            stmt.execute(createBookingsTable);
-            stmt.execute(createUsersTable);
-            stmt.execute(createMessagesTable);
+            stmt.executeUpdate(createUsersTable);
+            stmt.executeUpdate(createMessagesTable);
+            stmt.executeUpdate(createBookingsTable);
 
         } catch (SQLException e) {
             System.out.println("Error initializing database: " + e.getMessage());
@@ -193,10 +203,34 @@ public class DBConnector {
     // ____________________________________________________
 
     public boolean saveMessage(String sender, String receiver, String content) {
+        System.out.println("Inserts?"+ content);
         String query = "INSERT INTO messages (sender, receiver, content) VALUES ('" +
                 sender + "', '" + receiver + "', '" + content + "')";
         return executeUpdate(query);
     }
+    // ____________________________________________________
+
+    public ArrayList<String> loadYourMessages(String user1) {
+        ArrayList<String> persons = new ArrayList<>();
+        String query = "SELECT DISTINCT receiver FROM messages WHERE sender = ?";
+
+        try {
+            PreparedStatement statement = con.prepareStatement(query);
+            statement.setString(1, user1);
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+                persons.add(rs.getString("receiver"));
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Fejl i loadYourMessages: " + e.getMessage());
+        }
+
+        return persons;
+    }
+
+
 
     // ____________________________________________________
 
@@ -287,6 +321,27 @@ public class DBConnector {
         return id;
     }
 
+    // ____________________________________________________
+
+    public String getUserName(int ID) {
+        String username = ""; // default value if not found
+        String query = "SELECT username FROM users WHERE id = ?";
+
+        try (PreparedStatement getUserName = con.prepareStatement(query)) {
+            getUserName.setInt(1, ID);
+            ResultSet rs = getUserName.executeQuery();
+            if (rs.next()) {
+                username = rs.getString("username"); // parse the column to int
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return username;
+    }
+
+    // ____________________________________________________
+
     public ArrayList<String> getUserData(String username) {
 
         ArrayList<String> userData = new ArrayList<String>();
@@ -315,6 +370,16 @@ public class DBConnector {
             userData.add(rs.getString("language"));
             userData.add(rs.getString("accepted"));
             userData.add(rs.getString("darkmode"));
+            userData.add(rs.getString("lastonline"));
+            userData.add(rs.getString("city"));
+            userData.add(rs.getString("abtmeheader"));
+            userData.add(rs.getString("abtmedesc"));
+            userData.add(rs.getString("abtmefunfacts"));
+            userData.add(rs.getString("phone"));
+            userData.add(rs.getString("rating"));
+            userData.add(rs.getString("social"));
+            userData.add(rs.getString("contactheader"));
+            userData.add(rs.getString("contactdesc"));
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -788,6 +853,7 @@ public class DBConnector {
 
     }
 
+    // ____________________________________________________
 
     public boolean updateProfileColors(String username, String profileHex, String bannerHex, String roleHex, String bannerUrl) {
         String query = "UPDATE users SET profilehex = ?, bannerhex = ?, rolehex = ? WHERE username = ?";
@@ -809,4 +875,225 @@ public class DBConnector {
 
 
     }
+
+    // ____________________________________________________
+
+    public boolean updateLastOnline(String username, String lastOnline) {
+
+        String query = "UPDATE users SET lastonline = ? WHERE username = ?";
+
+        try (PreparedStatement changeLastOnline = con.prepareStatement(query)) {
+            changeLastOnline.setString(1, lastOnline);
+            changeLastOnline.setString(2, username);
+            int rowsAffected = changeLastOnline.executeUpdate();
+
+            return rowsAffected > 0; // true
+
+        } catch (SQLException e) {
+            System.out.println("changeLastOnline failed!!!");
+            return false;
+        }
+
+    }
+
+    // ____________________________________________________
+
+    public boolean updateStatus(String username, String status) {
+
+        String query = "UPDATE users SET status = ? WHERE username = ?";
+
+        try (PreparedStatement updateStatus = con.prepareStatement(query)) {
+            updateStatus.setString(1, status);
+            updateStatus.setString(2, username);
+            int rowsAffected = updateStatus.executeUpdate();
+
+            return rowsAffected > 0; // true
+
+        } catch (SQLException e) {
+            System.out.println("updateStatus failed!!!");
+            return false;
+        }
+
+    }
+
+    // ____________________________________________________
+
+    public boolean setCity(String username, String city) {
+
+        String query = "UPDATE users SET city = ? WHERE username = ?";
+
+        try (PreparedStatement setCity = con.prepareStatement(query)) {
+            setCity.setString(1, city);
+            setCity.setString(2, username);
+            int rowsAffected = setCity.executeUpdate();
+
+            return rowsAffected > 0; // true
+
+        } catch (SQLException e) {
+            System.out.println("setCity failed!!!");
+            return false;
+        }
+
+    }
+
+    // ____________________________________________________
+
+    public boolean updateABTMeHeader(String username, String header) {
+
+        String query = "UPDATE users SET abtmeheader = ? WHERE username = ?";
+
+        try (PreparedStatement updateABTMeHeader = con.prepareStatement(query)) {
+            updateABTMeHeader.setString(1, header);
+            updateABTMeHeader.setString(2, username);
+            int rowsAffected = updateABTMeHeader.executeUpdate();
+
+            return rowsAffected > 0; // true
+
+        } catch (SQLException e) {
+            System.out.println("updateABTMeHeader failed!!!");
+            return false;
+        }
+
+    }
+
+    // ____________________________________________________
+
+    public boolean updateABTMeDesc(String username, String desc) {
+
+        String query = "UPDATE users SET abtmedesc = ? WHERE username = ?";
+
+        try (PreparedStatement updateABTMeDesc = con.prepareStatement(query)) {
+            updateABTMeDesc.setString(1, desc);
+            updateABTMeDesc.setString(2, username);
+            int rowsAffected = updateABTMeDesc.executeUpdate();
+
+            return rowsAffected > 0; // true
+
+        } catch (SQLException e) {
+            System.out.println("updateABTMeDesc failed!!!");
+            return false;
+        }
+
+    }
+
+    // ____________________________________________________
+
+    public boolean updateABTMeFunFact(String username, String funFact) {
+
+        String query = "UPDATE users SET abtmefunfacts = ? WHERE username = ?";
+
+        try (PreparedStatement updateABTMeFunFact = con.prepareStatement(query)) {
+            updateABTMeFunFact.setString(1, funFact);
+            updateABTMeFunFact.setString(2, username);
+            int rowsAffected = updateABTMeFunFact.executeUpdate();
+
+            return rowsAffected > 0; // true
+
+        } catch (SQLException e) {
+            System.out.println("updateABTMeFunFact failed!!!");
+            return false;
+        }
+
+    }
+
+    // ____________________________________________________
+
+    public boolean updatePhoneNumber(String username, int number) {
+
+        String query = "UPDATE users SET phone = ? WHERE username = ?";
+
+        try (PreparedStatement updatePhoneNumber = con.prepareStatement(query)) {
+            updatePhoneNumber.setInt(1, number);
+            updatePhoneNumber.setString(2, username);
+            int rowsAffected = updatePhoneNumber.executeUpdate();
+
+            return rowsAffected > 0; // true
+
+        } catch (SQLException e) {
+            System.out.println("updatePhoneNumber failed!!!");
+            return false;
+        }
+
+    }
+
+    // ____________________________________________________
+
+    public boolean updateRating(String username, double rating) {
+
+        String query = "UPDATE users SET rating = ? WHERE username = ?";
+
+        try (PreparedStatement updateRating = con.prepareStatement(query)) {
+            updateRating.setDouble(1, rating);
+            updateRating.setString(2, username);
+            int rowsAffected = updateRating.executeUpdate();
+
+            return rowsAffected > 0; // true
+
+        } catch (SQLException e) {
+            System.out.println("updateRating failed!!!");
+            return false;
+        }
+
+    }
+
+    // ____________________________________________________
+
+    public boolean updateSocial(String username, String social) {
+
+        String query = "UPDATE users SET social = ? WHERE username = ?";
+
+        try (PreparedStatement updateSocial = con.prepareStatement(query)) {
+            updateSocial.setString(1, social);
+            updateSocial.setString(2, username);
+            int rowsAffected = updateSocial.executeUpdate();
+
+            return rowsAffected > 0; // true
+
+        } catch (SQLException e) {
+            System.out.println("updateSocial failed!!!");
+            return false;
+        }
+
+    }
+
+    // ____________________________________________________
+
+    public boolean updateContactHeader(String username, String header) {
+
+        String query = "UPDATE users SET contactheader = ? WHERE username = ?";
+
+        try (PreparedStatement updateContactHeader = con.prepareStatement(query)) {
+            updateContactHeader.setString(1, header);
+            updateContactHeader.setString(2, username);
+            int rowsAffected = updateContactHeader.executeUpdate();
+
+            return rowsAffected > 0; // true
+
+        } catch (SQLException e) {
+            System.out.println("updateContactHeader failed!!!");
+            return false;
+        }
+
+    }
+
+    // ____________________________________________________
+
+    public boolean updateContactDesc(String username, String desc) {
+
+        String query = "UPDATE users SET contactdesc = ? WHERE username = ?";
+
+        try (PreparedStatement updateContactDesc = con.prepareStatement(query)) {
+            updateContactDesc.setString(1, desc);
+            updateContactDesc.setString(2, username);
+            int rowsAffected = updateContactDesc.executeUpdate();
+
+            return rowsAffected > 0; // true
+
+        } catch (SQLException e) {
+            System.out.println("updateContactDesc failed!!!");
+            return false;
+        }
+
+    }
+
 } // DBConnector end
