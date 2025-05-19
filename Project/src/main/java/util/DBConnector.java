@@ -43,9 +43,9 @@ public class DBConnector {
     // ____________________________________________________
 
     private void initializeDatabase() {
-
         try {
             Statement stmt = con.createStatement();
+
             String createUsersTable = "CREATE TABLE IF NOT EXISTS users (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "username TEXT NOT NULL UNIQUE," +
@@ -61,16 +61,18 @@ public class DBConnector {
                     "school_id TEXT DEFAULT '0'," +
                     "student_year TEXT DEFAULT 'N/A'," +
                     "profile_picture TEXT DEFAULT 'person1.png'," +
-                    "language TEXT DEFAULT 'English'" +
-                    "lastonline TEXT DEFAULT 'NOT SEEN'" +
-                    "city TEXT" +
-                    "abtmeheader TEXT DEFAULT 'Hello...'" +
-                    "abtmedesc TEXT DEFAULT 'Welcome to my profile...'" +
-                    "abtmefunfacts TEXT DEFAULT 'No numbers before 1000 contains the letter A.'" +
-                    "phone INTEGER DEFAULT '00000000'" +
-                    "rating double DEFAULT '0.0'"+
-                    "social TEXT" +
-                    "contactheader TEXT DEFAULT 'I am glad you are here...'" +
+                    "language TEXT DEFAULT 'English'," +
+                    "accepted TEXT DEFAULT NULL," +
+                    "darkmode BOOLEAN DEFAULT NULL," +
+                    "lastonline TEXT DEFAULT 'NOT SEEN'," +
+                    "city TEXT," +
+                    "abtmeheader TEXT DEFAULT 'Hello...'," +
+                    "abtmedesc TEXT DEFAULT 'Welcome to my profile...'," +
+                    "abtmefunfacts TEXT DEFAULT 'No numbers before 1000 contains the letter A.'," +
+                    "phone INTEGER DEFAULT '00000000'," +
+                    "rating DOUBLE DEFAULT '0.0'," +
+                    "social TEXT," +
+                    "contactheader TEXT DEFAULT 'I am glad you are here...'," +
                     "contactdesc TEXT DEFAULT 'Welcome my friend. You can get in contact with me here! Hope to hear from ya!'" +
                     ")";
 
@@ -84,23 +86,53 @@ public class DBConnector {
 
             String createBookingsTable = "CREATE TABLE IF NOT EXISTS bookings (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "dato DATE NOT NULL," +
-                    "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP," +
-                    "place TEXT NOT NULL," +
-                    "contactNumber TEXT NOT NULL," +
-                    "bookingTimestamp DATETIME NOT NULL," +
-                    "open TEXT NOT NULL CHECK(open IN ('yes', 'no'))," +
-                    "notes TEXT DEFAULT 'Ingen noter..'" +
+                    "date TEXT NOT NULL," +
+                    "time TEXT DEFAULT CURRENT_TIMESTAMP," +
+                    "address TEXT NOT NULL," +
+                    "hairtypeId INTEGER NOT NULL," +
+                    "exam INTEGER," +
+                    "student_id INTEGER," +
+                    "FOREIGN KEY (hairtypeId) REFERENCES hair_type_id(id)," +
+                    "FOREIGN KEY (student_id) REFERENCES users(id)" +
                     ")";
+
+            String createHairTypeTable = "CREATE TABLE IF NOT EXISTS hair_type_id (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "texture TEXT DEFAULT NULL," +
+                    "color TEXT DEFAULT NULL," +
+                    "length TEXT DEFAULT NULL," +
+                    "gender TEXT DEFAULT NULL" +
+                    ")";
+
+            String createSchoolTable = "CREATE TABLE IF NOT EXISTS schools (" +
+                    "id INTEGER PRIMARY KEY," +
+                    "name TEXT NOT NULL" +
+                    ")";
+
+            String insertSchools = "INSERT OR IGNORE INTO schools (id, name) VALUES " +
+                    "(1, 'EUC SJÆLLAND NÆSTVED')," +
+                    "(2, 'EUC SYD STEGHOLT')," +
+                    "(3, 'HANSENBERG')," +
+                    "(4, 'HERNINGSHOLM ERHVERVSSKOLE')," +
+                    "(5, 'NEXT UDDANNELSE KØBENHAVN')," +
+                    "(6, 'EUD: RYBNERS SPANGSBJERG')," +
+                    "(7, 'SYDDANSK ERHVERVSSKOLE ODENSE')," +
+                    "(8, 'TECHCOLLEGE, STYLE & WELLNESS')," +
+                    "(9, 'TRADIUM, TEKNISKE ERHVERVSUDDANNELSER VA')," +
+                    "(10, 'AARHUS TECH')," +
+                    "(11, 'KØBENHAVNS FRISØRSKOLE')," +
+                    "(12, 'BEAUTY AND STYLE')";
 
             stmt.executeUpdate(createUsersTable);
             stmt.executeUpdate(createMessagesTable);
             stmt.executeUpdate(createBookingsTable);
+            stmt.executeUpdate(createHairTypeTable);
+            stmt.executeUpdate(createSchoolTable);
+            stmt.executeUpdate(insertSchools);
 
         } catch (SQLException e) {
             System.out.println("Error initializing database: " + e.getMessage());
         }
-
     }
 
     // ____________________________________________________
@@ -166,11 +198,14 @@ public class DBConnector {
     public boolean createUser(String username, String password, String email, String status, String banned, String role,
                               String profileHex, String bannerHex, String roleHex,
                               int hairTypeId, int schoolId, int studentYear,
-                              String profilePicture, String language, String accepted, String darkmode) {
+                              String profilePicture, String language, String accepted, String darkmode, String lastonline,
+                              String city, String abtmeheader, String abtmedesc, String abtmefunfacts, int phone, double rating,
+                              String social, String contactheader, String contactdesc) {
 
         String query = "INSERT INTO users (username, password, email, status, banned, role, profilehex, bannerhex, rolehex, " +
-                "hair_type_id, school_id, student_year, profile_picture, language, accepted, darkmode) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "hair_type_id, school_id, student_year, profile_picture, language, accepted, darkmode, lastonline, " +
+                "city, abtmeheader, abtmedesc, abtmefunfacts, phone, rating, social, contactheader, contactdesc) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement createUserQuery = con.prepareStatement(query)) {
             createUserQuery.setString(1, username);
@@ -189,7 +224,16 @@ public class DBConnector {
             createUserQuery.setString(14, language);
             createUserQuery.setString(15, accepted);
             createUserQuery.setString(16, darkmode);
-
+            createUserQuery.setString(17, lastonline);
+            createUserQuery.setString(18, city);
+            createUserQuery.setString(19, abtmeheader);
+            createUserQuery.setString(20, abtmedesc);
+            createUserQuery.setString(21, abtmefunfacts);
+            createUserQuery.setInt(22, phone);
+            createUserQuery.setDouble(23, rating);
+            createUserQuery.setString(24, social);
+            createUserQuery.setString(25, contactheader);
+            createUserQuery.setString(26, contactdesc);
             int rows = createUserQuery.executeUpdate();
             return rows > 0;
 
@@ -210,13 +254,13 @@ public class DBConnector {
     }
     // ____________________________________________________
 
-    public ArrayList<String> loadYourMessages(String user1) {
+    public ArrayList<String> loadYourMessages(String user) {
         ArrayList<String> persons = new ArrayList<>();
         String query = "SELECT DISTINCT receiver FROM messages WHERE sender = ?";
 
         try {
             PreparedStatement statement = con.prepareStatement(query);
-            statement.setString(1, user1);
+            statement.setString(1, user);
             ResultSet rs = statement.executeQuery();
 
             while (rs.next()) {

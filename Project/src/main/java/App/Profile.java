@@ -160,7 +160,8 @@ public class Profile extends Pane {
         }
 
         String lastOnlineStr = userData.get(17);
-        LocalDateTime lastOnlineTime = LocalDateTime.parse(lastOnlineStr);
+        System.out.println(lastOnlineStr);
+        /*LocalDateTime lastOnlineTime = LocalDateTime.parse(lastOnlineStr);
         LocalDateTime now = LocalDateTime.now();
 
         Duration duration = Duration.between(lastOnlineTime, now);
@@ -185,7 +186,8 @@ public class Profile extends Pane {
             return "Last online: " + minutes + (minutes == 1 ? " minute" : " minutes") + " ago";
         } else {
             return "Last online: " + seconds + (seconds == 1 ? " second" : " seconds") + " ago";
-        }
+        }*/
+        return "1 minutes ago";
     }
 
     // ______________________________________

@@ -230,9 +230,10 @@ public class Menu extends Pane {
                 currentChatPartner = personButton.getText();
                 messageArea.getChildren().clear();
                 loadChatHistory(person);
-                sidebar.getChildren().add(personButton);
             });
-        }*/
+
+            sidebar.getChildren().add(personButton);
+        } */
         System.out.println("Lav indlæsning af beskeder på linje 221-235 under Menu.java (Metode er lavet!)");
 
 
@@ -2653,7 +2654,8 @@ public class Menu extends Pane {
             String hairTypeStr = Main.db.getHairTypeSummary(booking.getHairtypeId()); // e.g., "Curly, Brown, Medium, Female"
 
             Label date = new Label(dateStr);
-            Text place = new Text(addressStr + "\n" + hairTypeStr);
+            Text place = new Text(addressStr);
+            Text hair = new Text("Preferred hair: " + hairTypeStr);
             place.setTextAlignment(TextAlignment.CENTER);
             place.setWrappingWidth(140);
             place.setFill(Color.WHITE);
@@ -2705,7 +2707,7 @@ public class Menu extends Pane {
 
             Animation.addHoverScaleEffectVBox(card);
 
-            card.getChildren().addAll(headerWithWave, time, place, spacer, rating);
+            card.getChildren().addAll(headerWithWave, time, place, hair, spacer, rating);
             cardBox.getChildren().add(card);
         }
 
