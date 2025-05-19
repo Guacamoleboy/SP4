@@ -25,9 +25,13 @@ public class BookingCard  {
         this.address = address;
         this.hairtype_id = hairtype_id;
         this.exam = exam;
+
         String username = Main.db.getUserName(student_id);
+
         Profile user = new Profile(username);
+
         this.review = user.getRating();
+
     }
 
     // ____________________________________________________
@@ -52,15 +56,21 @@ public class BookingCard  {
 
     // ____________________________________________________
 
-    public String getTime() { return time; }
+    public String getTime() {
+        return time;
+    }
 
     // ____________________________________________________
 
-    public String getAddress() { return address; }
+    public String getAddress() {
+        return address;
+    }
 
     // ____________________________________________________
 
-    public int getHairtypeId() { return hairtype_id; }
+    public int getHairtypeId() {
+        return hairtype_id;
+    }
 
     // ____________________________________________________
 
