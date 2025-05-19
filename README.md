@@ -1,7 +1,6 @@
-# SP4
-## ICE School Project
+# SP4 ICE School Project
 
-## Lavet af Ebou, Andreas, Carl Emil & Jonas.
+Lavet af Ebou, Andreas, Carl Emil & Jonas.
 
 # Idea & Proof of Concept
 _________________________
