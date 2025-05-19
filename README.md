@@ -28,13 +28,13 @@ Funktioner pr bruger
 ____________________
 
 ## Student
-• Skal kunne oprette elev samt eksamensklip.
-• Skal kunne acceptere brugere som anmoder om bookingen
-• Skal have deres egen profil med interesser, fun facts mm så brugeren allerede på forhånd ved hvad der evt kunne snakkes om
-• Skal accepteres af skolen før de kan oprette bookings
-• Slette booking
-• Overview over bookings, drikkepenge mm.
-• Settings menu med ændring af farver mm.
+• Skal kunne oprette elev samt eksamensklip./
+• Skal kunne acceptere brugere som anmoder om bookingen/
+• Skal have deres egen profil med interesser, fun facts mm så brugeren allerede på forhånd ved hvad der evt kunne snakkes om/
+• Skal accepteres af skolen før de kan oprette bookings/
+• Slette booking/
+• Overview over bookings, drikkepenge mm./
+• Settings menu med ændring af farver mm./
 
 ## Customer
 • Skal kunne booke et klip.
