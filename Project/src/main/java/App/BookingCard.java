@@ -6,25 +6,29 @@ import java.time.format.DateTimeFormatter;
 public class BookingCard  {
 
     // Attributes
-    private LocalDate date;
+    private String date;
     private String time;
     private String address;
     private double review;
     private int hairtype_id;
     private boolean exam;
-    private int student_id;
+    public static int student_id;
     private String paid;
     private String accepted;
+    private String customer;
 
     // ____________________________________________________
 
-    public BookingCard(LocalDate date, String time, String address, int hairtype_id, boolean exam, int student_id) {
-        this.student_id = student_id;
+    public BookingCard(String date, String time, String address, int hairtype_id, boolean exam, int student_id, String paid, String accepted, String customer) {
+        BookingCard.student_id = student_id;
         this.date = date;
         this.time = time;
         this.address = address;
         this.hairtype_id = hairtype_id;
         this.exam = exam;
+        this.paid = paid;
+        this.accepted = accepted;
+        this.customer = customer;
 
         String username = Main.db.getUserName(student_id);
 
@@ -42,7 +46,7 @@ public class BookingCard  {
         String paid = "No";
         String accepted = "No";
 
-        Main.db.createBooking(date, time, address, hairtype_id, exam, student_id, paid, accepted);
+        Main.db.createBooking(date, time, address, hairtype_id, exam, student_id, paid, accepted, customer);
 
     }
 
@@ -50,8 +54,7 @@ public class BookingCard  {
 
     //getters
     public String getDate() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM");
-        return date.format(formatter);
+        return this.date;
     }
 
     // ____________________________________________________
@@ -78,5 +81,28 @@ public class BookingCard  {
         return this.review;
     }
 
+    // ____________________________________________________
+
+    public String getPaid() {
+        return this.paid;
+    }
+
+    // ____________________________________________________
+
+    public String getAccepted() {
+        return this.accepted;
+    }
+
+    // ____________________________________________________
+
+    public static int getStudentID() {
+        return student_id;
+    }
+
+    // ____________________________________________________
+
+    public String getCustomer() {
+        return this.customer;
+    }
 
 } // Class end

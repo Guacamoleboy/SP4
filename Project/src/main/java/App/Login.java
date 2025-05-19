@@ -192,6 +192,11 @@ public class Login extends Pane {
 
         if (Main.db.isConnected() && Main.db.validateUser(username, password)) {
 
+            if (Main.db.isUserBanned(username)) {
+                showAlert("Your account has been banned. Please contact support.");
+                return;
+            }
+
             Menu menu = new Menu(username, password, 800, 600);
             Support.setMenu(menu);
             SideMenu sm = new SideMenu(100, 600, menu, Main.db.getRole(username), username); // Fix carl-emil

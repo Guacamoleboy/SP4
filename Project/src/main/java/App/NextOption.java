@@ -284,8 +284,7 @@ public class NextOption extends Pane {
         String social = "";
         String contactheader = "I'm glad you're here!";
         String contactdesc = "Contact me here!";
-
-
+        Integer student_id = null;
 
         boolean connected = Main.db.isConnected();
         System.out.println("Database connected: " + connected);
