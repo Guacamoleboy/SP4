@@ -274,6 +274,18 @@ public class NextOption extends Pane {
         String profilePicture = "person1.png";
         String language = "English";
         String darkmode = "Yes";
+        String lastonline = "Not seen";
+        String city = null;
+        String abtmeheader = "Hello...";
+        String abtmedesc = "Welcome to my profile";
+        String abtmefunfacts = "No numbers before 1000 contains the letter A";
+        int phone = 00000000;
+        double rating = 0.0;
+        String social = "";
+        String contactheader = "I'm glad you're here!";
+        String contactdesc = "Contact me here!";
+
+
 
         boolean connected = Main.db.isConnected();
         System.out.println("Database connected: " + connected);
@@ -282,7 +294,9 @@ public class NextOption extends Pane {
         boolean userCreated = Main.db.createUser(username, password, email, status, banned, role,
                 profileHex, bannerHex, roleHex,
                 hairTypeId, schoolId, studentYear,
-                profilePicture, language, accepted, darkmode);
+                profilePicture, language, accepted, darkmode,
+                lastonline, city, abtmeheader, abtmedesc, abtmefunfacts,
+                phone, rating, social, contactheader, contactdesc);
 
         if (connected && userCreated) {
             register.alert("Registration successful! You can now log in.");
@@ -324,6 +338,16 @@ public class NextOption extends Pane {
         String language = "English";
         String accepted = "No";
         String darkmode = "Yes";
+        String lastonline = "Not seen";
+        String city = null;
+        String abtmeheader = "Hello...";
+        String abtmedesc = "Welcome to my profile";
+        String abtmefunfacts = "No numbers before 1000 contains the letter A";
+        int phone = 00000000;
+        double rating = 0.0;
+        String social = "";
+        String contactheader = "I'm glad you're here!";
+        String contactdesc = "Contact me here!";
 
         boolean connected = Main.db.isConnected();
         System.out.println("Database connected: " + connected);
@@ -344,7 +368,17 @@ public class NextOption extends Pane {
                 profilePicture,
                 language,
                 accepted,
-                darkmode
+                darkmode,
+                lastonline,
+                city,
+                abtmeheader,
+                abtmedesc,
+                abtmefunfacts,
+                phone,
+                rating,
+                social,
+                contactheader,
+                contactdesc
         );
 
         if (connected && userCreated) {
