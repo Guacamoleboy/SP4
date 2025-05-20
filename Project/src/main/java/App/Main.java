@@ -50,6 +50,10 @@ public class Main extends Application { // Client class
         // Initialize database
         db = new DBConnector();
         db.connect(DB_URL);
+
+        // Hairtype database fix
+        // db.hairTypeInserter();
+
         if (db.connect(DB_URL)) {
             System.out.println("Database connection success");
         } else {

@@ -11,7 +11,7 @@
     createBackupAndClearFile (Used for clearData)
     deleteAfter30Days
 
-    Last updated: 12-04-2025
+    Last updated: 05-04-2025
     Updated by: Jonas
 
 */

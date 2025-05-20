@@ -879,7 +879,7 @@ public class Menu extends Pane {
         int currentUserId = Main.db.getStudentID(username);
         System.out.println("Current student_id for username " + username + ": " + currentUserId);
 
-        List<Request> requests = Main.db.getRequestsForUser(currentUserId);
+        List <Request> requests = Main.db.getRequestsForUser(currentUserId);
 
         if (requests.isEmpty()) {
             Label noRequestsLabel = new Label("No booking requests.");
@@ -2960,7 +2960,7 @@ public class Menu extends Pane {
             String timeStr = booking.getTime();
             String addressStr = booking.getAddress();
             int ratingInt = 3; //booking.getReview(); // TODO: not set up
-            String hairTypeStr = Main.db.getHairTypeSummary(booking.getHairtypeId()); // e.g., "Curly, Brown, Medium, Female"
+            String hairTypeStr = Main.db.getHairTypeSummary(booking.getHairtypeId()); // e.g., "Curly, Brown, Medium, Female", "All"
 
             Label date = new Label(dateStr);
             Text place = new Text(addressStr + "\n" + hairTypeStr);

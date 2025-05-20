@@ -797,7 +797,7 @@ public class DBConnector {
                 return rs.getInt("id");
             } else {
                 ps = con.prepareStatement(
-                        "INSERT INTO hair_types (texture, color, length, gender) VALUES (?, ?, ?, ?)",
+                        "INSERT INTO hair_type_id (texture, color, length, gender) VALUES (?, ?, ?, ?)",
                         Statement.RETURN_GENERATED_KEYS);
                 ps.setString(1, texture);
                 ps.setString(2, color);
@@ -817,20 +817,29 @@ public class DBConnector {
 
     //getter to the hairtype from db
     public String getHairTypeSummary(int id) {
+
         String sql = "SELECT texture, color, length, gender FROM hair_type_id WHERE id = ?";
+
         try (PreparedStatement ps = con.prepareStatement(sql)) {
+
             ps.setInt(1, id);
+
             ResultSet rs = ps.executeQuery();
+
             if (rs.next()) {
+
                 return rs.getString("texture") + ", " +
                         rs.getString("color") + ", " +
                         rs.getString("length") + ", " +
                         rs.getString("gender");
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return "Unknown";
+
     }
 
     // ____________________________________________________

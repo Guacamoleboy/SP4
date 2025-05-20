@@ -43,7 +43,6 @@ public class Login extends Pane {
     private Button forgotButton;
     private Button registerButton;
     private Button updateVersionButton;
-    private ProcessData processdata;
 
     // ____________________________________________________
 
@@ -139,9 +138,8 @@ public class Login extends Pane {
     public void registerButtonAction(){
         // If user presses the Register button!
         Register register = new Register(600, 600);
-        StartBorder sb = new StartBorder(3);
         StartInfo si = new StartInfo(300, 600);
-        HBox registerHBox = new HBox(register, sb, si);
+        HBox registerHBox = new HBox(register, si);
 
         si.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
         si.getStyleClass().add("orange");
