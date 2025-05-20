@@ -115,6 +115,8 @@ public class Profile extends Pane {
         return userData.get(7);
     }
 
+    // ______________________________________
+
     public String getProfilePicture() {
         return userData.get(13);
     }

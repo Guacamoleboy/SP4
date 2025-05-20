@@ -4,10 +4,7 @@ package App;
 // Import
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -24,7 +21,7 @@ public class Support {
 
     // _______________________________________
 
-    public static VBox displayTickets(Pane p) {
+    public static VBox displayTickets(Pane p, String username) {
 
         // VBox
         VBox ticketVBox = new VBox();
@@ -118,7 +115,7 @@ public class Support {
 
         redRegion.setOnMousePressed(e -> {
             p.getChildren().clear();
-            p.getChildren().add(displayResponse(p));
+            p.getChildren().add(displayResponse(p, username));
         });
 
         // Build UI
@@ -155,7 +152,7 @@ public class Support {
 
     // _______________________________________
 
-    public static VBox displayResponse(Pane p) {
+    public static VBox displayResponse(Pane p, String username) {
 
         VBox profileVBox = new VBox();
         profileVBox.getStylesheets().add(Support.class.getResource("/css/style.css").toExternalForm());
@@ -238,6 +235,31 @@ public class Support {
         unbanButton.setStyle("-fx-border-color: black; -fx-border-insets: 0; -fx-background-insets: 0; -fx-border-width: 2px; -fx-background-color: green; -fx-text-fill: white; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0.3, 0, 2);");
         banButton.setStyle("-fx-border-color: black; -fx-border-insets: 0; -fx-background-insets: 0; -fx-border-width: 2px; -fx-background-color: red; -fx-text-fill: white; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0.3, 0, 2);");
 
+        // Action listener on buttons
+        banButton.setOnAction(e -> {
+            AdminMenu adminMenu = new AdminMenu(Main.db, username);
+            adminMenu.banUser(username);
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("User has been banned");
+            alert.setHeaderText(null); // No header
+            alert.setContentText("The user has been banned. Continue with your ticket.");
+
+            alert.showAndWait();
+        });
+
+        unbanButton.setOnAction(e -> {
+            AdminMenu adminMenu = new AdminMenu(Main.db, username);
+            adminMenu.unbanUser(username);
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("User has been banned");
+            alert.setHeaderText(null); // No header
+            alert.setContentText("The user has been banned. Continue with your ticket.");
+
+            alert.showAndWait();
+        });
+
         // Hover
         Animation.addHoverScaleEffectMore(banButton);
         Animation.addHoverScaleEffectMore(unbanButton);
@@ -253,7 +275,7 @@ public class Support {
 
         rightFooter.setOnMousePressed(e -> {
             p.getChildren().clear();
-            p.getChildren().addAll(menu.displayHeader(), Support.displayTicketStatus(), Support.displayTickets(p));
+            p.getChildren().addAll(menu.displayHeader(), Support.displayTicketStatus(), Support.displayTickets(p, username));
         });
 
         bottomHBox.getChildren().addAll(leftFooter, rightFooter);
@@ -264,7 +286,6 @@ public class Support {
 
     // _______________________________________
 
-    // Load menu (fuck me)
     public static void setMenu(Menu m) {
         menu = m;
     }

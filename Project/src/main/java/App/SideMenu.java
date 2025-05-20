@@ -23,6 +23,7 @@ public class SideMenu extends Pane {
     private int sceneHeight;
     private String role;
     private String username;
+    private Profile profile;
 
     // OBJECT //
     private Menu menu;
@@ -38,6 +39,7 @@ public class SideMenu extends Pane {
         this.menu = menu;
         this.role = role;
         this.username = username;
+        this.profile = new Profile(username);
 
         // Display setup
         this.setPrefWidth(sceneWidth);
@@ -294,7 +296,7 @@ public class SideMenu extends Pane {
             menu.getChildren().clear();
             menu.getChildren().add(menu.displayHeader());
             menu.getChildren().add(Support.displayTicketStatus());
-            menu.getChildren().add(Support.displayTickets(menu));
+            menu.getChildren().add(Support.displayTickets(menu, username));
         });
 
         btn2.setOnAction(e -> {
@@ -506,8 +508,8 @@ public class SideMenu extends Pane {
     // ____________________________________________________
 
     private Button imageButton(String imagePath, int iconWidth, int iconHeight, int buttonSize) {
-
         ImageView icon = new ImageView(new Image(getClass().getResourceAsStream(imagePath)));
+
         icon.setFitWidth(iconWidth);
         icon.setFitHeight(iconHeight);
 
@@ -524,7 +526,7 @@ public class SideMenu extends Pane {
 
     // ____________________________________________________
 
-    private void openMenuType(String role) {
+    void openMenuType(String role) {
         switch (role) {
             case "Student":
                 this.getChildren().add(displayStudent());

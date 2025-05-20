@@ -14,8 +14,10 @@ import javafx.stage.Stage;
 import java.sql.*;
 import java.util.Optional;
 import javafx.util.Duration;
+import App.SideMenu.*;
 
 import static App.DialogBox.profileSettings;
+import static App.Login.sm;
 import static java.lang.Integer.parseInt;
 
 public class Setting extends Pane {
@@ -32,6 +34,7 @@ public class Setting extends Pane {
     private ColorPicker bannerColorPicker;
     private ColorPicker roleColorPicker;
     private Profile profile;
+
 
     public Setting(String username){
         this.username = username;
@@ -607,7 +610,6 @@ public class Setting extends Pane {
 
     private void editProfilePicture() {
         String content = profileSettings("Change Profile picture", "Enter link to your profile picture", profile.getProfilePicture());
-
         Main.db.setProfilePicture(username, content);
         profile.updateData(username);
     }
@@ -892,7 +894,7 @@ public class Setting extends Pane {
 
         // Action
         logOutButton.setOnAction(e -> {
-            if (acceptAlert("Logging out", "Are you sure?")) { // (TITLE, MESSAGE) FUCK JER
+            if (acceptAlert("Logging out", "Are you sure?")) {
                 Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
                 Main.loginPage(stage);
             }

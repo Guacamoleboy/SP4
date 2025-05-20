@@ -35,7 +35,7 @@ public class Main extends Application { // Client class
     private static final String DB_URL = "jdbc:sqlite:identifier.sqlite";
 
     // OBJECT //
-    private static Login login = new Login(600, 600);
+    public static Login login = new Login(600, 600);
     private StartInfo startinfo = new StartInfo(300, 600);
     public static DBConnector db;
     public static String lang = "Español";
