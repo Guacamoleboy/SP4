@@ -1,5 +1,6 @@
 package util;
 
+import App.AcceptedBooking;
 import App.BookingCard;
 import App.Tip;
 import App.Request;
@@ -9,6 +10,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static java.sql.DriverManager.getConnection;
 
 public class DBConnector {
 
@@ -25,7 +28,7 @@ public class DBConnector {
     public boolean connect(String url) {
 
         try {
-            con = DriverManager.getConnection(url);
+            con = getConnection(url);
             connected = true;
             initializeDatabase();
             return true;
@@ -411,7 +414,7 @@ public class DBConnector {
                 System.out.println("Created a database at:" + dbFile);
 
             }
-            con = java.sql.DriverManager.getConnection(url);
+            con = getConnection(url);
             connected = true;
             initializeDatabase();
             return true;
@@ -1434,6 +1437,269 @@ public class DBConnector {
             return false;
         }
 
+    }
+
+    // ____________________________________________________
+
+    public boolean saveToAcceptedBookings(int requestId, String comment, String customerName, int studentId, String status) {
+
+        String query = "INSERT INTO accepted_bookings (id, comments, customer, student, planned) VALUES (?, ?, ?, ?, ?)";
+
+        try (PreparedStatement stmt = con.prepareStatement(query)) {
+
+            stmt.setInt(1, requestId);
+            stmt.setString(2, comment);
+            stmt.setString(3, customerName);
+            stmt.setInt(4, studentId);
+            stmt.setString(5, status);
+
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // ____________________________________________________
+
+    public boolean isBookingAccepted(int requestId) {
+        String query = "SELECT accepted FROM bookings WHERE id = ?";
+
+        try (PreparedStatement stmt = con.prepareStatement(query)) {
+
+            stmt.setInt(1, requestId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                String status = rs.getString("accepted");
+                return "Yes".equalsIgnoreCase(status);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // ____________________________________________________
+
+    public String getBookingAcceptedStatus(int bookingId) {
+        String query = "SELECT accepted FROM bookings WHERE id = ?";
+
+        try (PreparedStatement stmt = con.prepareStatement(query)) {
+
+            stmt.setInt(1, bookingId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("accepted");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    // ____________________________________________________
+
+    public boolean acceptRequest(int requestId) {
+
+        if (!connected) {
+            System.out.println("Not connected to DB!");
+            return false;
+        }
+
+        String updateBooking = "UPDATE bookings SET accepted = 'Yes' WHERE id = ?";
+        String selectRequest = "SELECT sender, comment, receiver FROM request WHERE id = ?";
+        String insertAccepted = "INSERT INTO accepted_bookings (id, comments, customer, student, planned) VALUES (?, ?, ?, ?, ?)";
+        String deleteRequest = "DELETE FROM request WHERE id = ?";
+
+        try {
+            con.setAutoCommit(false);
+
+            // Update bookings.accepted
+            PreparedStatement stmt = con.prepareStatement(updateBooking);
+            stmt.setInt(1, requestId);
+            stmt.executeUpdate();
+            stmt.close();
+
+            // Select request info
+            stmt = con.prepareStatement(selectRequest);
+            stmt.setInt(1, requestId);
+            ResultSet rs = stmt.executeQuery();
+
+            String sender = null;
+            String comment = null;
+            int receiver = -1;
+
+            if (rs.next()) {
+                sender = rs.getString("sender");
+                comment = rs.getString("comment");
+                receiver = rs.getInt("receiver");
+            } else {
+                con.rollback();
+                rs.close();
+                stmt.close();
+                return false; // request not found
+            }
+            rs.close();
+            stmt.close();
+
+            // Insert into accepted_bookings
+            stmt = con.prepareStatement(insertAccepted);
+            stmt.setInt(1, requestId);
+            stmt.setString(2, comment);
+            stmt.setString(3, sender);
+            stmt.setInt(4, receiver);
+            stmt.setString(5, "Yes");
+            stmt.executeUpdate();
+            stmt.close();
+
+            // Delete request
+            stmt = con.prepareStatement(deleteRequest);
+            stmt.setInt(1, requestId);
+            stmt.executeUpdate();
+            stmt.close();
+
+            con.commit();
+            con.setAutoCommit(true);
+
+            return true;
+
+        } catch (SQLException e) {
+            try {
+                con.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // ____________________________________________________
+
+    public boolean cancelAcceptedBooking(int bookingId) {
+        String deleteAcceptedBooking = "DELETE FROM accepted_bookings WHERE id = ?";
+        String updateBookingStatus = "UPDATE bookings SET accepted = 'Denied' WHERE id = ?";
+
+        try {
+            con.setAutoCommit(false);
+
+            PreparedStatement stmt = con.prepareStatement(deleteAcceptedBooking);
+            stmt.setInt(1, bookingId);
+            int deletedRows = stmt.executeUpdate();
+            stmt.close();
+
+            PreparedStatement stmt2 = con.prepareStatement(updateBookingStatus);
+            stmt2.setInt(1, bookingId);
+            int updatedRows = stmt2.executeUpdate();
+            stmt2.close();
+
+            if (deletedRows == 1 && updatedRows == 1) {
+                con.commit();
+                con.setAutoCommit(true);
+                return true;
+            } else {
+                con.rollback();
+                con.setAutoCommit(true);
+                return false;
+            }
+
+        } catch (SQLException e) {
+            try {
+                con.rollback();
+                con.setAutoCommit(true);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // ____________________________________________________
+
+    public int getBookingIDByAcceptedBookingId(int acceptedBookingId) {
+        String query = "SELECT id FROM bookings WHERE id = (SELECT id FROM accepted_bookings WHERE id = ?)";
+        try (PreparedStatement stmt = con.prepareStatement(query)) {
+            stmt.setInt(1, acceptedBookingId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    // ____________________________________________________
+
+    public List<AcceptedBooking> getAcceptedBookingsForStudent(int studentId) {
+        List<AcceptedBooking> bookings = new ArrayList<>();
+        String query = "SELECT ab.id AS accepted_booking_id, b.id AS booking_id, ab.comments, ab.customer, ab.student, ab.planned, b.date, b.time " +
+                "FROM accepted_bookings ab " +
+                "JOIN bookings b ON ab.id = b.id " +
+                "WHERE ab.student = ? AND ab.planned = 'Yes'";
+
+        try (PreparedStatement stmt = con.prepareStatement(query)) {
+            stmt.setInt(1, studentId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                AcceptedBooking booking = new AcceptedBooking(
+                        rs.getInt("accepted_booking_id"),
+                        rs.getInt("booking_id"),
+                        rs.getString("comments"),
+                        rs.getString("customer"),
+                        rs.getInt("student"),
+                        rs.getString("planned"),
+                        rs.getString("date"),
+                        rs.getString("time")
+                );
+                bookings.add(booking);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return bookings;
+    }
+
+    // ____________________________________________________
+
+    public boolean cancelAcceptedBooking(int acceptedBookingId, int bookingId) {
+        String deleteAcceptedBooking = "DELETE FROM accepted_bookings WHERE id = ?";
+        String updateBookingStatus = "UPDATE bookings SET accepted = 'Denied' WHERE id = ?";
+
+        try {
+            con.setAutoCommit(false);
+
+            try (PreparedStatement deleteStmt = con.prepareStatement(deleteAcceptedBooking)) {
+                deleteStmt.setInt(1, acceptedBookingId);
+                deleteStmt.executeUpdate();
+            }
+
+            try (PreparedStatement updateStmt = con.prepareStatement(updateBookingStatus)) {
+                updateStmt.setInt(1, bookingId);
+                updateStmt.executeUpdate();
+            }
+
+            con.commit();
+            con.setAutoCommit(true);
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                con.rollback();
+                con.setAutoCommit(true);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            return false;
+        }
     }
 
 } // DBConnector end

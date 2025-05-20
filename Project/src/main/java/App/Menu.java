@@ -889,9 +889,7 @@ public class Menu extends Pane {
             for (Request req : requests) {
 
                 // Checks if booking is denied.
-                if (Main.db.isBookingDenied(req.getId())) {
-                    continue;
-                }
+
 
                 HBox singleRequestBox = new HBox(10);
                 singleRequestBox.setPadding(new Insets(10));
@@ -915,35 +913,42 @@ public class Menu extends Pane {
                 Animation.addHoverScaleEffectMore(denyBtn);
 
                 acceptBtn.setOnAction(e -> {
-                    boolean success = Main.db.updateBookingAcceptedStatus(req.getId(), "Yes");
+                    boolean success = Main.db.acceptRequest(req.getId());
                     if (success) {
-
                         Alert alert = new Alert(Alert.AlertType.INFORMATION);
                         alert.setTitle("Success");
                         alert.setHeaderText(null);
-                        alert.setContentText("Booking has been accepted");
+                        alert.setContentText("Booking accepted.");
                         alert.showAndWait();
 
                         messageArea.getChildren().clear();
                         messageArea.getChildren().add(createBookingRequestsContent());
                     } else {
-                        alertForgot("Failed to accept booking");
+                        alertForgot("Failed to accept booking.");
                     }
                 });
 
                 denyBtn.setOnAction(e -> {
-                    boolean success = Main.db.updateBookingAcceptedStatus(req.getId(), "Denied");
-                    if (success) {
+                    boolean updated = Main.db.updateBookingAcceptedStatus(req.getId(), "Denied");
+                    boolean saved = Main.db.saveToAcceptedBookings(
+                            req.getId(),
+                            req.getComment(),
+                            req.getSenderName(),
+                            currentUserId,
+                            "Denied"
+                    );
+
+                    if (updated && saved) {
                         Alert alert = new Alert(Alert.AlertType.INFORMATION);
                         alert.setTitle("Success");
                         alert.setHeaderText(null);
-                        alert.setContentText("Booking has been denied");
+                        alert.setContentText("Booking has been denied and recorded.");
                         alert.showAndWait();
 
                         messageArea.getChildren().clear();
                         messageArea.getChildren().add(createBookingRequestsContent());
                     } else {
-                        alertForgot("Failed to deny booking");
+                        alertForgot("Failed to deny and save booking");
                     }
                 });
 
@@ -981,21 +986,21 @@ public class Menu extends Pane {
         int currentUserId = Main.db.getStudentID(username);
         System.out.println("Current student_id for username " + username + ": " + currentUserId);
 
-        List<BookingCard> bookings = Main.db.getBookingCardsForUserWithAcceptedStatus(currentUserId, "Yes");
+        // Use AcceptedBooking instead of BookingCard
+        List<AcceptedBooking> bookings = Main.db.getAcceptedBookingsForStudent(currentUserId);
 
         if (bookings.isEmpty()) {
             Label noBookingsLabel = new Label("No active bookings.");
             noBookingsLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: #666;");
             bookingList.getChildren().add(noBookingsLabel);
         } else {
-            for (BookingCard booking : bookings) {
+            for (AcceptedBooking booking : bookings) {
                 HBox singleBookingBox = new HBox(10);
                 singleBookingBox.setPadding(new Insets(10));
                 singleBookingBox.setStyle("-fx-background-color: #d0d0d0; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0.3, 0, 3); " +
                         "-fx-background-radius: 15; -fx-border-color: #dddddd; -fx-border-radius: 15;");
                 singleBookingBox.setAlignment(Pos.CENTER_LEFT);
 
-                // Format display text for booking
                 String bookingText = "Date: " + booking.getDate() + " time: " + booking.getTime();
                 Label bookingLabel = new Label(bookingText);
                 bookingLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #444;");
@@ -1004,7 +1009,7 @@ public class Menu extends Pane {
 
                 Button cancelBtn = new Button("Cancel");
                 cancelBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; " +
-                        "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+                "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
 
                 Animation.addHoverScaleEffectMore(cancelBtn);
 
@@ -1017,8 +1022,8 @@ public class Menu extends Pane {
                     Optional<ButtonType> result = confirm.showAndWait();
 
                     if (result.isPresent() && result.get() == ButtonType.OK) {
-                        // FIX DET HER HVA FUCK
-                        boolean success = Main.db.updateBookingAcceptedStatus(Request.getId(), "Denied");
+                        // Use acceptedBookingId and bookingId from AcceptedBooking object
+                        boolean success = Main.db.cancelAcceptedBooking(booking.getAcceptedBookingId(), booking.getBookingId());
 
                         if (success) {
                             Alert alert = new Alert(Alert.AlertType.INFORMATION);

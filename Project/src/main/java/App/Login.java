@@ -108,7 +108,7 @@ public class Login extends Pane {
         Animation.addHoverScaleEffect(forgotButton);
 
         // Margins
-        VBox.setMargin(registerButton, new Insets(30, 0, 0, 0)); // More padding for the register button
+        VBox.setMargin(registerButton, new Insets(30, 0, 0, 0));
 
         // Add
         buttons.getChildren().addAll(loginButton, forgotButton); // HBox
