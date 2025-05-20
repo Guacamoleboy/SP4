@@ -452,29 +452,37 @@ public class Setting extends Pane {
     // _____________________________________________
 
     protected ScrollPane displayProfileColors() {
+
         VBox contentBox = new VBox();
+        contentBox.setFillWidth(true);
+        contentBox.setSpacing(0);
+        contentBox.setPadding(Insets.EMPTY);
+        contentBox.setStyle("-fx-padding: 0; -fx-margin: 0;");
 
         contentBox.getChildren().addAll(
                 createProfileSettingBox("Profile Colors", "/assets/icons/icon22.png", this::showColorPickerDialog, true, false),
-                createProfileSettingBox("Change About Me Header", "/assets/icons/icon22.png", this::editAboutMeHeader, false, false),
-                createProfileSettingBox("Change About Me Description", "/assets/icons/icon22.png", this::editAboutMeDescription, false, false),
-                createProfileSettingBox("Change About fun fact", "/assets/icons/icon22.png", this::editFunFact, false, false),
-                createProfileSettingBox("Change City", "/assets/icons/icon22.png", this::editCity, false, false),
-                createProfileSettingBox("Change Number", "/assets/icons/icon22.png", this::editNumber, false, false),
-                createProfileSettingBox("Change Email", "/assets/icons/icon22.png", this::editEmail, false, false),
-                createProfileSettingBox("Change profile picture", "/assets/icons/icon22.png", this::editProfilePicture, false, false),
-                createProfileSettingBox("Change Interests", "/assets/icons/icon22.png", this::editInterests, false, false),
-                createProfileSettingBox("Change Contact Me Header", "/assets/icons/icon22.png", this::editContactHeader, false, false),
-                createProfileSettingBox("Change Contact Me Description", "/assets/icons/icon22.png", this::editContactDescription, false, true)
+                createProfileSettingBox("Change About Me Header", "/assets/icons/icon23.png", this::editAboutMeHeader, false, false),
+                createProfileSettingBox("Change About Me Description", "/assets/icons/icon24.png", this::editAboutMeDescription, false, false),
+                createProfileSettingBox("Change About fun fact", "/assets/icons/icon25.png", this::editFunFact, false, false),
+                createProfileSettingBox("Change City", "/assets/icons/icon26.png", this::editCity, false, false),
+                createProfileSettingBox("Change Number", "/assets/icons/icon27.png", this::editNumber, false, false),
+                createProfileSettingBox("Change Email", "/assets/icons/icon28.png", this::editEmail, false, false),
+                createProfileSettingBox("Change profile picture", "/assets/icons/icon29.png", this::editProfilePicture, false, false),
+                createProfileSettingBox("Change Interests", "/assets/icons/icon30.png", this::editInterests, false, false),
+                createProfileSettingBox("Change Contact Me Header", "/assets/icons/icon31.png", this::editContactHeader, false, false),
+                createProfileSettingBox("Change Contact Me Description", "/assets/icons/icon32.png", this::editContactDescription, false, true)
         );
 
         ScrollPane scrollPane = new ScrollPane(contentBox);
         scrollPane.setFitToWidth(true);
-        scrollPane.setFitToHeight(true);
-        scrollPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        VBox.setVgrow(scrollPane, Priority.ALWAYS);
-        scrollPane.setStyle("-fx-background-color: transparent;");
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setStyle("-fx-background-color: transparent");
+        scrollPane.setPadding(Insets.EMPTY);
 
+        // Width fix
+        contentBox.minWidthProperty().bind(scrollPane.widthProperty());
+        contentBox.maxWidthProperty().bind(scrollPane.widthProperty());
 
         return scrollPane;
     }
@@ -482,41 +490,46 @@ public class Setting extends Pane {
     // _____________________________________________
 
     private HBox createProfileSettingBox(String labelText, String iconPath, Runnable action, boolean isFirst, boolean isLast) {
+
         HBox fullWidthHBox = new HBox();
         fullWidthHBox.setAlignment(Pos.CENTER_LEFT);
+        fullWidthHBox.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(fullWidthHBox, Priority.ALWAYS);
 
+        // Apply border only if not last
         if (!isLast) {
             fullWidthHBox.setStyle("-fx-border-width: 0 0 2px 0; -fx-border-color: #464646;");
         }
 
-        VBox greyRegion = new VBox();
+        // Grey region
+        HBox greyRegion = new HBox();
         greyRegion.setAlignment(Pos.CENTER_LEFT);
-        greyRegion.setStyle("-fx-background-color: #7c7c7c ; -fx-border-width: 0 2px 0 0; -fx-border-color: #464646;");
-        greyRegion.setPrefWidth(760 * 0.70);
+        greyRegion.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(greyRegion, Priority.ALWAYS);
+        greyRegion.setStyle("-fx-background-color: #7c7c7c; -fx-border-width: 0 2px 0 0; -fx-border-color: #464646;");
 
         Label label = new Label(labelText);
-        label.setStyle("-fx-font-size: 25px; -fx-text-fill: white; -fx-padding: 20px;");
+        label.setStyle("-fx-font-size: 18px; -fx-text-fill: white; -fx-padding: 20px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 4);");
         greyRegion.getChildren().add(label);
 
-        VBox colorRegion = new VBox();
+        // Color region
+        HBox colorRegion = new HBox();
+        colorRegion.setPadding(new Insets(10));
         colorRegion.setAlignment(Pos.CENTER);
-
 
         String borderRadius = "";
         if (isFirst) borderRadius = "-fx-background-radius: 0 20 0 0; -fx-border-radius: 0 20 0 0;";
         else if (isLast) borderRadius = "-fx-background-radius: 0 0 20 0; -fx-border-radius: 0 0 20 0;";
-
         colorRegion.setStyle("-fx-background-color: rgb(94,159,196); -fx-cursor: hand;" + borderRadius);
 
-        ImageView IconView = new ImageView(new Image(getClass().getResource(iconPath).toExternalForm()));
-        applyDropShadowEffect(IconView, 100, 100, 0.7);
-        colorRegion.getChildren().add(IconView);
+        ImageView iconView = new ImageView(new Image(getClass().getResource(iconPath).toExternalForm()));
+        applyDropShadowEffect(iconView, 75, 75, 0.7);
+        colorRegion.getChildren().add(iconView);
 
-
-        ScaleTransition scaleUp = new ScaleTransition(Duration.millis(100), IconView);
+        ScaleTransition scaleUp = new ScaleTransition(Duration.millis(100), iconView);
         scaleUp.setToX(1.08);
         scaleUp.setToY(1.08);
-        ScaleTransition scaleDown = new ScaleTransition(Duration.millis(100), IconView);
+        ScaleTransition scaleDown = new ScaleTransition(Duration.millis(100), iconView);
         scaleDown.setToX(1.0);
         scaleDown.setToY(1.0);
 
@@ -524,8 +537,13 @@ public class Setting extends Pane {
         colorRegion.setOnMouseExited(e -> scaleDown.playFromStart());
         colorRegion.setOnMouseClicked(e -> action.run());
 
+        // DEBUG: Use border colors to see widths
+        /*fullWidthHBox.setStyle("-fx-border-color: red;");
+        greyRegion.setStyle("-fx-border-color: green;");
+        colorRegion.setStyle("-fx-border-color: blue;");*/
 
         fullWidthHBox.getChildren().addAll(greyRegion, colorRegion);
+
         return fullWidthHBox;
     }
 
