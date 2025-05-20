@@ -58,6 +58,12 @@ public class Profile extends Pane {
 
     // ______________________________________
 
+    public void updateData(String username){
+        this.userData = Main.db.getUserData(username);
+    }
+
+    // ______________________________________
+
     public String getBanned(){
         return userData.get(6);
     }
@@ -266,6 +272,8 @@ public class Profile extends Pane {
         }
         return cuts;
     }
+
+
 
 
 }

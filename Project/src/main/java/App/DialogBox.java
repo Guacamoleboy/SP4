@@ -310,4 +310,56 @@ public class DialogBox extends Pane {
 
     }
 
+
+    public static String profileSettings(String title, String description, String content) {
+        Dialog<ButtonType> aboutme = new Dialog<>();
+        aboutme.setTitle(title);
+
+        // Header
+        Label headerLabel = new Label(description);
+        headerLabel.setTextAlignment(TextAlignment.CENTER);
+        headerLabel.setAlignment(Pos.CENTER);
+        headerLabel.setWrapText(true);
+        headerLabel.setPadding(new Insets(15, 20, 0, 20));
+
+        VBox headerBox = new VBox(headerLabel);
+        headerBox.setAlignment(Pos.CENTER);
+        aboutme.getDialogPane().setHeader(headerBox);
+
+        // Request
+        TextArea commentInput = new TextArea();
+        commentInput.setText(content != null ? content : "");
+        commentInput.setWrapText(true);
+        commentInput.setMaxWidth(200);
+        commentInput.setStyle(
+                "-fx-text-fill: #3a3a3a;" +
+                        "-fx-font-size: 14px;" +
+                        "-fx-font-weight: bold;"
+        );
+
+        VBox contentBox = new VBox(10, commentInput);
+        contentBox.setAlignment(Pos.CENTER);
+        contentBox.setPadding(new Insets(10));
+        contentBox.setStyle("-fx-background-color: transparent;");
+
+        aboutme.getDialogPane().setContent(contentBox);
+
+        // Buttons
+        ButtonType saveButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+        aboutme.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
+
+        // Show and get result
+        Optional<ButtonType> result = aboutme.showAndWait();
+
+        // Save result to database
+        if (result.isPresent() && result.get() == saveButtonType) {
+            String comment = commentInput.getText().trim();
+
+            if (!comment.isEmpty()) {
+                return comment;
+            }
+        }
+        return null;
+    }
+
 } // Dialog Class end

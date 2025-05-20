@@ -1407,4 +1407,24 @@ public class DBConnector {
 
     }
 
+    // ____________________________________________________
+
+    public boolean setEmail(String username, String email) {
+
+        String query = "UPDATE users SET email = ? WHERE username = ?";
+
+        try (PreparedStatement setEmail = con.prepareStatement(query)) {
+            setEmail.setString(1, email);
+            setEmail.setString(2, username);
+            int rowsAffected = setEmail.executeUpdate();
+
+            return rowsAffected > 0; // true
+
+        } catch (SQLException e) {
+            System.out.println("setEmail failed!!!");
+            return false;
+        }
+
+    }
+
 } // DBConnector end
