@@ -2642,11 +2642,10 @@ public class Menu extends Pane {
             String hairTypeStr = Main.db.getHairTypeSummary(booking.getHairtypeId()); // e.g., "Curly, Brown, Medium, Female"
 
             Label date = new Label(dateStr);
-            Text place = new Text(addressStr);
-            Text hair = new Text("Preferred hair: " + hairTypeStr);
-            place.setTextAlignment(TextAlignment.CENTER);
-            place.setWrappingWidth(140);
-            place.setFill(Color.WHITE);
+            Text hair = new Text(addressStr+"\nPreferred hair: " + hairTypeStr);
+            hair.setTextAlignment(TextAlignment.CENTER);
+            hair.setWrappingWidth(140);
+            hair.setFill(Color.WHITE);
 
             Label time = new Label(timeStr);
             Label rating = new Label(convertToStars(ratingInt)); // Optional
@@ -2678,7 +2677,6 @@ public class Menu extends Pane {
             wave.toBack();
 
             // Apply CSS
-            place.getStyleClass().add("card-visuals-lol");
             time.getStyleClass().add("card-visuals-bold");
             rating.getStyleClass().add("card-visuals-rating");
 
@@ -2695,7 +2693,7 @@ public class Menu extends Pane {
 
             Animation.addHoverScaleEffectVBox(card);
 
-            card.getChildren().addAll(headerWithWave, time, place, hair, spacer, rating);
+            card.getChildren().addAll(headerWithWave, time, hair, spacer, rating);
             cardBox.getChildren().add(card);
         }
 
