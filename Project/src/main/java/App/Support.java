@@ -167,7 +167,6 @@ public class Support {
         profileVBox.setPrefHeight(560);
         profileVBox.setStyle("-fx-background-color: #4b4747");
 
-        // HBox (Top content)
         HBox profilePictureHBox = new HBox();
         profilePictureHBox.setPrefHeight(134);
         profilePictureHBox.setPrefWidth(760);
@@ -180,38 +179,33 @@ public class Support {
         responseArea.getStyleClass().add("text-area");
         responseArea.setWrapText(true);
         responseArea.setPrefHeight(320);
-
-        // Removes the placeholder value on click
-        responseArea.setOnMouseClicked(e -> {
-            responseArea.clear();
-        });
+        responseArea.setOnMouseClicked(e -> responseArea.clear());
 
         HBox placeholderWrapper = new HBox(responseArea);
         placeholderWrapper.setAlignment(Pos.TOP_LEFT);
         placeholderWrapper.setPadding(new Insets(0, 0, 0, 20));
 
-        // Left (1/4)
         VBox leftPane = new VBox();
         leftPane.setPrefWidth(190);
         leftPane.setStyle("-fx-background-color: rgb(220,160,84); -fx-background-radius: 20px 0 0 0; -fx-border-radius: 20px 0 0 0; -fx-border-width: 0 2px 0 0; -fx-border-color: rgba(0, 0, 0, 0.5); ");
         leftPane.setAlignment(Pos.CENTER);
         Label ticketLabel = new Label("165112");
-        ticketLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: #FFF");
+        ticketLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: #FFF; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0.3, 0, 2);");
         leftPane.getChildren().add(ticketLabel);
 
         Image sendButtonIcon = new Image(Support.class.getResource("/assets/icons/icon17.png").toExternalForm());
         ImageView sendButtonIconView = new ImageView(sendButtonIcon);
         sendButtonIconView.setFitWidth(50);
         sendButtonIconView.setFitHeight(50);
+        sendButtonIconView.setStyle("-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0.3, 0, 2);");
         sendButtonIconView.setPreserveRatio(true);
 
-        // Right (3/4)
         VBox rightPane = new VBox();
         rightPane.setPrefWidth(570);
         rightPane.setAlignment(Pos.CENTER);
         rightPane.setStyle("-fx-background-color: #D3D3D3FF; -fx-background-radius: 0 20px 0 0; -fx-border-radius: 0 20px 0 0;");
         Label bannerLabel = new Label("Unban me bro...");
-        bannerLabel.setStyle("-fx-font-size: 24px;");
+        bannerLabel.setStyle("-fx-font-size: 24px; ; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0.3, 0, 2);");
         rightPane.getChildren().add(bannerLabel);
 
         profilePictureHBox.getChildren().addAll(leftPane, rightPane);
@@ -219,7 +213,6 @@ public class Support {
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
-        // Bottom HBox
         HBox bottomHBox = new HBox();
         bottomHBox.setPrefHeight(80);
         bottomHBox.setPrefWidth(760);
@@ -232,7 +225,25 @@ public class Support {
         VBox leftFooter = new VBox();
         leftFooter.setPrefWidth(760 * 0.85);
         leftFooter.setStyle("-fx-background-color: #D3D3D3FF; -fx-background-radius: 0 0 0 20px; -fx-border-radius: 0 0 0 20px;");
-        leftFooter.setAlignment(Pos.CENTER);
+        leftFooter.setAlignment(Pos.CENTER_LEFT);
+
+        HBox buttonGroup = new HBox(10);
+        buttonGroup.setAlignment(Pos.CENTER_LEFT);
+        buttonGroup.setPadding(new Insets(0, 0, 0, 20));
+
+        Button banButton = new Button("Ban");
+        Button unbanButton = new Button("Unban");
+
+        // Button visuals
+        unbanButton.setStyle("-fx-border-color: black; -fx-border-insets: 0; -fx-background-insets: 0; -fx-border-width: 2px; -fx-background-color: green; -fx-text-fill: white; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0.3, 0, 2);");
+        banButton.setStyle("-fx-border-color: black; -fx-border-insets: 0; -fx-background-insets: 0; -fx-border-width: 2px; -fx-background-color: red; -fx-text-fill: white; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0.3, 0, 2);");
+
+        // Hover
+        Animation.addHoverScaleEffectMore(banButton);
+        Animation.addHoverScaleEffectMore(unbanButton);
+
+        buttonGroup.getChildren().addAll(banButton, unbanButton);
+        leftFooter.getChildren().add(buttonGroup);
 
         VBox rightFooter = new VBox();
         rightFooter.setPrefWidth(760 * 0.15);
@@ -245,9 +256,8 @@ public class Support {
             p.getChildren().addAll(menu.displayHeader(), Support.displayTicketStatus(), Support.displayTickets(p));
         });
 
-        // Footer
         bottomHBox.getChildren().addAll(leftFooter, rightFooter);
-        profileVBox.getChildren().addAll(profilePictureHBox, placeholderWrapper ,spacer, bottomHBox);
+        profileVBox.getChildren().addAll(profilePictureHBox, placeholderWrapper, spacer, bottomHBox);
 
         return profileVBox;
     }

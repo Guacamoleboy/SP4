@@ -196,6 +196,11 @@ public class Register extends Pane {
             return false;
         }
 
+        if (Main.db.emailExists(getEmail())) {
+            alert("Email already exists");
+            return false;
+        }
+
         return true;
     }
 

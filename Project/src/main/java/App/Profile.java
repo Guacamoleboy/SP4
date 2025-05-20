@@ -58,6 +58,12 @@ public class Profile extends Pane {
 
     // ______________________________________
 
+    public void updateData(String username){
+        this.userData = Main.db.getUserData(username);
+    }
+
+    // ______________________________________
+
     public String getBanned(){
         return userData.get(6);
     }
@@ -160,7 +166,8 @@ public class Profile extends Pane {
         }
 
         String lastOnlineStr = userData.get(17);
-        LocalDateTime lastOnlineTime = LocalDateTime.parse(lastOnlineStr);
+        System.out.println(lastOnlineStr);
+        /*LocalDateTime lastOnlineTime = LocalDateTime.parse(lastOnlineStr);
         LocalDateTime now = LocalDateTime.now();
 
         Duration duration = Duration.between(lastOnlineTime, now);
@@ -185,7 +192,8 @@ public class Profile extends Pane {
             return "Last online: " + minutes + (minutes == 1 ? " minute" : " minutes") + " ago";
         } else {
             return "Last online: " + seconds + (seconds == 1 ? " second" : " seconds") + " ago";
-        }
+        }*/
+        return "1 minutes ago";
     }
 
     // ______________________________________
@@ -264,6 +272,8 @@ public class Profile extends Pane {
         }
         return cuts;
     }
+
+
 
 
 }

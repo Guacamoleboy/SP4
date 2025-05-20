@@ -24,9 +24,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import javafx.scene.layout.Priority;
@@ -38,6 +40,7 @@ import javafx.scene.text.TextAlignment;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 public class Menu extends Pane {
 
@@ -85,6 +88,8 @@ public class Menu extends Pane {
         this.password = password;
         this.user = new Profile(username);
         this.userProfile = new Profile(this.username);
+
+
 
         // Scene Setup
         this.sceneWidth = sceneWidth;
@@ -196,7 +201,7 @@ public class Menu extends Pane {
 
     // ____________________________________________________
 
-    public VBox displayMyMessages() {
+    public VBox displayMyMessages(String username) {
 
         VBox messageVBox = new VBox();
         messageVBox.setLayoutX(20);
@@ -218,45 +223,31 @@ public class Menu extends Pane {
         sidebar.setPadding(Insets.EMPTY);
         sidebar.setStyle("-fx-background-color: #696969; -fx-border-radius: 20 0 0 20; -fx-background-radius: 20 0 0 20;");
 
-        /*
-        INDLÆS BESKEDER SKAL LAVES HER
-        KAN IKKE TESTE FØR JEG FÅR MIN DATABASE TIL AT VIRKE....
-
-        ArrayList<String> persons = Main.db.loadYourMessages(username);
-        for (String person : persons) {
-            Button personButton = new Button(person);
-            personButton.getStyleClass().addAll("user-button");
-            personButton.setOnAction(e -> {
-                currentChatPartner = personButton.getText();
-                messageArea.getChildren().clear();
-                loadChatHistory(person);
-                sidebar.getChildren().add(personButton);
-            });
-        }*/
-        System.out.println("Lav indlæsning af beskeder på linje 221-235 under Menu.java (Metode er lavet!)");
-
-
-        Button user1 = new Button("Jonas");
-        Button user2 = new Button("Andreas");
-        Button user3 = new Button("Ebou");
-        Button user4 = new Button("Carl-Emil");
-
-        sidebar.getChildren().addAll(user1, user2, user3, user4);
-        user1.getStyleClass().addAll("user-button", "user-button1");
-        user2.getStyleClass().add("user-button");
-        user3.getStyleClass().add("user-button");
-        user4.getStyleClass().add("user-button");
-
         VBox rightContent = new VBox(10);
         rightContent.setPrefWidth(760 * 0.74);
         rightContent.setAlignment(Pos.TOP_LEFT);
         rightContent.setPadding(new Insets(0));
+        rightContent.setStyle("-fx-background-color: transparent;");
 
         VBox messageArea = new VBox(15);
         messageArea.setPadding(new Insets(20));
         messageArea.setAlignment(Pos.TOP_LEFT);
         messageArea.setStyle("-fx-background-color: transparent;");
-        messageArea.setPrefHeight(420);
+
+        ScrollPane scrollPane = new ScrollPane(messageArea);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPrefHeight(440);
+        scrollPane.setMaxHeight(400);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setStyle(
+                "-fx-background-color: transparent; " +
+                        "-fx-background-insets: 0; " +
+                        "-fx-border-radius: 0 25px 0 0; " +
+                        "-fx-background-radius: 0 25px 0 0; " +
+                        "-fx-padding: 0; " +
+                        "-fx-border-color: transparent;"
+        );
 
         HBox inputArea = new HBox(10);
         inputArea.setPadding(new Insets(10));
@@ -277,55 +268,69 @@ public class Menu extends Pane {
         sendButton.setGraphic(sendIconView);
         sendButton.setStyle("-fx-background-color: orange; -fx-border-radius: 20px; -fx-background-radius: 20px; -fx-background-insets: 0; -fx-border-insets: 0; -fx-border-width: 1.5px; -fx-border-color: rgba(0,0,0,0.5); -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0.3, 0, 2);");
 
+        messageArea.heightProperty().addListener((obs, oldVal, newVal) -> scrollPane.setVvalue(1.0));
+
+        final String[] currentChatPartner = {null};
+
         sendButton.setOnAction(e -> {
             String text = messageInput.getText().trim();
-            if (!text.isEmpty()) {
+            if (!text.isEmpty() && currentChatPartner[0] != null) {
                 messageArea.getChildren().add(
-                        createMessageBubble(text, true, this.username, "Now")
+                        createMessageBubble(text, true, username, "Now")
                 );
-                sendMessage(messageInput.getText());
+                Main.db.saveMessage(username, currentChatPartner[0], text);
                 messageInput.clear();
+                scrollPane.layout();
+                scrollPane.setVvalue(1.0);
             }
         });
 
         inputArea.getChildren().addAll(messageInput, sendButton);
-        rightContent.getChildren().addAll(messageArea, inputArea);
-
+        rightContent.getChildren().addAll(scrollPane, inputArea);
+        VBox.setVgrow(scrollPane, Priority.ALWAYS);
         messageHBox.getChildren().addAll(sidebar, rightContent);
         messageVBox.getChildren().add(messageHBox);
 
-        user1.setOnAction(e -> {
-            currentChatPartner = user1.getText();
-            messageArea.getChildren().clear();
-            messageArea.getChildren().addAll(
-                    createMessageBubble("Shit du lugtede forleden bro.. Det helt galt. Kom aldrig igen. Forstår du?", false, "Ebou", "10:15"),
-                    createMessageBubble("My bad nigga. Jeg havde lort i numsen. Skal nok gå i bad næste gang.", true,"Jonas", "10:16"),
-                    createMessageBubble("Nigga what? Yous 20 and don't know how to wipe? Det low key crazy. Men fair nok. Wipe lige næste gang. Ses!", false,"Ebou", "10:17")
-            );
-        });
-        user2.setOnAction(e -> {
-            messageArea.getChildren().clear();
-            messageArea.getChildren().addAll(
-                    createMessageBubble("Det her er en tekst. Forstår du? Det tror jeg ikke du gør..", false, "Jonas", "10:15"),
-                    createMessageBubble("Det ren GG..", true,"Andreas", "10:16"),
-                    createMessageBubble("Nigga what?", false,"Jonas", "10:17")
-            );
-        });
-        user3.setOnAction(e -> {
-            messageArea.getChildren().clear();
-            messageArea.getChildren().addAll(
-                    createMessageBubble("Shit jeg er bare ikke ham jo..", false, "Jonas", "10:15"),
-                    createMessageBubble("Fax lil bro. Straight up fax. Ong no cap.", true,"Ebou", "10:16")
-            );
-        });
-        user4.setOnAction(e -> {
-            messageArea.getChildren().clear();
-            messageArea.getChildren().addAll(
-                    createMessageBubble("Hvad er dit navn", false, "Jonas", "10:15"),
-                    createMessageBubble("Carl Emil uden bindesteg din idiot.. Forstår du? Det var dog utroligt. Jeg er lige her jo!", true,"Carl Emil", "10:16"),
-                    createMessageBubble("lol. Muted.", false,"Jonas", "10:17")
-            );
-        });
+        // Load chat partners dynamically
+        ArrayList<String> chatPartners = Main.db.loadYourMessages(username);
+
+        for (int i = 0; i < chatPartners.size(); i++) {
+            String partner = chatPartners.get(i);
+            Button userButton = new Button(partner);
+
+            if (i == 0) {
+                userButton.getStyleClass().addAll("user-button", "user-button1");
+            } else {
+                userButton.getStyleClass().add("user-button");
+            }
+
+            sidebar.getChildren().add(userButton);
+
+            userButton.setOnAction(ev -> {
+                currentChatPartner[0] = partner;
+                messageArea.getChildren().clear();
+
+                ResultSet rs = Main.db.getMessages(username, partner);
+                try {
+                    while (rs != null && rs.next()) {
+                        String sender = rs.getString("sender");
+                        String content = rs.getString("content");
+                        String fullTimestamp = rs.getString("timestamp");
+                        String timeOnly = fullTimestamp.substring(11, 16); // Array index mellem 11 og 16 altså 19:06 (5 values)
+
+                        boolean isSender = sender.equals(username);
+                        messageArea.getChildren().add(
+                                createMessageBubble(content, isSender, sender, timeOnly)
+                        );
+                    }
+                } catch (SQLException ex) {
+                    System.out.println("Error loading messages: " + ex.getMessage());
+                }
+
+                scrollPane.layout();
+                scrollPane.setVvalue(1.0);
+            });
+        }
 
         return messageVBox;
     }
@@ -482,7 +487,7 @@ public class Menu extends Pane {
         Button setting1 = new Button("Log Out");
         Button setting2 = new Button("Language");
         Button setting3 = new Button("Darkmode");
-        Button setting4 = new Button("Change Profile Colors");
+        Button setting4 = new Button("Edit profile");
         Button setting5 = new Button("Delete Account");
 
         sidebar.getChildren().addAll(setting1, setting2, setting3, setting4, setting5);
@@ -763,12 +768,12 @@ public class Menu extends Pane {
 
         setting2.setOnAction(e -> {
             messageArea.getChildren().clear();
-            messageArea.getChildren().add(displayActiveBookinsCancel());
+            messageArea.getChildren().add(displayActiveBookingsCancel());
         });
 
         setting3.setOnAction(e -> {
             messageArea.getChildren().clear();
-            messageArea.getChildren().add(createTipsContent());
+            messageArea.getChildren().add(createTipsContent(username));
         });
 
         return settingsVBox;
@@ -776,9 +781,10 @@ public class Menu extends Pane {
 
     // ____________________________________________________
 
-    private Node createTipsContent() {
+    private Node createTipsContent(String username) {
+
         VBox tipsBox = new VBox(15);
-        tipsBox.setPadding(new Insets(10, 10, 10, 10));
+        tipsBox.setPadding(new Insets(10));
         tipsBox.setPrefHeight(480);
         tipsBox.setPrefWidth(Double.MAX_VALUE);
         tipsBox.setStyle("-fx-background-color: #e1e1e1; -fx-background-radius: 0 20px 20px 0; -fx-border-radius: 0 20px 20px 0; -fx-border-color: #ccc; -fx-border-width: 1px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 4);");
@@ -786,18 +792,16 @@ public class Menu extends Pane {
         Label header = new Label("Recent tips");
         header.setStyle("-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #4d4d4d; -fx-border-width: 0 0 2px 0; -fx-border-color: orange;");
 
-        // Tip list container
         VBox tipList = new VBox(10);
 
-        String[] comments = {
-                "Tak for sidst!",
-                "Slap af en fade bro! :fire:",
-                "Du fuckede op, men respekt nok. Du får lige lidt."
-        };
-        String[] amounts = { "$50", "$30", "$75" };
+        // Get tips from DB
+        List<Tip> tips = Main.db.getTipsForUser(username);
 
-        for (int i = 0; i < comments.length; i++) {
+        double totalTips = 0;
+        double thisMonthTips = 0;
+        YearMonth currentMonth = YearMonth.now();
 
+        for (Tip tip : tips) {
             VBox singleTipBox = new VBox();
             singleTipBox.setPadding(new Insets(10));
             singleTipBox.setStyle("-fx-background-color: #d0d0d0; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0.3, 0, 3); -fx-background-radius: 15; -fx-border-color: #dddddd; -fx-border-radius: 15;");
@@ -805,10 +809,10 @@ public class Menu extends Pane {
             HBox tipLine = new HBox();
             tipLine.setAlignment(Pos.CENTER_LEFT);
 
-            Label commentLabel = new Label(comments[i]);
+            Label commentLabel = new Label(tip.comment != null ? tip.comment : "(no comment)");
             commentLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #444;");
 
-            Label amountLabel = new Label(amounts[i]);
+            Label amountLabel = new Label("$" + String.format("%.2f", tip.amount));
             amountLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #41bd25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0.3, 0, 1);");
 
             HBox.setHgrow(commentLabel, Priority.ALWAYS);
@@ -818,6 +822,8 @@ public class Menu extends Pane {
             singleTipBox.getChildren().add(tipLine);
 
             tipList.getChildren().add(singleTipBox);
+
+            totalTips += tip.amount;
         }
 
         VBox.setVgrow(tipList, Priority.ALWAYS);
@@ -832,7 +838,7 @@ public class Menu extends Pane {
         totalTipsBox.setStyle("-fx-background-color: #e0ffe0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0.3, 0, 3);");
         Label totalLabel = new Label("Total Tips");
         totalLabel.setStyle("-fx-font-weight: bold;");
-        Label totalAmount = new Label("$155");
+        Label totalAmount = new Label("$" + String.format("%.2f", totalTips));
         totalTipsBox.getChildren().addAll(totalLabel, totalAmount);
 
         VBox monthTipsBox = new VBox();
@@ -841,7 +847,7 @@ public class Menu extends Pane {
         monthTipsBox.setStyle("-fx-background-color: #e0f7ff; -fx-border-radius: 8; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0.3, 0, 3);");
         Label monthLabel = new Label("This Month");
         monthLabel.setStyle("-fx-font-weight: bold;");
-        Label monthAmount = new Label("$80");
+        Label monthAmount = new Label("$" + String.format("%.2f", thisMonthTips));
         monthTipsBox.getChildren().addAll(monthLabel, monthAmount);
 
         HBox.setHgrow(totalTipsBox, Priority.ALWAYS);
@@ -851,7 +857,6 @@ public class Menu extends Pane {
 
         summaryBox.getChildren().addAll(totalTipsBox, monthTipsBox);
 
-        // Add all to main VBox
         tipsBox.getChildren().addAll(header, tipList, summaryBox);
         return tipsBox;
     }
@@ -859,6 +864,7 @@ public class Menu extends Pane {
     // ____________________________________________________
 
     private Node createBookingRequestsContent() {
+
         VBox bookingsBox = new VBox(15);
         bookingsBox.setPadding(new Insets(10));
         bookingsBox.setPrefHeight(480);
@@ -870,193 +876,171 @@ public class Menu extends Pane {
 
         VBox bookingList = new VBox(10);
 
-        String[] bookings = {
-                "Haircut with Jonas - 26.03 - 14:00",
-                "Fade with Andreas - 27.03 - 11:30",
-                "Beard trim with Carl Emil - 28.03 - 16:00"
-        };
+        int currentUserId = Main.db.getStudentID(username);
+        System.out.println("Current student_id for username " + username + ": " + currentUserId);
 
-        for (String booking : bookings) {
-            VBox singleBookingBox = new VBox();
-            singleBookingBox.setPadding(new Insets(10));
-            singleBookingBox.setStyle("-fx-background-color: #d0d0d0; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0.3, 0, 3); -fx-background-radius: 15; -fx-border-color: #dddddd; -fx-border-radius: 15;");
+        List<Request> requests = Main.db.getRequestsForUser(currentUserId);
 
-            HBox bookingLine = new HBox(10);
-            bookingLine.setAlignment(Pos.CENTER_LEFT);
+        if (requests.isEmpty()) {
+            Label noRequestsLabel = new Label("No booking requests.");
+            noRequestsLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: #666;");
+            bookingList.getChildren().add(noRequestsLabel);
+        } else {
+            for (Request req : requests) {
 
-            Label bookingLabel = new Label(booking);
-            bookingLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #444;");
-            HBox.setHgrow(bookingLabel, Priority.ALWAYS);
-            bookingLabel.setMaxWidth(Double.MAX_VALUE);
-
-            Button acceptBtn = new Button("Accept");
-            acceptBtn.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; " +
-                    "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
-
-            Button denyBtn = new Button("Deny");
-            denyBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; " +
-                    "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
-
-            // Hover
-            Animation.addHoverScaleEffectMore(acceptBtn);
-            Animation.addHoverScaleEffectMore(denyBtn);
-
-            acceptBtn.setOnAction(e -> {
-                String bookingInfo = bookingLabel.getText();
-
-                // Extract booking details
-                String[] parts = bookingInfo.split(" - ");
-                String studentName = parts[0].split(" with ")[1];
-                String date = parts[1];
-                String time = parts[2];
-
-                // Update booking status in database
-                boolean success = Main.db.executeUpdate("UPDATE bookings SET accepted = 'Yes' WHERE student_id = (SELECT id FROM users WHERE username = '" +
-                        studentName + "') AND date = '" + date + "' AND time = '" + time + "'");
-
-                if (success) {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Success");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Booking has been accepted");
-                    alert.showAndWait();
-
-                    // Refresh the booking list
-                    messageArea.getChildren().clear();
-                    messageArea.getChildren().add(createBookingRequestsContent());
-                } else {
-                    alertForgot("Failed to accept booking");
+                // Checks if booking is denied.
+                if (Main.db.isBookingDenied(req.getId())) {
+                    continue;
                 }
-            });
 
-            denyBtn.setOnAction(e -> {
-                String bookingInfo = bookingLabel.getText();
+                HBox singleRequestBox = new HBox(10);
+                singleRequestBox.setPadding(new Insets(10));
+                singleRequestBox.setStyle("-fx-background-color: #d0d0d0; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0.3, 0, 3); -fx-background-radius: 15; -fx-border-color: #dddddd; -fx-border-radius: 15;");
+                singleRequestBox.setAlignment(Pos.CENTER_LEFT);
 
-                // Extract booking details
-                String[] parts = bookingInfo.split(" - ");
-                String studentName = parts[0].split(" with ")[1];
-                String date = parts[1];
-                String time = parts[2];
+                Label requestLabel = new Label("Request from " + req.getSenderName() + ": " + req.getComment());
+                requestLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #444;");
+                HBox.setHgrow(requestLabel, Priority.ALWAYS);
+                requestLabel.setMaxWidth(Double.MAX_VALUE);
 
-                // Update booking status in database
-                boolean success = Main.db.executeUpdate("UPDATE bookings SET accepted = 'No' WHERE student_id = (SELECT id FROM users WHERE username = '" +
-                        studentName + "') AND date = '" + date + "' AND time = '" + time + "'");
+                Button acceptBtn = new Button("Accept");
+                acceptBtn.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; " +
+                        "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
 
-                if (success) {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Success");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Booking has been denied");
-                    alert.showAndWait();
+                Button denyBtn = new Button("Deny");
+                denyBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; " +
+                        "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
 
-                    // Refresh the booking list
-                    messageArea.getChildren().clear();
-                    messageArea.getChildren().add(createBookingRequestsContent());
-                } else {
-                    alertForgot("Failed to deny booking");
-                }
-            });
+                Animation.addHoverScaleEffectMore(acceptBtn);
+                Animation.addHoverScaleEffectMore(denyBtn);
 
-            HBox requestLine = new HBox(10);
-            requestLine.setAlignment(Pos.CENTER_LEFT);
-            requestLine.getChildren().addAll(bookingLabel, acceptBtn, denyBtn);
-            singleBookingBox.getChildren().add(requestLine);
+                acceptBtn.setOnAction(e -> {
+                    boolean success = Main.db.updateBookingAcceptedStatus(req.getId(), "Yes");
+                    if (success) {
 
-            bookingList.getChildren().add(singleBookingBox);
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Success");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Booking has been accepted");
+                        alert.showAndWait();
+
+                        messageArea.getChildren().clear();
+                        messageArea.getChildren().add(createBookingRequestsContent());
+                    } else {
+                        alertForgot("Failed to accept booking");
+                    }
+                });
+
+                denyBtn.setOnAction(e -> {
+                    boolean success = Main.db.updateBookingAcceptedStatus(req.getId(), "Denied");
+                    if (success) {
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Success");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Booking has been denied");
+                        alert.showAndWait();
+
+                        messageArea.getChildren().clear();
+                        messageArea.getChildren().add(createBookingRequestsContent());
+                    } else {
+                        alertForgot("Failed to deny booking");
+                    }
+                });
+
+                HBox actionBox = new HBox(10, acceptBtn, denyBtn);
+                actionBox.setAlignment(Pos.CENTER_RIGHT);
+
+                singleRequestBox.getChildren().addAll(requestLabel, actionBox);
+                bookingList.getChildren().add(singleRequestBox);
+            }
         }
 
         VBox.setVgrow(bookingList, Priority.ALWAYS);
-
         bookingsBox.getChildren().addAll(header, bookingList);
+
         return bookingsBox;
     }
 
     // ____________________________________________________
 
-    private Node displayActiveBookinsCancel() {
+    private Node displayActiveBookingsCancel() {
         VBox bookingsBox = new VBox(15);
         bookingsBox.setPadding(new Insets(10));
         bookingsBox.setPrefHeight(480);
         bookingsBox.setPrefWidth(Double.MAX_VALUE);
-        bookingsBox.setStyle("-fx-background-color: #e1e1e1; -fx-background-radius: 0 20px 20px 0; -fx-border-radius: 0 20px 20px 0; -fx-border-color: #ccc; -fx-border-width: 1px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 4);");
+        bookingsBox.setStyle("-fx-background-color: #e1e1e1; -fx-background-radius: 0 20px 20px 0; " +
+                "-fx-border-radius: 0 20px 20px 0; -fx-border-color: #ccc; -fx-border-width: 1px; " +
+                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 4);");
 
-        Label header = new Label("Cancel booking");
-        header.setStyle("-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #4d4d4d; -fx-border-width: 0 0 2px 0; -fx-border-color: orange;");
+        Label header = new Label("Cancel Booking");
+        header.setStyle("-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #4d4d4d; " +
+                "-fx-border-width: 0 0 2px 0; -fx-border-color: orange;");
 
         VBox bookingList = new VBox(10);
 
-        String[] bookings = {
-                "Haircut with Jonas - 26.03 - 14:00",
-                "Fade with Andreas - 27.03 - 11:30",
-                "Beard trim with Carl Emil - 28.03 - 16:00"
-        };
+        int currentUserId = Main.db.getStudentID(username);
+        System.out.println("Current student_id for username " + username + ": " + currentUserId);
 
-        for (String booking : bookings) {
-            VBox singleBookingBox = new VBox();
-            singleBookingBox.setPadding(new Insets(10));
-            singleBookingBox.setStyle("-fx-background-color: #d0d0d0; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0.3, 0, 3); -fx-background-radius: 15; -fx-border-color: #dddddd; -fx-border-radius: 15;");
+        List<BookingCard> bookings = Main.db.getBookingCardsForUserWithAcceptedStatus(currentUserId, "Yes");
 
-            HBox bookingLine = new HBox(10);
-            bookingLine.setAlignment(Pos.CENTER_LEFT);
+        if (bookings.isEmpty()) {
+            Label noBookingsLabel = new Label("No active bookings.");
+            noBookingsLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: #666;");
+            bookingList.getChildren().add(noBookingsLabel);
+        } else {
+            for (BookingCard booking : bookings) {
+                HBox singleBookingBox = new HBox(10);
+                singleBookingBox.setPadding(new Insets(10));
+                singleBookingBox.setStyle("-fx-background-color: #d0d0d0; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0.3, 0, 3); " +
+                        "-fx-background-radius: 15; -fx-border-color: #dddddd; -fx-border-radius: 15;");
+                singleBookingBox.setAlignment(Pos.CENTER_LEFT);
 
-            Label bookingLabel = new Label(booking);
-            bookingLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #444;");
-            HBox.setHgrow(bookingLabel, Priority.ALWAYS);
-            bookingLabel.setMaxWidth(Double.MAX_VALUE);
+                // Format display text for booking
+                String bookingText = "Date: " + booking.getDate() + " time: " + booking.getTime();
+                Label bookingLabel = new Label(bookingText);
+                bookingLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #444;");
+                HBox.setHgrow(bookingLabel, Priority.ALWAYS);
+                bookingLabel.setMaxWidth(Double.MAX_VALUE);
 
-            Button denyBtn = new Button("Cancel");
-            denyBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; " +
-                    "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
+                Button cancelBtn = new Button("Cancel");
+                cancelBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; " +
+                        "-fx-font-size: 12px; -fx-padding: 4 10; -fx-background-radius: 20px; -fx-border-radius: 20px;");
 
-            // Hover
-            Animation.addHoverScaleEffectMore(denyBtn);
+                Animation.addHoverScaleEffectMore(cancelBtn);
 
-            denyBtn.setOnAction(e -> {
-                String bookingInfo = bookingLabel.getText();
+                cancelBtn.setOnAction(e -> {
+                    Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+                    confirm.setTitle("Confirm Cancellation");
+                    confirm.setHeaderText(null);
+                    confirm.setContentText("Are you sure you want to cancel this booking?");
 
-                // Extract booking details
-                String[] parts = bookingInfo.split(" - ");
-                String studentName = parts[0].split(" with ")[1];
-                String date = parts[1];
-                String time = parts[2];
+                    Optional<ButtonType> result = confirm.showAndWait();
 
-                // Confirm cancellation
-                Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-                confirm.setTitle("Confirm Cancellation");
-                confirm.setHeaderText(null);
-                confirm.setContentText("Are you sure you want to cancel this booking?");
+                    if (result.isPresent() && result.get() == ButtonType.OK) {
+                        // FIX DET HER HVA FUCK
+                        boolean success = Main.db.updateBookingAcceptedStatus(Request.getId(), "Denied");
 
-                Optional<ButtonType> result = confirm.showAndWait();
+                        if (success) {
+                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                            alert.setTitle("Success");
+                            alert.setHeaderText(null);
+                            alert.setContentText("Booking has been cancelled");
+                            alert.showAndWait();
 
-                if (result.isPresent() && result.get() == ButtonType.OK) {
-                    // Delete booking from database
-                    boolean success = Main.db.executeUpdate("DELETE FROM bookings WHERE student_id = (SELECT id FROM users WHERE username = '" +
-                            studentName + "') AND date = '" + date + "' AND time = '" + time + "'");
-
-                    if (success) {
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle("Success");
-                        alert.setHeaderText(null);
-                        alert.setContentText("Booking has been cancelled");
-                        alert.showAndWait();
-
-                        // Refresh the booking list
-                        messageArea.getChildren().clear();
-                        messageArea.getChildren().add(displayActiveBookinsCancel());
-                    } else {
-                        alertForgot("Failed to cancel booking");
+                            messageArea.getChildren().clear();
+                            messageArea.getChildren().add(displayActiveBookingsCancel());
+                        } else {
+                            alertForgot("Failed to cancel booking");
+                        }
                     }
-                }
-            });
+                });
 
-            bookingLine.getChildren().addAll(bookingLabel, denyBtn);
-            singleBookingBox.getChildren().add(bookingLine);
-
-            bookingList.getChildren().add(singleBookingBox);
+                singleBookingBox.getChildren().addAll(bookingLabel, cancelBtn);
+                bookingList.getChildren().add(singleBookingBox);
+            }
         }
 
         VBox.setVgrow(bookingList, Priority.ALWAYS);
-
         bookingsBox.getChildren().addAll(header, bookingList);
         return bookingsBox;
     }
@@ -2617,7 +2601,7 @@ public class Menu extends Pane {
             String p = "500kr";
 
             card.setOnMouseClicked(event -> {
-                DialogBox.displayBook(dateStr,p, timeStr, convertToStars(4));
+                DialogBox.displayBook(dateStr,p, timeStr, convertToStars(4), username, BookingCard.getStudentID());
             });
 
             Animation.addHoverScaleEffectVBox(card);
@@ -2653,7 +2637,8 @@ public class Menu extends Pane {
             String hairTypeStr = Main.db.getHairTypeSummary(booking.getHairtypeId()); // e.g., "Curly, Brown, Medium, Female"
 
             Label date = new Label(dateStr);
-            Text place = new Text(addressStr + "\n" + hairTypeStr);
+            Text place = new Text(addressStr);
+            Text hair = new Text("Preferred hair: " + hairTypeStr);
             place.setTextAlignment(TextAlignment.CENTER);
             place.setWrappingWidth(140);
             place.setFill(Color.WHITE);
@@ -2705,7 +2690,7 @@ public class Menu extends Pane {
 
             Animation.addHoverScaleEffectVBox(card);
 
-            card.getChildren().addAll(headerWithWave, time, place, spacer, rating);
+            card.getChildren().addAll(headerWithWave, time, place, hair, spacer, rating);
             cardBox.getChildren().add(card);
         }
 
@@ -2941,7 +2926,7 @@ public class Menu extends Pane {
             String p = "500kr";
 
             card.setOnMouseClicked(event -> {
-                DialogBox.displayBook(dateStr,p, timeStr, convertToStars(4));
+                DialogBox.displayBook(dateStr,p, timeStr, convertToStars(4), username, BookingCard.getStudentID());
             });
 
             Animation.addHoverScaleEffectVBox(card);
@@ -3058,6 +3043,7 @@ public class Menu extends Pane {
 
             String d = "26.03";
             String t = "15:00";
+            String student = "student";
 
             // Labels
             Label date = new Label(d);
@@ -3073,10 +3059,10 @@ public class Menu extends Pane {
             SVGPath wave = new SVGPath();
             wave.setContent(
                     "M0 30 " +
-                            "C26 10, 26 50, 52 30 " +
-                            "C78 10, 78 50, 104 30 " +
-                            "C130 10, 130 50, 158 30 " +
-                            "V50 H0 Z"
+                    "C26 10, 26 50, 52 30 " +
+                    "C78 10, 78 50, 104 30 " +
+                    "C130 10, 130 50, 158 30 " +
+                    "V50 H0 Z"
             );
 
             DropShadow dropShadow = new DropShadow();
@@ -3108,7 +3094,7 @@ public class Menu extends Pane {
             tipButton.setPadding(new Insets(5, 10, 5, 10));
             VBox.setMargin(tipButton, new Insets(0, 0, 20, 0));
 
-            tipButton.setOnAction(e -> DialogBox.displayTip(d, t));
+            tipButton.setOnAction(e -> DialogBox.displayTip(d, t, username, student));
 
             // TipButton :hover
             Animation.addHoverScaleEffect(tipButton);
@@ -3323,6 +3309,7 @@ public class Menu extends Pane {
     // ____________________________________________________
 
     public VBox displayProfile() {
+        this.user = new Profile(username);
         this.userProfile = new Profile(this.username);
         String profilePicBgColor = userProfile.getProfilePictureHex();
         String bannerBgColor = userProfile.getProfileBannerHex();
@@ -3349,6 +3336,7 @@ public class Menu extends Pane {
         leftPane.setAlignment(Pos.TOP_CENTER);
         leftPane.setPadding(new Insets(0,0,0,0));
         leftPane.setStyle("-fx-background-color: " + profilePicBgColor + ";");
+
         Image profileImage = new Image(getClass().getResource("/assets/profile/person1.png").toExternalForm());
         ImageView profileImageView = new ImageView(profileImage);
         profileImageView.setFitWidth(150);
@@ -3361,7 +3349,7 @@ public class Menu extends Pane {
         VBox leftPaneInfo = new VBox();
         leftPaneInfo.setAlignment(Pos.CENTER);
         leftPaneInfo.getChildren().add(roleLabel);
-        leftPaneInfo.setPrefWidth(190);
+        leftPaneInfo.setPrefWidth(200);
         leftPaneInfo.setStyle("-fx-background-color: " + roleBgColor + ";");
 
         // Rating Box
@@ -3402,10 +3390,6 @@ public class Menu extends Pane {
         HBox galleryBox = createNavBox("Service Reviews");
 
         navRow.getChildren().addAll(aboutMeBox, reviewsBox, contactBox, galleryBox);
-
-        VBox rightPaneContent = new VBox(10);
-        rightPaneContent.setPrefWidth(550);
-        rightPaneContent.setAlignment(Pos.TOP_CENTER);
 
         // Actions
         contactBox.setOnMouseClicked(e -> {
@@ -3454,7 +3438,7 @@ public class Menu extends Pane {
         aboutMeBox.getStyleClass().add("nav-box-selected-first");
 
         // Add
-        rightPane.getChildren().addAll(rightPaneBanner, navRow, rightPaneContent);
+        rightPane.getChildren().addAll(rightPaneBanner, navRow);
         profilePictureHBox.getChildren().addAll(leftPane, rightPane);
         profileVBox.getChildren().addAll(profilePictureHBox, bottomContentBox);
 
@@ -3699,7 +3683,8 @@ public class Menu extends Pane {
             contactBox.getStyleClass().add("nav-box-selected");
             reviewsBox.getStyleClass().remove("nav-box-selected");
             galleryBox.getStyleClass().remove("nav-box-selected");
-            getChildren().clear();
+            bottomContentBox.getChildren().clear();
+            bottomContentBox.getChildren().add(displayContactMe());
         });
 
         aboutMeBox.setOnMouseClicked(e -> {
@@ -3708,6 +3693,7 @@ public class Menu extends Pane {
             galleryBox.getStyleClass().remove("nav-box-selected");
             aboutMeBox.getStyleClass().add("nav-box-selected-first");
             bottomContentBox.getChildren().clear();
+            bottomContentBox.getChildren().add(displayFAQ());
         });
 
         reviewsBox.setOnMouseClicked(e -> {
@@ -3716,6 +3702,7 @@ public class Menu extends Pane {
             galleryBox.getStyleClass().remove("nav-box-selected");
             reviewsBox.getStyleClass().add("nav-box-selected");
             bottomContentBox.getChildren().clear();
+            bottomContentBox.getChildren().add(displayReviewSchool());
         });
 
         galleryBox.setOnMouseClicked(e -> {
@@ -3724,6 +3711,7 @@ public class Menu extends Pane {
             reviewsBox.getStyleClass().remove("nav-box-selected");
             galleryBox.getStyleClass().add("nav-box-selected");
             bottomContentBox.getChildren().clear();
+            bottomContentBox.getChildren().add(displaySchoolStudentStats());
         });
 
         // CSS
@@ -3741,7 +3729,7 @@ public class Menu extends Pane {
         profileVBox.getChildren().addAll(profilePictureHBox, bottomContentBox);
 
         // Load about me by default
-        // bottomContentBox.getChildren().add(displayAboutMe()); ENABLE WHEN CORRECT
+        bottomContentBox.getChildren().add(displayFAQ());
 
         return profileVBox;
     }
@@ -3822,7 +3810,7 @@ public class Menu extends Pane {
         navRow.setAlignment(Pos.CENTER);
         navRow.setSpacing(0);
 
-        HBox faqBox = createNavBox("F&Q");
+        HBox faqBox = createNavBox("About Me");
         HBox contactBox = createNavBox("Contact");
         HBox studentsBox = createNavBox("Students");
         HBox reviewsOfUsBox = createNavBox("Reviews of us");
@@ -3840,6 +3828,7 @@ public class Menu extends Pane {
             reviewsOfUsBox.getStyleClass().remove("nav-box-selected");
             faqBox.getStyleClass().remove("nav-box-selected-first");
             bottomContentBox.getChildren().clear();
+            bottomContentBox.getChildren().add(displayContactMe());
         });
 
         faqBox.setOnMouseClicked(e -> {
@@ -3848,6 +3837,7 @@ public class Menu extends Pane {
             reviewsOfUsBox.getStyleClass().remove("nav-box-selected");
             faqBox.getStyleClass().add("nav-box-selected-first");
             bottomContentBox.getChildren().clear();
+            bottomContentBox.getChildren().add(displayAboutMe());
         });
 
         studentsBox.setOnMouseClicked(e -> {
@@ -3856,6 +3846,7 @@ public class Menu extends Pane {
             reviewsOfUsBox.getStyleClass().remove("nav-box-selected");
             studentsBox.getStyleClass().add("nav-box-selected");
             bottomContentBox.getChildren().clear();
+            bottomContentBox.getChildren().add(displayTeacherStats());
         });
 
         reviewsOfUsBox.setOnMouseClicked(e -> {
@@ -3864,6 +3855,7 @@ public class Menu extends Pane {
             studentsBox.getStyleClass().remove("nav-box-selected");
             reviewsOfUsBox.getStyleClass().add("nav-box-selected");
             bottomContentBox.getChildren().clear();
+            bottomContentBox.getChildren().add(displayReviewSchool());
         });
 
         // CSS
@@ -3881,7 +3873,7 @@ public class Menu extends Pane {
         profileVBox.getChildren().addAll(profilePictureHBox, bottomContentBox);
 
         // Load about me by default
-        //bottomContentBox.getChildren().add(displayAboutMe()); ADD CORRECT FAQ WHEN ITS DONE
+        bottomContentBox.getChildren().add(displayAboutMe());
 
         return profileVBox;
     }
@@ -3980,6 +3972,7 @@ public class Menu extends Pane {
             galleryBox.getStyleClass().remove("nav-box-selected");
             aboutMeBox.getStyleClass().remove("nav-box-selected-first");
             bottomContentBox.getChildren().clear();
+            bottomContentBox.getChildren().add(displaySupportStats());
         });
 
         aboutMeBox.setOnMouseClicked(e -> {
@@ -3988,6 +3981,7 @@ public class Menu extends Pane {
             galleryBox.getStyleClass().remove("nav-box-selected");
             aboutMeBox.getStyleClass().add("nav-box-selected-first");
             bottomContentBox.getChildren().clear();
+            bottomContentBox.getChildren().add(displayAboutMe());
         });
 
         reviewsBox.setOnMouseClicked(e -> {
@@ -3996,6 +3990,7 @@ public class Menu extends Pane {
             galleryBox.getStyleClass().remove("nav-box-selected");
             reviewsBox.getStyleClass().add("nav-box-selected");
             bottomContentBox.getChildren().clear();
+            bottomContentBox.getChildren().add(displayFAQ());
         });
 
         galleryBox.setOnMouseClicked(e -> {
@@ -4004,6 +3999,7 @@ public class Menu extends Pane {
             reviewsBox.getStyleClass().remove("nav-box-selected");
             galleryBox.getStyleClass().add("nav-box-selected");
             bottomContentBox.getChildren().clear();
+            DialogBox.displayMessageDialog(username, username, Main.db);
         });
 
         // CSS
@@ -4021,7 +4017,7 @@ public class Menu extends Pane {
         profileVBox.getChildren().addAll(profilePictureHBox, bottomContentBox);
 
         // Load about me by default
-        // bottomContentBox.getChildren().add(displayAboutMe()); // DISPLAY CORRECT WHEN DONE
+        bottomContentBox.getChildren().add(displayAboutMe());
 
         return profileVBox;
     }
@@ -4052,6 +4048,172 @@ public class Menu extends Pane {
 
     // ____________________________________________________
 
+    private Node displaySupportStats() {
+        VBox statsBox = new VBox(15);
+        statsBox.setPadding(new Insets(10));
+        statsBox.setPrefHeight(480);
+        statsBox.setPrefWidth(Double.MAX_VALUE);
+
+        statsBox.setStyle("-fx-background-color: #2d2d2d; "
+                + "-fx-background-radius: 0 0 20px 20px; "
+                + "-fx-border-radius: 0 0 20px 20px; "
+                + "-fx-border-color: #444; "
+                + "-fx-border-width: 1px; "
+                + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0.3, 0, 4);"
+        );
+
+        Label header = new Label("Support Stats");
+        header.setStyle("-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: orange;");
+        header.setAlignment(Pos.CENTER);
+        header.setMaxWidth(Double.MAX_VALUE);
+        header.setTextAlignment(TextAlignment.CENTER);
+
+        VBox headerBox = new VBox(header);
+        headerBox.setAlignment(Pos.CENTER);
+        headerBox.setPadding(new Insets(0, 0, 8, 0));
+        headerBox.setStyle("-fx-border-color: orange; -fx-border-width: 0 0 2px 0; -fx-border-style: solid;");
+        headerBox.setMaxWidth(Region.USE_PREF_SIZE);
+
+        // Stats data
+        String[][] stats = {
+                {"Users banned", "12"},
+                {"Tickets Closed", "34"},
+                {"Messages Responded To", "56"},
+                {"Users Unbanned", "8"},
+                {"Average Response Time", "3h 20m"},
+                {"Active Tickets", "7"},
+                {"Feedback Score", "4.7 / 5"},
+                {"Resolution Rate", "92%"},
+                {"Longest Ticket Open", "2 days"},
+                {"Support Hours Logged", "120h"}
+        };
+
+        Function<String[], VBox> createStatBox = stat -> {
+            VBox box = new VBox(5);
+            box.setPadding(new Insets(12));
+            box.setStyle("-fx-background-color: #444; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 6, 0.3, 0, 3);");
+            box.setPrefWidth(200);
+            box.setAlignment(Pos.CENTER);
+
+            Label titleLabel = new Label(stat[0]);
+            titleLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: #eee; -fx-font-weight: bold;");
+            titleLabel.setWrapText(true);
+            titleLabel.setTextAlignment(TextAlignment.CENTER);
+
+            Label valueLabel = new Label(stat[1]);
+            valueLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: orange; -fx-font-weight: bold;");
+            valueLabel.setTextAlignment(TextAlignment.CENTER);
+
+            box.getChildren().addAll(titleLabel, valueLabel);
+            return box;
+        };
+
+        VBox content = new VBox(10);
+
+        for (int i = 0; i < stats.length; i += 3) {
+            HBox row = new HBox(15);
+            row.setAlignment(Pos.CENTER);
+
+            for (int j = i; j < i + 3 && j < stats.length; j++) {
+                VBox statBox = createStatBox.apply(stats[j]);
+                HBox.setHgrow(statBox, Priority.ALWAYS);
+                statBox.setMaxWidth(Double.MAX_VALUE);
+                row.getChildren().add(statBox);
+            }
+
+            content.getChildren().add(row);
+        }
+
+        VBox.setVgrow(content, Priority.ALWAYS);
+
+        ScrollPane scrollPane = new ScrollPane(content);
+        scrollPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
+        statsBox.getChildren().addAll(headerBox, scrollPane);
+        VBox.setVgrow(scrollPane, Priority.ALWAYS);
+
+        return statsBox;
+    }
+
+    // ____________________________________________________
+
+    private Node displayFAQ() {
+
+        VBox faqBox = new VBox(15);
+        faqBox.setPadding(new Insets(10));
+        faqBox.setPrefHeight(480);
+        faqBox.setPrefWidth(Double.MAX_VALUE);
+        faqBox.setStyle("-fx-background-color: #2d2d2d; "
+        + "-fx-background-radius: 0 0 20px 20px; "
+        + "-fx-border-radius: 0 0 20px 20px; "
+        + "-fx-border-color: #444; "
+        + "-fx-border-width: 1px; "
+        + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0.3, 0, 4);");
+
+        Label header = new Label("Frequently Asked Questions");
+        header.setStyle("-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: orange;");
+        header.setMaxWidth(Double.MAX_VALUE);
+        header.setAlignment(Pos.CENTER);
+        header.setTextAlignment(TextAlignment.CENTER);
+
+        StackPane headerBox = new StackPane(header);
+        headerBox.setPadding(new Insets(0, 0, 8, 0));
+        headerBox.setStyle("-fx-border-color: orange; -fx-border-width: 0 0 2px 0; -fx-border-style: solid;");
+        headerBox.setMaxWidth(Region.USE_PREF_SIZE);
+
+        String[][] faqs = {
+                {"How do I reset my password?",
+                        "To reset your password, click on the 'Forgot Password' link on the login page and follow the instructions sent to your email."},
+                {"What is your support response time?",
+                        "Our support team typically responds within 24 hours during business days."},
+                {"Can I change my subscription plan later?",
+                        "Yes, you can upgrade or downgrade your subscription at any time from your account settings."},
+                {"How do I contact support?",
+                        "You can contact support via the 'Contact Us' form in the app or by emailing support@example.com."},
+                {"Is my data secure?",
+                        "Absolutely! We use industry-standard encryption and security measures to protect your data."}
+        };
+
+        VBox faqContent = new VBox(12);
+        faqContent.setPrefWidth(Double.MAX_VALUE);
+
+        for (String[] faq : faqs) {
+            VBox faqItem = new VBox(6);
+            faqItem.setPadding(new Insets(15));
+            faqItem.setStyle("-fx-background-color: #444; -fx-background-radius: 15; "
+                    + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 6, 0.3, 0, 3);");
+            faqItem.setPrefWidth(Double.MAX_VALUE);
+
+            Label questionLabel = new Label(faq[0]);
+            questionLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: white; -fx-border-color: orange; -fx-border-width: 0 0 1px 0");
+            questionLabel.setWrapText(true);
+
+            Label answerLabel = new Label(faq[1]);
+            answerLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #ccc;");
+            answerLabel.setWrapText(true);
+
+            faqItem.getChildren().addAll(questionLabel, answerLabel);
+            faqContent.getChildren().add(faqItem);
+        }
+
+        ScrollPane scrollPane = new ScrollPane(faqContent);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setStyle("-fx-background-color: transparent; -fx-background-insets: 0;");
+
+        faqBox.getChildren().addAll(headerBox, scrollPane);
+        VBox.setVgrow(scrollPane, Priority.ALWAYS);
+
+        return faqBox;
+    }
+
+    // ____________________________________________________
+
     public VBox displayReview() {
 
         VBox reviewContainer = new VBox(10);
@@ -4073,6 +4235,232 @@ public class Menu extends Pane {
             singleReview.setPadding(new Insets(30));
             singleReview.setStyle("-fx-background-color: white; -fx-background-radius: 10px; "
             + "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+
+            Label header = new Label(review.get(0));
+            header.setStyle("-fx-text-alignment: CENTER !important; -fx-font-weight: bold; -fx-font-size: 14px;");
+
+            Label body = new Label(review.get(1));
+            body.setStyle("-fx-font-size: 10px;");
+            body.setWrapText(true);
+            body.setMaxWidth(760/2);
+            double rating = Double.parseDouble(review.get(2));
+            Label stars = new Label(convertToStars(rating));
+            stars.getStyleClass().add("star");
+
+            singleReview.getChildren().addAll(header, body, stars);
+            flowPane.getChildren().add(singleReview);
+        }
+
+        ScrollPane scrollPane = new ScrollPane(flowPane);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPrefViewportHeight(600);
+
+        scrollPane.setStyle("-fx-padding: 10px 0 20px 0; -fx-background: transparent; -fx-background-color: transparent;");
+        flowPane.setStyle("-fx-padding: 10px 0 20px 0; -fx-background-color: transparent;");
+
+        // Remove scroll visuals
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
+        reviewContainer.getChildren().addAll(title, scrollPane);
+        return reviewContainer;
+    }
+
+    // ____________________________________________________
+
+    private Node displaySchoolStudentStats() {
+        VBox statsBox = new VBox(15);
+        statsBox.setPadding(new Insets(10));
+        statsBox.setPrefHeight(480);
+        statsBox.setPrefWidth(Double.MAX_VALUE);
+        statsBox.setStyle("-fx-background-color: #2d2d2d; "
+                + "-fx-background-radius: 0 0 20px 20px; "
+                + "-fx-border-radius: 0 0 20px 20px; "
+                + "-fx-border-color: #444; "
+                + "-fx-border-width: 1px; "
+                + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0.3, 0, 4);");
+
+        Label header = new Label("Our Stats");
+        header.setStyle("-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: orange;");
+        header.setAlignment(Pos.TOP_CENTER);
+        header.setMaxWidth(Double.MAX_VALUE);
+        header.setTextAlignment(TextAlignment.CENTER);
+
+        VBox headerBox = new VBox(header);
+        headerBox.setAlignment(Pos.TOP_CENTER);
+        headerBox.setPadding(new Insets(0, 0, 8, 0));
+        headerBox.setStyle("-fx-border-color: orange; -fx-border-width: 0 0 2px 0; -fx-border-style: solid;");
+        headerBox.setMaxWidth(Region.USE_PREF_SIZE);
+
+        String[][] stats = {
+                {"Graduated Students", "1200"},
+                {"Active Students", "850"},
+                {"Teachers", "75"},
+                {"Classes", "40"},
+                {"Average GPA", "3.6"},
+                {"Extracurricular Clubs", "15"}
+        };
+
+        Function<String[], VBox> createStatBox = stat -> {
+            VBox box = new VBox(5);
+            box.setPadding(new Insets(12));
+            box.setStyle("-fx-background-color: #444; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 6, 0.3, 0, 3);");
+            box.setPrefWidth(250);
+            box.setAlignment(Pos.CENTER);
+
+            Label titleLabel = new Label(stat[0]);
+            titleLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: #eee; -fx-font-weight: bold;");
+            titleLabel.setWrapText(true);
+            titleLabel.setTextAlignment(TextAlignment.CENTER);
+
+            Label valueLabel = new Label(stat[1]);
+            valueLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: orange; -fx-font-weight: bold;");
+            valueLabel.setTextAlignment(TextAlignment.CENTER);
+
+            box.getChildren().addAll(titleLabel, valueLabel);
+            return box;
+        };
+
+        VBox content = new VBox(10);
+
+        for (int i = 0; i < stats.length; i += 2) {
+            HBox row = new HBox(15);
+            row.setAlignment(Pos.CENTER);
+
+            for (int j = i; j < i + 2 && j < stats.length; j++) {
+                VBox statBox = createStatBox.apply(stats[j]);
+                HBox.setHgrow(statBox, Priority.ALWAYS);
+                statBox.setMaxWidth(Double.MAX_VALUE);
+                row.getChildren().add(statBox);
+            }
+
+            content.getChildren().add(row);
+        }
+
+        VBox.setVgrow(content, Priority.ALWAYS);
+
+        ScrollPane scrollPane = new ScrollPane(content);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setStyle("-fx-background-color: transparent;");
+
+        statsBox.getChildren().addAll(headerBox, scrollPane);
+        VBox.setVgrow(scrollPane, Priority.ALWAYS);
+
+        return statsBox;
+    }
+
+    // ____________________________________________________
+
+    private Node displayTeacherStats() {
+        VBox statsBox = new VBox(15);
+        statsBox.setPadding(new Insets(10));
+        statsBox.setPrefHeight(480);
+        statsBox.setPrefWidth(Double.MAX_VALUE);
+        statsBox.setStyle("-fx-background-color: #2d2d2d; "
+                + "-fx-background-radius: 0 0 20px 20px; "
+                + "-fx-border-radius: 0 0 20px 20px; "
+                + "-fx-border-color: #444; "
+                + "-fx-border-width: 1px; "
+                + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0.3, 0, 4);");
+
+        Label header = new Label("My Stats");
+        header.setStyle("-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: orange;");
+        header.setAlignment(Pos.TOP_CENTER);
+        header.setMaxWidth(Double.MAX_VALUE);
+        header.setTextAlignment(TextAlignment.CENTER);
+
+        VBox headerBox = new VBox(header);
+        headerBox.setAlignment(Pos.TOP_CENTER);
+        headerBox.setPadding(new Insets(0, 0, 8, 0));
+        headerBox.setStyle("-fx-border-color: orange; -fx-border-width: 0 0 2px 0; -fx-border-style: solid;");
+        headerBox.setMaxWidth(Region.USE_PREF_SIZE);
+
+        String[][] stats = {
+                {"Students Taught", "230"},
+                {"Average Student GPA", "3.4"},
+                {"Courses Created", "18"},
+                {"Years of Experience", "12"},
+                {"Parent Meetings", "47"},
+                {"Graded Assignments", "1,240"}
+        };
+
+        Function<String[], VBox> createStatBox = stat -> {
+            VBox box = new VBox(5);
+            box.setPadding(new Insets(12));
+            box.setStyle("-fx-background-color: #444; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 6, 0.3, 0, 3);");
+            box.setPrefWidth(250);
+            box.setAlignment(Pos.CENTER);
+
+            Label titleLabel = new Label(stat[0]);
+            titleLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: #eee; -fx-font-weight: bold;");
+            titleLabel.setWrapText(true);
+            titleLabel.setTextAlignment(TextAlignment.CENTER);
+
+            Label valueLabel = new Label(stat[1]);
+            valueLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: orange; -fx-font-weight: bold;");
+            valueLabel.setTextAlignment(TextAlignment.CENTER);
+
+            box.getChildren().addAll(titleLabel, valueLabel);
+            return box;
+        };
+
+        VBox content = new VBox(10);
+
+        for (int i = 0; i < stats.length; i += 2) {
+            HBox row = new HBox(15);
+            row.setAlignment(Pos.CENTER);
+
+            for (int j = i; j < i + 2 && j < stats.length; j++) {
+                VBox statBox = createStatBox.apply(stats[j]);
+                HBox.setHgrow(statBox, Priority.ALWAYS);
+                statBox.setMaxWidth(Double.MAX_VALUE);
+                row.getChildren().add(statBox);
+            }
+
+            content.getChildren().add(row);
+        }
+
+        VBox.setVgrow(content, Priority.ALWAYS);
+
+        ScrollPane scrollPane = new ScrollPane(content);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setStyle("-fx-background-color: transparent;");
+
+        statsBox.getChildren().addAll(headerBox, scrollPane);
+        VBox.setVgrow(scrollPane, Priority.ALWAYS);
+
+        return statsBox;
+    }
+
+    // ____________________________________________________
+
+    public VBox displayReviewSchool() {
+
+        VBox reviewContainer = new VBox(10);
+        reviewContainer.setAlignment(Pos.TOP_CENTER);
+
+        Label title = new Label("Recent student Reviews");
+        title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #FFF; -fx-border-width: 0 0 2px 0; -fx-border-color: orange");
+        VBox.setMargin(title, new Insets(20, 0, 10, 0));
+
+        FlowPane flowPane = new FlowPane();
+        flowPane.setHgap(30);
+        flowPane.setVgap(20);
+        flowPane.setAlignment(Pos.CENTER);
+
+        ArrayList<ArrayList<String>> reviews = user.getReviews();
+
+        for (ArrayList<String> review : reviews) {
+            VBox singleReview = new VBox(5);
+            singleReview.setPadding(new Insets(30));
+            singleReview.setStyle("-fx-background-color: white; -fx-background-radius: 10px; "
+                    + "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);");
 
             Label header = new Label(review.get(0));
             header.setStyle("-fx-text-alignment: CENTER !important; -fx-font-weight: bold; -fx-font-size: 14px;");
@@ -4166,10 +4554,12 @@ public class Menu extends Pane {
     // ____________________________________________________
 
     public VBox displayAboutMe() {
+
         VBox mainContainer = new VBox();
         mainContainer.setPadding(Insets.EMPTY);
         mainContainer.setSpacing(0);
         mainContainer.setAlignment(Pos.TOP_LEFT);
+        mainContainer.setStyle("-fx-background-color: #575757; -fx-border-radius: 0 0 25px 25px; -fx-background-radius: 0 0 25px 25px");
 
         HBox splitBox = new HBox();
         splitBox.setSpacing(0);
@@ -4263,21 +4653,23 @@ public class Menu extends Pane {
         rightBox.setPadding(Insets.EMPTY);
         rightBox.setSpacing(0);
         rightBox.setAlignment(Pos.TOP_LEFT);
+        rightBox.setStyle("-fx-background-radius: 0 0 20 0; -fx-border-radius: 0 0 20 0; -fx-background-color: #575757");
 
         FlowPane flowPane = new FlowPane();
         flowPane.setHgap(0);
         flowPane.setVgap(0);
         flowPane.setPadding(Insets.EMPTY);
         flowPane.setAlignment(Pos.TOP_LEFT);
-        flowPane.setStyle("-fx-background-color: transparent;");
+        flowPane.setStyle("-fx-background-color: #575757; -fx-background-radius: 0 0 20 0; -fx-border-radius: 0 0 20 0");
 
         ScrollPane scrollPane = new ScrollPane(flowPane);
-        scrollPane.setFitToWidth(true);
         scrollPane.setPrefViewportHeight(560);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setPadding(Insets.EMPTY);
-        scrollPane.setStyle("-fx-background-color: transparent;");
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPadding(Insets.EMPTY);
+        scrollPane.setStyle("-fx-background-color: transparent; -fx-border-width: 0; -fx-padding: 0; -fx-background-radius: 0 0 20 0; -fx-border-radius: 0 0 20 0");
 
         Label aboutHeader = new Label(user.getProfileAboutmeHeader());
         aboutHeader.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: orange;");
@@ -4313,6 +4705,26 @@ public class Menu extends Pane {
         rightContent.setStyle("-fx-background-color: #575757; -fx-background-radius: 0 0 20px 0; -fx-border-radius: 0 0 20px 0;");
         rightContent.setPrefWidth(560);
         rightContent.setPrefHeight(600);
+
+        rightBox.setPadding(Insets.EMPTY);
+
+        rightContent.minWidthProperty().bind(scrollPane.widthProperty());
+        rightContent.maxWidthProperty().bind(scrollPane.widthProperty());
+
+        Rectangle clip = new Rectangle();
+        clip.setArcWidth(25);
+        clip.setArcHeight(25);
+        clip.widthProperty().bind(splitBox.widthProperty());
+        clip.heightProperty().bind(splitBox.heightProperty());
+        splitBox.setClip(clip);
+
+        // Padding issues debug
+        /*rightContent.setStyle("-fx-border-color: red; -fx-border-width: 2px;");
+        scrollPane.setStyle("-fx-border-color: blue; -fx-border-width: 2px;");
+        rightBox.setStyle("-fx-border-color: green; -fx-border-width: 2px;");*/
+
+        HBox.setHgrow(rightBox, Priority.ALWAYS);
+        rightBox.setMaxWidth(Double.MAX_VALUE);
 
         scrollPane.setContent(rightContent);
         rightBox.getChildren().add(scrollPane);
@@ -4732,8 +5144,8 @@ public class Menu extends Pane {
         Image plusIcon = new Image(getClass().getResource("/assets/icons/icon20.png").toExternalForm());
 
         ImageView plusView = new ImageView(plusIcon);
-        plusView.setFitWidth(20);
-        plusView.setFitHeight(20);
+        plusView.setFitWidth(25);
+        plusView.setFitHeight(25);
 
         // FRAME MOD HØJRE
         HBox mainContainer = new HBox(0);
@@ -4743,9 +5155,8 @@ public class Menu extends Pane {
         mainContainer.setLayoutY(0);
 
         HBox topMenuHBox = new HBox(10);
-        topMenuHBox.setPadding(new Insets(10, 10, 10, 10));
+        topMenuHBox.setPadding(new Insets(8, 10, 8, 10));
         topMenuHBox.setPrefWidth(800);
-        topMenuHBox.setPrefHeight(50);
         topMenuHBox.setStyle("-fx-border-width: 0 0 2px 0; -fx-border-color: rgb(0, 0, 0); -fx-background-color: #575757");
 
         // Label
@@ -4803,22 +5214,22 @@ public class Menu extends Pane {
         timePicker.setPrefHeight(30);
 
         hairTypeDropdown = new ComboBox<>();
-        hairTypeDropdown.getItems().addAll("Straight", "Wavy", "Curly", "Coily");
+        hairTypeDropdown.getItems().addAll("Straight", "Wavy", "Curly", "Coily", "All");
         hairTypeDropdown.setPromptText("Choose Hairtype");
         hairTypeDropdown.getStyleClass().add("combo-box");
 
         hairColorDropdown = new ComboBox<>();
-        hairColorDropdown.getItems().addAll("Blonde", "Black", "Brown", "Red", "Grey");
+        hairColorDropdown.getItems().addAll("Blonde", "Black", "Brown", "Red", "Grey", "All");
         hairColorDropdown.setPromptText("Hair Color");
         hairColorDropdown.getStyleClass().add("combo-box");
 
         lengthDropdown = new ComboBox<>();
-        lengthDropdown.getItems().addAll("Bald", "Buzz", "Short", "Medium", "Long", "Very Long", "Tied");
+        lengthDropdown.getItems().addAll("Bald", "Buzz", "Short", "Medium", "Long", "Very Long", "Tied", "All");
         lengthDropdown.setPromptText("Hair Length");
         lengthDropdown.getStyleClass().add("combo-box");
 
         genderDropdown = new ComboBox<>();
-        genderDropdown.getItems().addAll("Male", "Female");
+        genderDropdown.getItems().addAll("Male", "Female", "All");
         genderDropdown.setPromptText("Gender");
         genderDropdown.getStyleClass().add("combo-box");
 
@@ -4879,7 +5290,10 @@ public class Menu extends Pane {
 
         if (result.isPresent() && result.get().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
 
+            // Fix for Active Bookings.. Hvem fuck sætter LocalDate til TEXT i databasen altså...
             LocalDate selectedDate = datePicker.getValue();
+            String dateString = selectedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
             String selectedTime = timePicker.getValue();
             String selectedAddress = addressField.getText();
 
@@ -4897,13 +5311,17 @@ public class Menu extends Pane {
                 alert.setHeaderText("Please fill in all fields before applying.");
                 alert.setContentText("Make sure to select date, time, address, hair type, color, length, and gender.");
                 alert.showAndWait();
-                return; // Exit early, do not save
+                return;
             }
 
-            int currentStudent_id = Main.db.getUserID(username);
+            int currentStudent_id = Main.db.getStudentID(username);
             int hairtypeId = Main.db.getOrCreateHairType(hairType, hairColor, hairLength, gender);
 
-            BookingCard card = new BookingCard(selectedDate, selectedTime, selectedAddress, hairtypeId, isExam, currentStudent_id);
+            String paid = "No";
+            String accepted = "No";
+            String customer = "Null";
+
+            BookingCard card = new BookingCard(dateString, selectedTime, selectedAddress, hairtypeId, isExam, currentStudent_id, paid, accepted, customer);
             card.createBooking();
 
         }

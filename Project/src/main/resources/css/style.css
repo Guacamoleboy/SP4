@@ -512,7 +512,7 @@
 
 .left-pane-info {
     -fx-background-color: #d0e6f7;
-    -fx-border-width: 2px 2px 2px 0;
+    -fx-border-width: 2px 0 2px 0;
     -fx-border-color: rgb(0, 0, 0);
 }
 
@@ -553,7 +553,7 @@
     -fx-border-color: rgb(0, 0, 0);
     -fx-border-width: 0 0 2px 0;
     -fx-cursor: hand;
-    -fx-padding: 0;
+    -fx-padding: 0 0 0 0; /* Center of navbox */
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0.5, 0, 1);
     -fx-transition: all 0.2s ease-in-out;
 }
@@ -565,7 +565,7 @@
 .nav-box-selected-first {
     -fx-background-color: #d0d0d0;
     -fx-border-color: rgb(0,0,0);
-    -fx-border-width: 0 2px 2px 0;
+    -fx-border-width: 0 2px 2px 2px;
 }
 
 .nav-box-selected {
@@ -780,4 +780,22 @@
 
 .socials-button.selected Label {
     -fx-text-fill: black;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .scroll-bar {
+    -fx-opacity: 0;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+    -fx-min-width: 0;
+    -fx-min-height: 0;
+    -fx-max-width: 0;
+    -fx-max-height: 0;
 }
