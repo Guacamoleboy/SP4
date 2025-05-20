@@ -36,7 +36,6 @@ public class Register extends Pane {
     private TextField emailField;
     private PasswordField passwordField;
     private PasswordField passwordConfirmField;
-    private FileIO io = new FileIO();
     private Button nextButton;
     private Button goBackButton;
     private Button forgotButton;
@@ -210,9 +209,8 @@ public class Register extends Pane {
 
         // If user presses the next button!
         NextOption nextoption = new NextOption(600, 600, this);
-        StartBorder sb = new StartBorder(3);
         StartInfo si = new StartInfo(300, 600);
-        HBox nextOptionHBox = new HBox(nextoption, sb, si);
+        HBox nextOptionHBox = new HBox(nextoption, si);
         System.out.println(dropdownBox.getValue());
 
         si.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());

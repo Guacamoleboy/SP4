@@ -242,7 +242,11 @@ public class Profile extends Pane {
     // ______________________________________
 
     public ArrayList<ArrayList<String>> getReviews() {
+
         ArrayList<ArrayList<String>> reviews = new ArrayList<>();
+
+        // Hardcoded
+
         for (int i = 0; i < 9; i++) {
             ArrayList<String> review = new ArrayList<String>();
             Random random = new Random();
@@ -255,6 +259,7 @@ public class Profile extends Pane {
             review.add(rating);
             reviews.add(review);
         }
+
         return reviews;
     }
 

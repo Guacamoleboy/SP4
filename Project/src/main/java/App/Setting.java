@@ -184,7 +184,10 @@ public class Setting extends Pane {
         });
 
         redRegion.setOnMouseClicked(e -> {
-            if (Main.db.deleteAccount(this.username)) {
+
+            boolean deleteConfirm = acceptAlert("Delete account?", "Are you sure you want to delete your account? This can't be undone...");
+
+            if (Main.db.deleteAccount(this.username) && deleteConfirm) {
                 Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
                 Main.loginPage(stage);
             }

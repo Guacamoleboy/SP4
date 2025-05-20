@@ -228,7 +228,6 @@ public class NextOption extends Pane {
 
     public void goBackButtonAction(){
         Register register = new Register(600, 600, this.register.getUsername(), this.register.getPassword(), this.register.getEmail());
-        StartBorder sb = new StartBorder(3);
         StartInfo si = new StartInfo(300, 600);
 
         si.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
@@ -237,7 +236,7 @@ public class NextOption extends Pane {
         register.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
         register.getStyleClass().add("body");
 
-        HBox goBackHBOX = new HBox(register, sb, si);
+        HBox goBackHBOX = new HBox(register, si);
 
         Scene goBackScene = new Scene(goBackHBOX, 900, 600);
 
