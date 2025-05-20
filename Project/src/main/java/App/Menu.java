@@ -487,7 +487,7 @@ public class Menu extends Pane {
         Button setting1 = new Button("Log Out");
         Button setting2 = new Button("Language");
         Button setting3 = new Button("Darkmode");
-        Button setting4 = new Button("Change Profile Colors");
+        Button setting4 = new Button("Edit profile");
         Button setting5 = new Button("Delete Account");
 
         sidebar.getChildren().addAll(setting1, setting2, setting3, setting4, setting5);
@@ -3309,7 +3309,7 @@ public class Menu extends Pane {
     // ____________________________________________________
 
     public VBox displayProfile() {
-
+        this.user = new Profile(username);
         this.userProfile = new Profile(this.username);
         String profilePicBgColor = userProfile.getProfilePictureHex();
         String bannerBgColor = userProfile.getProfileBannerHex();

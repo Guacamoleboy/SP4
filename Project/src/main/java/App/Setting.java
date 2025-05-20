@@ -15,6 +15,9 @@ import java.sql.*;
 import java.util.Optional;
 import javafx.util.Duration;
 
+import static App.DialogBox.profileSettings;
+import static java.lang.Integer.parseInt;
+
 public class Setting extends Pane {
 
     // Attributes
@@ -28,10 +31,11 @@ public class Setting extends Pane {
     private ColorPicker profileColorPicker;
     private ColorPicker bannerColorPicker;
     private ColorPicker roleColorPicker;
+    private Profile profile;
 
     public Setting(String username){
         this.username = username;
-
+        profile = new Profile(username);
         // instantiate color pickers with error handling
         try {
             profileColorPicker = new ColorPicker(Color.web(getProfileColor()));
@@ -191,8 +195,6 @@ public class Setting extends Pane {
 
         return fullWidthHBox;
     }
-
-
 
     // _____________________________________________
 
@@ -383,7 +385,7 @@ public class Setting extends Pane {
 
     // _____________________________________________
 
-    protected HBox displayProfileColors() {
+    /*protected HBox displayProfileColors() {
         // HBox
         HBox fullWidthHBox = new HBox();
         fullWidthHBox.setAlignment(Pos.CENTER_LEFT);
@@ -439,7 +441,173 @@ public class Setting extends Pane {
         fullWidthHBox.getChildren().addAll(greyRegion, colorRegion);
 
         return fullWidthHBox;
+    }*/
+
+    // _____________________________________________
+
+    protected ScrollPane displayProfileColors() {
+        VBox contentBox = new VBox();
+
+        contentBox.getChildren().addAll(
+                createProfileSettingBox("Profile Colors", "/assets/icons/icon22.png", this::showColorPickerDialog, true, false),
+                createProfileSettingBox("Change About Me Header", "/assets/icons/icon22.png", this::editAboutMeHeader, false, false),
+                createProfileSettingBox("Change About Me Description", "/assets/icons/icon22.png", this::editAboutMeDescription, false, false),
+                createProfileSettingBox("Change About fun fact", "/assets/icons/icon22.png", this::editFunFact, false, false),
+                createProfileSettingBox("Change City", "/assets/icons/icon22.png", this::editCity, false, false),
+                createProfileSettingBox("Change Number", "/assets/icons/icon22.png", this::editNumber, false, false),
+                createProfileSettingBox("Change Email", "/assets/icons/icon22.png", this::editEmail, false, false),
+                createProfileSettingBox("Change Contact Me Header", "/assets/icons/icon22.png", this::editContactHeader, false, false),
+                createProfileSettingBox("Change Contact Me Description", "/assets/icons/icon22.png", this::editContactDescription, false, true)
+        );
+
+        ScrollPane scrollPane = new ScrollPane(contentBox);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+        scrollPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        VBox.setVgrow(scrollPane, Priority.ALWAYS);
+        scrollPane.setStyle("-fx-background-color: transparent;");
+
+
+        return scrollPane;
     }
+
+    // _____________________________________________
+
+    private HBox createProfileSettingBox(String labelText, String iconPath, Runnable action, boolean isFirst, boolean isLast) {
+        HBox fullWidthHBox = new HBox();
+        fullWidthHBox.setAlignment(Pos.CENTER_LEFT);
+
+        if (!isLast) {
+            fullWidthHBox.setStyle("-fx-border-width: 0 0 2px 0; -fx-border-color: #464646;");
+        }
+
+        VBox greyRegion = new VBox();
+        greyRegion.setAlignment(Pos.CENTER_LEFT);
+        greyRegion.setStyle("-fx-background-color: #7c7c7c ; -fx-border-width: 0 2px 0 0; -fx-border-color: #464646;");
+        greyRegion.setPrefWidth(760 * 0.70);
+
+        Label label = new Label(labelText);
+        label.setStyle("-fx-font-size: 25px; -fx-text-fill: white; -fx-padding: 20px;");
+        greyRegion.getChildren().add(label);
+
+        VBox colorRegion = new VBox();
+        colorRegion.setAlignment(Pos.CENTER);
+
+
+        String borderRadius = "";
+        if (isFirst) borderRadius = "-fx-background-radius: 0 20 0 0; -fx-border-radius: 0 20 0 0;";
+        else if (isLast) borderRadius = "-fx-background-radius: 0 0 20 0; -fx-border-radius: 0 0 20 0;";
+
+        colorRegion.setStyle("-fx-background-color: rgb(94,159,196); -fx-cursor: hand;" + borderRadius);
+
+        ImageView IconView = new ImageView(new Image(getClass().getResource(iconPath).toExternalForm()));
+        applyDropShadowEffect(IconView, 100, 100, 0.7);
+        colorRegion.getChildren().add(IconView);
+
+
+        ScaleTransition scaleUp = new ScaleTransition(Duration.millis(100), IconView);
+        scaleUp.setToX(1.08);
+        scaleUp.setToY(1.08);
+        ScaleTransition scaleDown = new ScaleTransition(Duration.millis(100), IconView);
+        scaleDown.setToX(1.0);
+        scaleDown.setToY(1.0);
+
+        colorRegion.setOnMouseEntered(e -> scaleUp.playFromStart());
+        colorRegion.setOnMouseExited(e -> scaleDown.playFromStart());
+        colorRegion.setOnMouseClicked(e -> action.run());
+
+
+        fullWidthHBox.getChildren().addAll(greyRegion, colorRegion);
+        return fullWidthHBox;
+    }
+
+    // _____________________________________________
+
+    private void editAboutMeHeader() {
+        String content = profileSettings("About me", "Change header", profile.getProfileAboutmeHeader());
+
+        Main.db.updateABTMeHeader(username, content);
+        profile.updateData(username);
+    }
+
+    // _____________________________________________
+
+    private void editAboutMeDescription() {
+        String content = profileSettings("About me", "Change description", profile.getProfileAboutDescription());
+
+        Main.db.updateABTMeDesc(username, content);
+        profile.updateData(username);
+    }
+
+    // _____________________________________________
+
+    private void editContactHeader() {
+        String content = profileSettings("Contact me", "Change header", profile.getContactHeader());
+
+        Main.db.updateContactHeader(username, content);
+        profile.updateData(username);
+    }
+
+    // _____________________________________________
+
+    private void editContactDescription() {
+        String content = profileSettings("Contact me", "Change description", profile.getContactDescription());
+
+        Main.db.updateContactDesc(username, content);
+        profile.updateData(username);
+    }
+
+    // _____________________________________________
+
+    private void editFunFact() {
+        String content = profileSettings("About me", "Change fun fact", profile.getFunFacts());
+
+        Main.db.updateABTMeFunFact(username, content);
+        profile.updateData(username);
+    }
+
+    // _____________________________________________
+
+    private void editCity() {
+        String content = profileSettings("Change city", "Enter city name", profile.getCity());
+
+        Main.db.setCity(username, content);
+        profile.updateData(username);
+    }
+
+    // _____________________________________________
+
+    private void editNumber() {
+        String content = profileSettings("Change number", "Enter your number", profile.getPhoneNumber());
+
+        try {
+            int number = Integer.parseInt(content);
+            Main.db.updatePhoneNumber(username, number);
+            profile.updateData(username);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input! Please enter a valid number.");
+        }
+    }
+
+    // _____________________________________________
+
+    private void editEmail() {
+        String content = profileSettings("Change email", "Enter your email", profile.getEmail());
+
+        Main.db.setEmail(username, content);
+        profile.updateData(username);
+    }
+
+    // _____________________________________________
+
+    private void editSocial() {
+        String content = profileSettings("Social media", "Change your socials", profile.getSocial("instagram"));
+
+        Main.db.updateABTMeFunFact(username, content);
+        profile.updateData(username);
+    }
+
+    // _____________________________________________
 
     private void showColorPickerDialog() {
         Dialog<ButtonType> dialog = new Dialog<>();
@@ -598,6 +766,8 @@ public class Setting extends Pane {
                 (int) (color.getOpacity() * 255));
     }
 
+    // _____________________________________________
+
     private String getProfileColor() {
         try {
             Profile profile = new Profile(username);
@@ -610,6 +780,8 @@ public class Setting extends Pane {
             return "#ADD8E6FF"; // light blue
         }
     }
+
+    // _____________________________________________
 
     private String getBannerColor() {
         try {
@@ -624,6 +796,8 @@ public class Setting extends Pane {
         }
     }
 
+    // _____________________________________________
+
     private String getRoleColor() {
         try {
             Profile profile = new Profile(username);
@@ -637,17 +811,20 @@ public class Setting extends Pane {
         }
     }
 
+    // _____________________________________________
 
     private boolean isValidColorFormat(String color) {
         // is valid hex format (#RRGGBB or #RRGGBBAA)
         return color.matches("^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$");
     }
 
-
+    // _____________________________________________
 
     private boolean saveProfileColors(String profileHex, String bannerHex, String roleHex, String bannerUrl) {
         return Main.db.updateProfileColors(username, profileHex, bannerHex, roleHex, bannerUrl);
     }
+
+    // _____________________________________________
 
     private void showSuccessAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -656,6 +833,8 @@ public class Setting extends Pane {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+    // _____________________________________________
 
     private void showErrorAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
