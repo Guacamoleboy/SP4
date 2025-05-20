@@ -3342,7 +3342,15 @@ public class Menu extends Pane {
         leftPane.setPadding(new Insets(0,0,0,0));
         leftPane.setStyle("-fx-background-color: " + profilePicBgColor + ";");
 
-        Image profileImage = new Image(getClass().getResource("/assets/profile/person1.png").toExternalForm());
+        Image profileImage;
+        if (!user.getProfilePicture().equalsIgnoreCase("person1.png")) {
+            System.out.println("Custom picture!");
+            profileImage = new Image(user.getProfilePicture());
+        } else {
+            System.out.println("Standard picture!");
+            profileImage = new Image(getClass().getResource("/assets/profile/person1.png").toExternalForm());
+        }
+
         ImageView profileImageView = new ImageView(profileImage);
         profileImageView.setFitWidth(150);
         profileImageView.setFitHeight(130);
@@ -4690,9 +4698,9 @@ public class Menu extends Pane {
         tagsBox.setPadding(new Insets(5, 0, 0, 0));
         tagsBox.setAlignment(Pos.CENTER_LEFT);
 
-        String[] tags = user.getInterests();
+        //String[] tags = user.getInterests();
 
-        for (String tag : tags) {
+        for (String tag : Main.db.getInterests(user.getID())) {
             Label tagLabel = new Label("#" + tag);
             tagLabel.setStyle("-fx-background-color: #333; -fx-text-fill: white; -fx-padding: 4 8 4 8; -fx-background-radius: 10; -fx-font-size: 14px");
             tagsBox.getChildren().add(tagLabel);

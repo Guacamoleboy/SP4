@@ -115,6 +115,10 @@ public class Profile extends Pane {
         return userData.get(7);
     }
 
+    public String getProfilePicture() {
+        return userData.get(13);
+    }
+
     // ______________________________________
 
     public String getProfileBannerHex(){
@@ -144,14 +148,6 @@ public class Profile extends Pane {
     public String getProfileAboutDescription() {
         return userData.get(20);
     }
-
-    // ______________________________________
-
-    public String[] getInterests() {
-        System.out.println("INTERESTS SKAL SÆTTES IND I DATABASE!!!");
-        return new String[]{"Gym", "Creativity", "Gaming"};
-    }
-
     // ______________________________________
 
     public String getFunFacts() {
@@ -277,8 +273,5 @@ public class Profile extends Pane {
         }
         return cuts;
     }
-
-
-
 
 }
