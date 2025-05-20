@@ -35,6 +35,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
+import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import java.time.LocalDate;
@@ -2606,7 +2607,7 @@ public class Menu extends Pane {
             String p = "500kr";
 
             card.setOnMouseClicked(event -> {
-                DialogBox.displayBook(dateStr,p, timeStr, convertToStars(4), username, BookingCard.getStudentID());
+                DialogBox.displayBook(dateStr, addressStr, timeStr, convertToStars(4), username, BookingCard.getStudentID());
             });
 
             Animation.addHoverScaleEffectVBox(card);
@@ -2642,11 +2643,10 @@ public class Menu extends Pane {
             String hairTypeStr = Main.db.getHairTypeSummary(booking.getHairtypeId()); // e.g., "Curly, Brown, Medium, Female"
 
             Label date = new Label(dateStr);
-            Text place = new Text(addressStr);
-            Text hair = new Text("Preferred hair: " + hairTypeStr);
-            place.setTextAlignment(TextAlignment.CENTER);
-            place.setWrappingWidth(140);
-            place.setFill(Color.WHITE);
+            Text hair = new Text(addressStr+"\nPreferred hair: " + hairTypeStr);
+            hair.setTextAlignment(TextAlignment.CENTER);
+            hair.setWrappingWidth(140);
+            hair.setFill(Color.WHITE);
 
             Label time = new Label(timeStr);
             Label rating = new Label(convertToStars(ratingInt)); // Optional
@@ -2678,7 +2678,6 @@ public class Menu extends Pane {
             wave.toBack();
 
             // Apply CSS
-            place.getStyleClass().add("card-visuals-lol");
             time.getStyleClass().add("card-visuals-bold");
             rating.getStyleClass().add("card-visuals-rating");
 
@@ -2695,7 +2694,7 @@ public class Menu extends Pane {
 
             Animation.addHoverScaleEffectVBox(card);
 
-            card.getChildren().addAll(headerWithWave, time, place, hair, spacer, rating);
+            card.getChildren().addAll(headerWithWave, time, hair, spacer, rating);
             cardBox.getChildren().add(card);
         }
 
@@ -3261,8 +3260,6 @@ public class Menu extends Pane {
             clip.setArcWidth(25);
             clip.setArcHeight(25);
 
-            // nigga
-
             imageView.setClip(clip);
 
             imageBoxes.getChildren().add(imageView);
@@ -3342,11 +3339,24 @@ public class Menu extends Pane {
         leftPane.setPadding(new Insets(0,0,0,0));
         leftPane.setStyle("-fx-background-color: " + profilePicBgColor + ";");
 
-        Image profileImage = new Image(getClass().getResource("/assets/profile/person1.png").toExternalForm());
+        Image profileImage;
+        if (!user.getProfilePicture().equalsIgnoreCase("person1.png")) {
+            profileImage = new Image(user.getProfilePicture());
+        } else {
+            profileImage = new Image(getClass().getResource("/assets/profile/person1.png").toExternalForm());
+        }
+
         ImageView profileImageView = new ImageView(profileImage);
-        profileImageView.setFitWidth(150);
+        profileImageView.setFitWidth(188);
         profileImageView.setFitHeight(130);
-        profileImageView.setPreserveRatio(true);
+        profileImageView.setPreserveRatio(false);
+
+
+        SVGPath clip = new SVGPath();
+        clip.setContent("M0,22 Q0,0 22,0 H188 V150 H0 Z");
+        profileImageView.setClip(clip);
+
+
 
         Label roleLabel = new Label("Customer");
         roleLabel.setPadding(new Insets(5,0,5,0));
@@ -4175,12 +4185,12 @@ public class Menu extends Pane {
                         "To reset your password, click on the 'Forgot Password' link on the login page and follow the instructions sent to your email."},
                 {"What is your support response time?",
                         "Our support team typically responds within 24 hours during business days."},
-                {"Can I change my subscription plan later?",
-                        "Yes, you can upgrade or downgrade your subscription at any time from your account settings."},
+                {"How do I book a time?",
+                        "Simply press any of the cards and a pop-up will show with any information you'll need."},
                 {"How do I contact support?",
-                        "You can contact support via the 'Contact Us' form in the app or by emailing support@example.com."},
+                        "We are currently working on implementing a support option. Hang tight!"},
                 {"Is my data secure?",
-                        "Absolutely! We use industry-standard encryption and security measures to protect your data."}
+                        "No lol. GG."}
         };
 
         VBox faqContent = new VBox(12);
@@ -4302,8 +4312,8 @@ public class Menu extends Pane {
                 {"Active Students", "850"},
                 {"Teachers", "75"},
                 {"Classes", "40"},
-                {"Average GPA", "3.6"},
-                {"Extracurricular Clubs", "15"}
+                {"Average GPA", "8.7"}, // Dansk karakter
+                {"Tutors", "17"}
         };
 
         Function<String[], VBox> createStatBox = stat -> {
@@ -4385,7 +4395,7 @@ public class Menu extends Pane {
 
         String[][] stats = {
                 {"Students Taught", "230"},
-                {"Average Student GPA", "3.4"},
+                {"Average Student GPA", "11"},
                 {"Courses Created", "18"},
                 {"Years of Experience", "12"},
                 {"Parent Meetings", "47"},
@@ -4465,7 +4475,7 @@ public class Menu extends Pane {
             VBox singleReview = new VBox(5);
             singleReview.setPadding(new Insets(30));
             singleReview.setStyle("-fx-background-color: white; -fx-background-radius: 10px; "
-                    + "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+            + "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);");
 
             Label header = new Label(review.get(0));
             header.setStyle("-fx-text-alignment: CENTER !important; -fx-font-weight: bold; -fx-font-size: 14px;");
@@ -4690,9 +4700,9 @@ public class Menu extends Pane {
         tagsBox.setPadding(new Insets(5, 0, 0, 0));
         tagsBox.setAlignment(Pos.CENTER_LEFT);
 
-        String[] tags = user.getInterests();
+        //String[] tags = user.getInterests();
 
-        for (String tag : tags) {
+        for (String tag : Main.db.getInterests(user.getID())) {
             Label tagLabel = new Label("#" + tag);
             tagLabel.setStyle("-fx-background-color: #333; -fx-text-fill: white; -fx-padding: 4 8 4 8; -fx-background-radius: 10; -fx-font-size: 14px");
             tagsBox.getChildren().add(tagLabel);
@@ -4835,7 +4845,7 @@ public class Menu extends Pane {
 
     public String getDate() {
 
-        int day = (int) (Math.random() * 28) + 1; // Fuck the rest of the days. Hardcoded anyways.
+        int day = (int) (Math.random() * 28) + 1;
         int month = (int) (Math.random() * 12) + 1;
         String year = "2025";
 
@@ -5125,6 +5135,9 @@ public class Menu extends Pane {
         Button contactButton = new Button("Send a Message");
         contactButton.setStyle("-fx-background-color: orange;-fx-background-insets: 0; -fx-border-insets: 0; -fx-cursor: hand; -fx-text-fill: black; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 15px; -fx-border-radius: 15px;");
         contactButton.setPrefWidth(200);
+
+        // Contact action listener til messages
+        contactButton.setOnAction(e -> DialogBox.displayMessageDialog(username, username, Main.db));
 
         // Hover
         Animation.addHoverScaleEffectMore(contactButton);

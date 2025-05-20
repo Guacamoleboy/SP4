@@ -6,10 +6,8 @@ import App.Tip;
 import App.Request;
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.sql.DriverManager.getConnection;
 
@@ -134,6 +132,14 @@ public class DBConnector {
                     "name TEXT NOT NULL" +
                     ")";
 
+
+            String createInterests = "CREATE TABLE IF NOT EXISTS interest (" +
+                    "id INTEGER NOT NULL," +
+                    "name TEXT NOT NULL," +
+                    "PRIMARY KEY (id, name)" +
+                    ")";
+
+
             String insertSchools = "INSERT OR IGNORE INTO schools (id, name) VALUES " +
                     "(1, 'EUC SJÆLLAND NÆSTVED')," +
                     "(2, 'EUC SYD STEGHOLT')," +
@@ -156,6 +162,7 @@ public class DBConnector {
             stmt.executeUpdate(createHairTypeTable);
             stmt.executeUpdate(createSchoolTable);
             stmt.executeUpdate(insertSchools);
+            stmt.executeUpdate(createInterests);
 
         } catch (SQLException e) {
             System.out.println("Error initializing database: " + e.getMessage());
@@ -1437,6 +1444,101 @@ public class DBConnector {
             return false;
         }
 
+    }
+
+    // ____________________________________________________
+
+    public boolean setProfilePicture(String username, String link) {
+
+        String query = "UPDATE users SET profile_picture = ? WHERE username = ?";
+
+        try (PreparedStatement setProfilePicture = con.prepareStatement(query)) {
+            setProfilePicture.setString(1, link);
+            setProfilePicture.setString(2, username);
+            int rowsAffected = setProfilePicture.executeUpdate();
+
+            return rowsAffected > 0; // true
+
+        } catch (SQLException e) {
+            System.out.println("setProfilePicture failed!!!");
+            return false;
+        }
+
+    }
+
+    // ____________________________________________________
+
+    public boolean updateInterests(String username, String link) {
+        int userId = getStudentID(username);
+        if (userId == -1) return false;
+
+        Set<String> newInterests = Arrays.stream(link.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toSet());
+
+        String fetchQuery = "SELECT name FROM interest WHERE id = ?";
+        String insertQuery = "INSERT INTO interest (id, name) VALUES (?, ?)";
+        String deleteQuery = "DELETE FROM interest WHERE id = ? AND name = ?";
+
+        try (
+                PreparedStatement fetchStmt = con.prepareStatement(fetchQuery);
+                PreparedStatement insertStmt = con.prepareStatement(insertQuery);
+                PreparedStatement deleteStmt = con.prepareStatement(deleteQuery)
+        ) {
+            fetchStmt.setInt(1, userId);
+            ResultSet rs = fetchStmt.executeQuery();
+
+            Set<String> existingInterests = new HashSet<>();
+            while (rs.next()) {
+                existingInterests.add(rs.getString("name"));
+            }
+
+            for (String interest : newInterests) {
+                if (!existingInterests.contains(interest)) {
+                    insertStmt.setInt(1, userId);
+                    insertStmt.setString(2, interest);
+                    insertStmt.addBatch();
+                }
+            }
+
+            for (String interest : existingInterests) {
+                if (!newInterests.contains(interest)) {
+                    deleteStmt.setInt(1, userId);
+                    deleteStmt.setString(2, interest);
+                    deleteStmt.addBatch();
+                }
+            }
+
+            insertStmt.executeBatch();
+            deleteStmt.executeBatch();
+
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // ____________________________________________________
+
+    public ArrayList<String> getInterests(int id) {
+        ArrayList<String> interests = new ArrayList<>();
+        String query = "SELECT name FROM interest WHERE id = ?";
+
+        try (PreparedStatement stmt = con.prepareStatement(query)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                interests.add(rs.getString("name"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return interests;
     }
 
     // ____________________________________________________

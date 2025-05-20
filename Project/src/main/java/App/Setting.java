@@ -14,8 +14,10 @@ import javafx.stage.Stage;
 import java.sql.*;
 import java.util.Optional;
 import javafx.util.Duration;
+import App.SideMenu.*;
 
 import static App.DialogBox.profileSettings;
+import static App.Login.sm;
 import static java.lang.Integer.parseInt;
 
 public class Setting extends Pane {
@@ -32,6 +34,7 @@ public class Setting extends Pane {
     private ColorPicker bannerColorPicker;
     private ColorPicker roleColorPicker;
     private Profile profile;
+
 
     public Setting(String username){
         this.username = username;
@@ -459,6 +462,8 @@ public class Setting extends Pane {
                 createProfileSettingBox("Change City", "/assets/icons/icon22.png", this::editCity, false, false),
                 createProfileSettingBox("Change Number", "/assets/icons/icon22.png", this::editNumber, false, false),
                 createProfileSettingBox("Change Email", "/assets/icons/icon22.png", this::editEmail, false, false),
+                createProfileSettingBox("Change profile picture", "/assets/icons/icon22.png", this::editProfilePicture, false, false),
+                createProfileSettingBox("Change Interests", "/assets/icons/icon22.png", this::editInterests, false, false),
                 createProfileSettingBox("Change Contact Me Header", "/assets/icons/icon22.png", this::editContactHeader, false, false),
                 createProfileSettingBox("Change Contact Me Description", "/assets/icons/icon22.png", this::editContactDescription, false, true)
         );
@@ -598,6 +603,27 @@ public class Setting extends Pane {
         String content = profileSettings("Change email", "Enter your email", profile.getEmail());
 
         Main.db.setEmail(username, content);
+        profile.updateData(username);
+    }
+
+    // _____________________________________________
+
+    private void editProfilePicture() {
+        String content = profileSettings("Change Profile picture", "Enter link to your profile picture", profile.getProfilePicture());
+        Main.db.setProfilePicture(username, content);
+        profile.updateData(username);
+    }
+
+    // _____________________________________________
+
+    private void editInterests() {
+        String interests = "";
+        for (String interest : Main.db.getInterests(profile.getID())) {
+            interests += interest + ", ";
+        }
+        String content = profileSettings("Change interests", "Enter your interests", interests);
+
+        Main.db.updateInterests(username, content);
         profile.updateData(username);
     }
 
@@ -868,7 +894,7 @@ public class Setting extends Pane {
 
         // Action
         logOutButton.setOnAction(e -> {
-            if (acceptAlert("Logging out", "Are you sure?")) { // (TITLE, MESSAGE) FUCK JER
+            if (acceptAlert("Logging out", "Are you sure?")) {
                 Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
                 Main.loginPage(stage);
             }
